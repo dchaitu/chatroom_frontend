@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
+import { Button, Input, Typography } from "@material-tailwind/react";
+import { PaperAirplaneIcon } from '@heroicons/react/24/solid';
 
 const GetMessagesFromRoom = () => {
     const [messages, setMessages] = useState([]);
@@ -131,32 +133,31 @@ const GetMessagesFromRoom = () => {
         }
     };
 
+    const currentRoom = rooms.find(room => room.id === parseInt(selectedRoom));
+
     return (
-        <div className="flex h-screen bg-gray-100">
+        <div className="flex h-screen bg-gray-100 font-sans">
             {/* Sidebar */}
-            <div className="w-1/4 bg-white border-r border-gray-200 p-4">
+            <div className="w-1/4 bg-white border-r border-gray-200 p-4 flex flex-col">
                 <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-bold">Rooms</h2>
-                    <button
-                        onClick={handleCreateRoom}
-                        className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-                    >
-                        New Room
-                    </button>
+                    <Typography variant="h5" color="blue-gray">Rooms</Typography>
+                    <Button onClick={handleCreateRoom} size="sm">New Room</Button>
                 </div>
-                <select
-                    value={selectedRoom}
-                    onChange={handleRoomChange}
-                    className="w-full p-2 border rounded mb-4"
-                >
-                    {rooms.map(room => (
-                        <option key={room.id} value={room.id}>
-                            {room.name}
-                        </option>
-                    ))}
-                </select>
-                <div className="mt-4">
-                    <p className="text-sm text-gray-500">
+                <div className="relative w-full min-w-[200px]">
+                    <select
+                        value={selectedRoom}
+                        onChange={handleRoomChange}
+                        className="w-full p-2.5 text-sm text-gray-500 bg-white border rounded-md shadow-sm outline-none appearance-none focus:border-indigo-600"
+                    >
+                        {rooms.map(room => (
+                            <option key={room.id} value={room.id}>
+                                {room.name}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                <div className="mt-auto">
+                    <p className={`text-sm ${isConnected ? 'text-green-500' : 'text-red-500'}`}>
                         Status: {isConnected ? 'Connected' : 'Disconnected'}
                     </p>
                 </div>
@@ -164,43 +165,51 @@ const GetMessagesFromRoom = () => {
 
             {/* Chat Area */}
             <div className="flex-1 flex flex-col">
+                {/* Chat Header */}
+                <div className="p-4 border-b bg-white">
+                    <Typography variant="h6" color="blue-gray">{currentRoom ? currentRoom.name : 'Chat'}</Typography>
+                </div>
+
                 {/* Messages */}
-                <div className="flex-1 overflow-y-auto p-4">
-                    {messages.map((message, index) => (
-                        <div
-                            key={index}
-                            className={`mb-4 ${message.sender === localStorage.getItem('username') ? 'text-right' : ''}`}
-                        >
-                            <div className={`inline-block p-3 rounded-lg ${message.sender === localStorage.getItem('username') ? 'bg-blue-500 text-white' : 'bg-white'}`}>
-                                <p className="font-semibold">{message.sender}</p>
-                                <p>{message.content}</p>
-                                <p className="text-xs opacity-75">
-                                    {new Date(message.timestamp).toLocaleString()}
-                                </p>
+                <div className="flex-1 overflow-y-auto p-6 bg-gray-50">
+                    <div className="space-y-4">
+                        {messages.map((message, index) => (
+                            <div
+                                key={index}
+                                className={`flex ${message.sender === localStorage.getItem('username') ? 'justify-end' : 'justify-start'}`}
+                            >
+                                <div className={`max-w-xs lg:max-w-md p-3 rounded-xl ${message.sender === localStorage.getItem('username') ? 'bg-indigo-500 text-white' : 'bg-white shadow-md'}`}>
+                                    <p className="font-semibold text-sm">{message.sender}</p>
+                                    <p className="text-md">{message.content}</p>
+                                    <p className="text-xs opacity-75 mt-1 text-right">
+                                        {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                    </p>
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                     <div ref={messagesEndRef} />
                 </div>
 
                 {/* Message Input */}
-                <form onSubmit={handleSendMessage} className="p-4 border-t">
-                    <div className="flex">
-                        <input
+                <div className="p-4 bg-white border-t">
+                    <form onSubmit={handleSendMessage} className="flex items-center gap-2">
+                        <Input
                             type="text"
                             value={newMessage}
                             onChange={(e) => setNewMessage(e.target.value)}
                             placeholder="Type your message..."
-                            className="flex-1 p-2 border rounded-l focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="!border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent placeholder:text-gray-500 focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10"
+                            labelProps={{
+                                className: "hidden",
+                            }}
+                            containerProps={{ className: "min-w-0 flex-1" }}
                         />
-                        <button
-                            type="submit"
-                            className="bg-blue-500 text-white px-4 py-2 rounded-r hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        >
-                            Send
-                        </button>
-                    </div>
-                </form>
+                        <Button type="submit" size="md" className="rounded-lg flex items-center justify-center">
+                            <PaperAirplaneIcon className="h-5 w-5" />
+                        </Button>
+                    </form>
+                </div>
             </div>
         </div>
     );

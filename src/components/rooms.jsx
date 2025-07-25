@@ -1,6 +1,7 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {useParams} from "react-router-dom";
 import GetRoom from "./getRoom";
+import {Typography} from "@material-tailwind/react";
 
 // Get messages in the current room
 const Rooms = () => {
@@ -35,10 +36,12 @@ const Rooms = () => {
 
     return (
         <div>
-            <h2>{username}'s Rooms</h2>
+            <Typography variant="h1">{username}'s Rooms</Typography>
+            <div className="card">
             {rooms.map((room) => (
                 <GetRoom key={room.room_id} room={room} />
             ))}
+            </div>
         </div>
     );
 }

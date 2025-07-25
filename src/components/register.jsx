@@ -1,8 +1,10 @@
-import React, {useState} from "react";
-import {useNavigate} from "react-router-dom";
-import {Button} from "./ui/button";
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import ReCAPTCHA from 'react-google-recaptcha';
-import {siteKey} from "./../constants/constants";
+import { siteKey } from "../constants/constants";
+import { Card, Input, Button } from "@material-tailwind/react";
+import { CardBody, CardFooter } from "@material-tailwind/react";
+import { UserCircleIcon, LockClosedIcon, IdentificationIcon, UserGroupIcon } from '@heroicons/react/24/outline';
 
 const Register = () => {
 
@@ -49,69 +51,106 @@ const Register = () => {
     };
 
     return (
-        <div className="flex justify-center items-center min-h-screen">
-            <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
-
-                <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Register</h2>
-
-                <form onSubmit={handleSubmit} method="POST" className="space-y-6">
-                    <div>
-                        <label htmlFor="username"
-                               className="block text-sm font-medium text-gray-700">Username</label>
-                        <input type="text" name="username" id="username" required
-                               value={username}
-                               onChange={(e) => setUsername(e.target.value)}
-
-                               className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"/>
-                    </div>
-
-                    <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700">Full Name</label>
-                        <input type="text" name="email" id="email" required
-                               value={fullName}
-                               onChange={(e) => setFullName(e.target.value)}
-
-                               className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"/>
-                    </div>
-
-                    <div>
-                        <label htmlFor="password"
-                               className="block text-sm font-medium text-gray-700">Password</label>
-                        <input type="password" name="password" id="password" required
-                               value={password}
-                               onChange={(e) => setPassword(e.target.value)}
-
-                               className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"/>
-                    </div>
-
-                    <div>
-                        <label htmlFor="password2" className="block text-sm font-medium text-gray-700">RoomId</label>
-                        <input type="text" name="password2" id="password2" required
-                               value={roomId}
-                               onChange={(e) => setRoomId(e.target.value)}
-                               className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"/>
-                    </div>
-
-
-                    <div>
-                        <ReCAPTCHA
-                            sitekey={siteKey}
-                            onChange={(value) => setRecaptchaValue(value)}
-                        />
-                        <div className="flex flex-wrap p-2 items-center gap-2 md:flex-row">
-                            <Button
-                                    className="w-full py-2 px-4">
-                                Register
-                            </Button>
-                        </div>
-                    </div>
-                </form>
-
-
-                <p className="mt-4 text-center text-sm text-gray-600">
-                    Already have an account?
-                    <a href="/login/" className="text-indigo-600 hover:text-indigo-500 font-semibold"> Login</a>
+        <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+            <div className="sm:mx-auto sm:w-full sm:max-w-md">
+                <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                    Create a new account
+                </h2>
+                <p className="mt-2 text-center text-sm text-gray-600">
+                    Or{' '}
+                    <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500">
+                        sign in to your account
+                    </Link>
                 </p>
+            </div>
+
+            <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+                <Card className="border-0 shadow-lg">
+                    <CardBody className="py-8 px-8">
+                        {error && (
+                            <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-md text-sm">
+                                {error}
+                            </div>
+                        )}
+                        <form onSubmit={handleSubmit} className="space-y-6">
+                            <div>
+                                <Input
+                                    type="text"
+                                    label="Username"
+                                    size="lg"
+                                    icon={<UserCircleIcon className="h-4 w-4" />}
+                                    value={username}
+                                    onChange={(e) => setUsername(e.target.value)}
+                                    required
+                                />
+                            </div>
+
+                            <div className="mt-4">
+                                <Input
+                                    type="text"
+                                    label="Full Name"
+                                    size="lg"
+                                    icon={<IdentificationIcon className="h-4 w-4" />}
+                                    value={fullName}
+                                    onChange={(e) => setFullName(e.target.value)}
+                                    required
+                                />
+                            </div>
+
+                            <div className="mt-4">
+                                <Input
+                                    type="password"
+                                    label="Password"
+                                    size="lg"
+                                    icon={<LockClosedIcon className="h-4 w-4" />}
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
+                                />
+                            </div>
+
+                            <div className="mt-4">
+                                <Input
+                                    type="text"
+                                    label="Room ID"
+                                    size="lg"
+                                    icon={<UserGroupIcon className="h-4 w-4" />}
+                                    value={roomId}
+                                    onChange={(e) => setRoomId(e.target.value)}
+                                    required
+                                />
+                            </div>
+
+                            <div className="mt-6">
+                                <ReCAPTCHA
+                                    sitekey={siteKey}
+                                    onChange={(value) => setRecaptchaValue(value)}
+                                    className="flex justify-center"
+                                />
+                            </div>
+
+                            <div className="mt-6">
+                                <Button
+                                    type="submit"
+                                    color="blue"
+                                    size="lg"
+                                    disabled={!recaptchaValue}
+                                    fullWidth
+                                    className="flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                                >
+                                    Create Account
+                                </Button>
+                            </div>
+                        </form>
+                    </CardBody>
+                    <CardFooter className="bg-gray-50 py-4 px-8 border-t border-gray-200">
+                        <div className="text-center text-sm text-gray-500">
+                            <Link to="/" className="font-medium text-blue-600 hover:text-blue-500">
+                                Back to home
+                            </Link>
+                        </div>
+                    </CardFooter>
+                </Card>
             </div>
         </div>
     );

@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import ReCAPTCHA from 'react-google-recaptcha';
-import {siteKey} from "../constants/constants";
-// import './login.css'
-import {Button} from "./ui/button";
+import { siteKey } from "../constants/constants";
+import { Card, Input, Button } from "@material-tailwind/react";
+import { CardHeader, CardBody, CardFooter, Typography } from "@material-tailwind/react";
+import { LockClosedIcon, UserCircleIcon } from '@heroicons/react/24/outline';
 
 const Login = () => {
     const [username, setUsername] = useState('');
@@ -65,45 +66,92 @@ const Login = () => {
 
 
     return (
-        <div className="flex justify-center items-center min-h-screen">
-            <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
+        <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+            <div className="sm:mx-auto sm:w-full sm:max-w-md">
+                <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                    Sign in to your account
+                </h2>
+                <p className="mt-2 text-center text-sm text-gray-600">
+                    Or{' '}
+                    <Link to="/register" className="font-medium text-blue-600 hover:text-blue-500">
+                        create a new account
+                    </Link>
+                </p>
+            </div>
 
-                <h1 className="font-bold heading text-2xl content-center">Login</h1>
-                <form onSubmit={handleSubmit}>
-                    <div className="p-2">
-                        <label className="p-1">Username</label>
-                        <input className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                               type="text"
-                               value={username}
-                               onChange={(e) => setUsername(e.target.value)}
-                               required
-                        />
-                    </div>
-                    <div className="p-2">
-                        <label className="p-1">Password</label>
-                        <input className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                               type="password"
-                               value={password}
-                               onChange={(e) => setPassword(e.target.value)}
-                               required
-                        />
-                    </div>
-                    <div className="p-2">
-                        <ReCAPTCHA
-                            sitekey={siteKey}
-                            onChange={(value) => onClickCaptchaButton(value)}
-                        />
-                    </div>
+            <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+                <Card className="border-0 shadow-lg">
+                    <CardBody className="py-8 px-8">
+                        {error && (
+                            <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-md text-sm">
+                                {error}
+                            </div>
+                        )}
+                        <form onSubmit={handleSubmit} className="space-y-6">
+                            <div>
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <UserCircleIcon className="h-5 w-5 text-gray-400" />
+                                    </div>
+                                    <Input
+                                        type="text"
+                                        label="Username"
+                                        size="lg"
+                                        className="pl-10"
+                                        value={username}
+                                        onChange={(e) => setUsername(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                            </div>
 
-                    <div className="flex flex-wrap p-2 items-center gap-2 md:flex-row">
-                        <Button
-                            disabled={!recaptchaValue}
-                                className="text-white font-medium rounded-lg text-sm px-5 py-2.5 w-full max-w-xs"
-                                type="submit">
-                            Login
-                        </Button>
-                    </div>
-                </form>
+                            <div className="mt-4">
+                                <div className="relative mt-4">
+                                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <LockClosedIcon className="h-0.5 w-5 text-gray-400" />
+                                    </div>
+                                    <Input
+                                        type="password"
+                                        label="Password"
+                                        size="lg"
+                                        className="pl-10"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        required
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="mt-6">
+                                <ReCAPTCHA
+                                    sitekey={siteKey}
+                                    onChange={(value) => onClickCaptchaButton(value)}
+                                    className="flex justify-center"
+                                />
+                            </div>
+
+                            <div className="mt-6">
+                                <Button
+                                    type="submit"
+                                    color="blue"
+                                    size="lg"
+                                    disabled={!recaptchaValue}
+                                    fullWidth
+                                    className="flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+                                >
+                                    Sign in
+                                </Button>
+                            </div>
+                        </form>
+                    </CardBody>
+                    <CardFooter className="bg-gray-50 py-4 px-8 border-t border-gray-200">
+                        <div className="text-center text-sm text-gray-500">
+                            <Link to="/" className="font-medium text-blue-600 hover:text-blue-500">
+                                Back to home
+                            </Link>
+                        </div>
+                    </CardFooter>
+                </Card>
             </div>
         </div>
     );
