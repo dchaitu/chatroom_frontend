@@ -7,6 +7,7 @@ import {
     UserPlusIcon,
     UserGroupIcon
 } from '@heroicons/react/24/outline';
+import {NavbarDefault} from "./navBarDefault";
 
 const Home = () => {
     const navigate = useNavigate();

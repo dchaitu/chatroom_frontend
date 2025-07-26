@@ -1,10 +1,10 @@
 import {
     Card,
-    CardHeader,
     CardBody, Typography, CardFooter, Button,
 } from "@material-tailwind/react";
+import {Link} from "react-router-dom";
 
-const GetRoom = ({ room }) => {
+const GetRoom = ({ room, username }) => {
     const { room_id, room_name } = room;
 
     return (
@@ -20,7 +20,7 @@ const GetRoom = ({ room }) => {
 
                 </CardBody>
                 <CardFooter className="pt-0">
-                    <a href="#" className="inline-block">
+                    <Link to={`/rooms/${room_id}/messages`} state={{username: username}} className="inline-block">
                         <Button size="sm" variant="text" className="flex items-center gap-2">
                             Learn More
                             <svg
@@ -38,7 +38,7 @@ const GetRoom = ({ room }) => {
                                 />
                             </svg>
                         </Button>
-                    </a>
+                    </Link>
                 </CardFooter>
             </Card>
     );
