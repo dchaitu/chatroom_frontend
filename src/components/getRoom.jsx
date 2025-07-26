@@ -2,10 +2,15 @@ import {
     Card,
     CardBody, Typography, CardFooter, Button,
 } from "@material-tailwind/react";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 
 const GetRoom = ({ room, username }) => {
     const { room_id, room_name } = room;
+    const navigate = useNavigate();
+    const goToRoomMessages = () => {
+     localStorage.setItem("room_id", room_id);
+     navigate(`/rooms/messages`);   
+    }
 
     return (
             <Card className="mt-6 w-96">
@@ -20,8 +25,7 @@ const GetRoom = ({ room, username }) => {
 
                 </CardBody>
                 <CardFooter className="pt-0">
-                    <Link to={`/rooms/${room_id}/messages`} state={{username: username}} className="inline-block">
-                        <Button size="sm" variant="text" className="flex items-center gap-2">
+                        <Button size="sm" onClick={goToRoomMessages} variant="text" className="flex items-center gap-2">
                             Learn More
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
@@ -38,7 +42,6 @@ const GetRoom = ({ room, username }) => {
                                 />
                             </svg>
                         </Button>
-                    </Link>
                 </CardFooter>
             </Card>
     );

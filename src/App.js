@@ -6,6 +6,7 @@ import Home from "./components/home";
 import ShowUserRooms from "./components/showUserRooms";
 import GetMessagesFromRoom from "./components/getMessagesFromRoom";
 import UserProfile from "./components/userProfile";
+import InvalidRoute from "./components/invalidRoute";
 
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
             <Route exact path="/rooms" element={<ShowUserRooms />} />
             <Route exact path="/rooms/messages/" element={<GetMessagesFromRoom />} />
             <Route exact path="/profile" element={<UserProfile />} />
+            <Route path="*" element={<InvalidRoute />} />
           </Routes>
         </div>
       </Router>

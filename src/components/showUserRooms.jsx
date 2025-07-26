@@ -41,14 +41,10 @@ const ShowUserRooms = () => {
 
     }, [username, navigate]);
 
-    const changeRoomToNewRoom = (e) => {
-        e.preventDefault();
-        navigate('')
-    }
 
     return (
         <div>
-            <NavbarDefault user={username} />
+            <NavbarDefault username={username} />
             <Typography variant="h1">{username}'s Rooms</Typography>
             <div className="card">
             {rooms.map((room) => (
