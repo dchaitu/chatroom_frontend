@@ -2,12 +2,12 @@ import React, {useEffect, useState} from "react";
 import {Button, Typography} from "@material-tailwind/react";
 import {useNavigate} from "react-router-dom";
 
-const UserProfile = () => {
+const UserProfile = ({ username }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
-    const username = localStorage.getItem("username");
+    // Username is now passed as a prop
 
     const goToRooms = () => {
         navigate('/rooms');

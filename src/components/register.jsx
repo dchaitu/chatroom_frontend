@@ -5,16 +5,15 @@ import { siteKey } from "../constants/constants";
 import { Card, Input, Button } from "@material-tailwind/react";
 import { CardBody, CardFooter } from "@material-tailwind/react";
 import { UserCircleIcon, LockClosedIcon, IdentificationIcon, UserGroupIcon } from '@heroicons/react/24/outline';
+import {MailIcon} from "lucide-react";
 
 const Register = () => {
 
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [password2, setPassword2] = useState('');
     const [error, setError] = useState('');
     const [fullName, setFullName] = useState('');
-    const [roomId, setRoomId] = useState('');
     const [recaptchaValue, setRecaptchaValue] = useState(null);
     const navigate = useNavigate();
 
@@ -29,10 +28,10 @@ const Register = () => {
             },
             body: JSON.stringify({
                 username: username,
+                email: email,
                 password: password,
                 fullname: fullName,
-                room_id: roomId
-                // recaptcha_token: recaptchaValue
+                recaptcha_token: recaptchaValue
             }),
         });
 
@@ -96,6 +95,17 @@ const Register = () => {
                                     required
                                 />
                             </div>
+                            <div className="mt-4">
+                                <Input
+                                    type="email"
+                                    label="Email"
+                                    size="lg"
+                                    icon={<MailIcon className="h-4 w-4" />}
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    required
+                                />
+                            </div>
 
                             <div className="mt-4">
                                 <Input
@@ -109,17 +119,6 @@ const Register = () => {
                                 />
                             </div>
 
-                            <div className="mt-4">
-                                <Input
-                                    type="text"
-                                    label="Room ID"
-                                    size="lg"
-                                    icon={<UserGroupIcon className="h-4 w-4" />}
-                                    value={roomId}
-                                    onChange={(e) => setRoomId(e.target.value)}
-                                    required
-                                />
-                            </div>
 
                             <div className="mt-6">
                                 <ReCAPTCHA

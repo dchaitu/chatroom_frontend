@@ -26,7 +26,7 @@ const GetRoom = ({ room, username }) => {
                 </CardBody>
                 <CardFooter className="pt-0">
                         <Button size="sm" onClick={goToRoomMessages} variant="text" className="flex items-center gap-2">
-                            Learn More
+                            Go to Room
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 fill="none"

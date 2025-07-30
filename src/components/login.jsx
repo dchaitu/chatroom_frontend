@@ -29,27 +29,45 @@ const Login = () => {
                 body: JSON.stringify({
                     username: username,
                     password: password,
-                    // recaptcha_token: recaptchaValue
+                    recaptcha_token: recaptchaValue
                 }),
             });
             // console.log("recaptcha token", recaptchaValue);
 
             const data = await response.json();
-            console.log("Response:", data);
+            console.log("Response:", response);
 
-            if (response.ok) {
-                localStorage.setItem('access_token', data.access);
+            console.log("Response data:", data);
+
+            if (data.status_code===200) {
+                // Store the authentication data
+                localStorage.setItem('token', data.access);
                 localStorage.setItem('refresh', data.refresh);
-                console.log("Login successful, navigating to rooms");
                 localStorage.setItem('username', username);
-                navigate(`/rooms`);
-            } else {
-                if (response.status === 401) {
+                
+                console.log("Login successful, navigating to rooms");
+                
+
+                
+                // Small delay to ensure state updates before navigation
+                setTimeout(() => {
+                    navigate('/rooms');
+                }, 100);
+            } else if (data.status_code === 401)
+                {
                     setError('Invalid username or password');
-                } else {
+                    navigate('/');
+                    console.log(response);
+                }
+                else if(data.status_code===404)
+                {
+                    setError('User Not Found');
+                    navigate(`/register`);
+                }
+                else {
                     setError(data.detail || 'Login failed. Please try again.');
                 }
-            }
+
         } catch (error) {
             console.error('Login error:', error);
             setError('Failed to connect to the server');
@@ -108,7 +126,7 @@ const Login = () => {
                             <div className="mt-4">
                                 <div className="relative mt-4">
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <LockClosedIcon className="h-0.5 w-5 text-gray-400" />
+                                        <LockClosedIcon className="h-5 w-5 text-gray-400" />
                                     </div>
                                     <Input
                                         type="password"

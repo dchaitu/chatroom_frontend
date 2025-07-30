@@ -3,7 +3,7 @@ import {Button, Input, Typography} from "@material-tailwind/react";
 import {PaperAirplaneIcon, ArrowLeftIcon} from '@heroicons/react/24/solid';
 import {useNavigate} from 'react-router-dom';
 
-const GetMessagesFromRoom = () => {
+const GetMessagesFromRoom = ({ username }) => {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const [isConnected, setIsConnected] = useState(false);
@@ -12,82 +12,123 @@ const GetMessagesFromRoom = () => {
     const roomId = localStorage.getItem("room_id");
     const token = localStorage.getItem('token');
 
+    const currentUsername = username;
+    const [ws, setWs] = useState(null);
+
     // Scroll to bottom of messages
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
-    // Fetch messages when component mounts
+    // Establish WebSocket connection
     useEffect(() => {
-        const fetchMessages = async () => {
-            try {
-                const response = await fetch('http://localhost:8000/rooms/messages', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Token ${token}`
-                    },
-                    body: JSON.stringify({
-                        room_id: roomId
-                    })
-                });
-                const data = await response.json();
-                setMessages(data);
-            } catch (error) {
-                console.error('Error fetching messages:', error);
+        if (!currentUsername || !roomId) return;
+        
+        const websocketUrl = `wss://c4plozmo3f.execute-api.us-east-1.amazonaws.com/production?username=${encodeURIComponent(currentUsername)}&room_id=${encodeURIComponent(roomId)}`;
+        console.log("Attempting to connect:", { currentUsername, roomId, websocketUrl });
+        
+        let socket;
+        let reconnectAttempts = 0;
+        const maxReconnectAttempts = 5;
+        let reconnectTimeout;
+
+        const connectWebSocket = () => {
+            if (reconnectAttempts >= maxReconnectAttempts) {
+                console.error("Max reconnection attempts reached");
+                return;
             }
+
+            socket = new WebSocket(websocketUrl);
+
+            socket.onopen = () => {
+                console.log("WebSocket connected");
+                setIsConnected(true);
+                reconnectAttempts = 0; // Reset reconnection attempts on successful connection
+            };
+
+            socket.onmessage = (event) => {
+                console.log("Received raw data:", event.data);
+                try {
+                    const messageData = JSON.parse(event.data);
+                    console.log("Received message:", messageData);
+                    setMessages(prevMessages => [...prevMessages, messageData]);
+                } catch (error) {
+                    console.error("Error parsing message:", error, event.data);
+                }
+            };
+
+            socket.onclose = (event) => {
+                setIsConnected(false);
+                console.log("WebSocket disconnected. Code:", event.code, "Reason:", event.reason);
+                
+                // Attempt to reconnect with exponential backoff
+                if (event.code !== 1000) { // 1000 is a normal closure
+                    const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 30000); // Max 30s delay
+                    console.log(`Reconnecting in ${delay}ms...`);
+                    reconnectTimeout = setTimeout(() => {
+                        reconnectAttempts++;
+                        connectWebSocket();
+                    }, delay);
+                }
+            };
+
+            socket.onerror = (error) => {
+                console.error("WebSocket error:", error);
+                socket.close();
+            };
+
+            setWs(socket);
         };
 
-        fetchMessages();
-    }, [roomId, token]);
+        connectWebSocket();
+        // Cleanup on unmount
+        return () => {
+            if (reconnectTimeout) clearTimeout(reconnectTimeout);
+            if (socket) socket.close();
+        };
+    }, [currentUsername, roomId]);
 
     // Auto-scroll to bottom when messages change
     useEffect(() => {
         scrollToBottom();
     }, [messages]);
 
-    // Handle sending a new message
-    const handleSendMessage = async (e) => {
+    // Handle sending a new message via WebSocket
+    const handleSendMessage = (e) => {
         e.preventDefault();
-        if (!newMessage.trim()) return;
+        const messageToSend = newMessage.trim();
+        if (!messageToSend || !ws || ws.readyState !== WebSocket.OPEN) {
+            console.warn("Cannot send message - WebSocket not ready");
+            return;
+        }
+
+        const message = {
+            action: "sendmessage",
+            content: messageToSend,
+            username: currentUsername,
+            room_id: roomId,
+            timestamp: new Date().toISOString()
+        };
 
         try {
-            const response = await fetch('http://localhost:8000/send_message/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Token ${token}`
-                },
-                body: JSON.stringify({
-                    room_id: roomId,
-                    content: newMessage
-                })
-            });
-
-            if (response.ok) {
-                setNewMessage('');
-                // Fetch messages again to update the list
-                const updatedMessages = await fetch('http://localhost:8000/rooms/messages', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Token ${token}`
-                    },
-                    body: JSON.stringify({ room_id: roomId })
-                });
-                const data = await updatedMessages.json();
-                setMessages(data);
-            }
+            console.log("Sending message:", message);
+            console.log("Sending message (string):", JSON.stringify(message));
+            ws.send(JSON.stringify(message));
+            setMessages(prevMessages => [...prevMessages, message]);
+            setNewMessage('');
         } catch (error) {
-            console.error('Error sending message:', error);
+            console.error("Error sending message:", error);
         }
     };
 
     // Handle leaving the room
     const handleLeaveRoom = () => {
+        if (ws) {
+            ws.close();
+        }
         localStorage.removeItem('room_id');
         navigate('/rooms');
-    };
+    }
 
 
 
@@ -97,10 +138,10 @@ const GetMessagesFromRoom = () => {
         <div className="flex h-screen bg-gray-100 font-sans">
             {/* Sidebar */}
             <div className="w-1/4 bg-white border-r border-gray-200 p-4 flex flex-col">
-                <Button 
-                    onClick={handleLeaveRoom} 
-                    color="red" 
-                    variant="outlined" 
+                <Button
+                    onClick={handleLeaveRoom}
+                    color="red"
+                    variant="outlined"
                     className="flex items-center gap-2 mb-4"
                 >
                     <ArrowLeftIcon className="h-4 w-4" />
@@ -124,9 +165,9 @@ const GetMessagesFromRoom = () => {
                                 className={`flex ${message.username === localStorage.getItem('username') ? 'justify-end' : 'justify-start'}`}
                             >
                                 <div
-                                    className={`max-w-xs lg:max-w-md p-3 rounded-xl ${message.sender === localStorage.getItem('username') ? 'bg-indigo-500 text-white' : 'bg-white shadow-md'}`}>
+                                    className={`max-w-xs lg:max-w-md p-3 rounded-xl ${message.username === currentUsername ? 'bg-indigo-500 text-white ml-auto' : 'bg-white shadow-md'}`}>
                                     <p className="font-semibold text-sm">{message.username}</p>
-                                    <p className="text-md">{message.content}</p>
+                                    <p className="text-md break-words">{message.content}</p>
 
                                     <p className="text-xs opacity-75 mt-1 text-right">
                                         {new Date(message.timestamp).toLocaleTimeString([], {
