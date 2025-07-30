@@ -1,13 +1,15 @@
 import React, {useEffect, useState} from "react";
 import {Button, Typography} from "@material-tailwind/react";
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
+import {REST_API_PATH} from "../constants/constants";
 
-const UserProfile = ({ username }) => {
+const UserProfile = () => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const navigate = useNavigate();
     // Username is now passed as a prop
+    const {username} = useParams();
 
     const goToRooms = () => {
         navigate('/rooms');
@@ -20,14 +22,11 @@ const UserProfile = ({ username }) => {
         }
         const fetchUserProfile = async () => {
             try {
-                const response = await fetch(`http://localhost:8000/user/`, {
+                const response = await fetch(`${REST_API_PATH}/user/${username}`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        username: username,
-                    })
+                    }
                 });
                 if (!response.ok) {
                     throw new Error("Failed to fetch user profile");

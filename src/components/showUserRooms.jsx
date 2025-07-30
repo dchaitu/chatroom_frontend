@@ -1,12 +1,13 @@
 import React, {useEffect, useState} from 'react';
 import GetRoom from "./getRoom";
 import {Input, Typography, Button, Dialog, DialogHeader, DialogBody, DialogFooter} from "@material-tailwind/react";
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import NavbarDefault from "./navBarDefault";
 import { PlusIcon, ArrowRightIcon } from '@heroicons/react/24/solid';
+import {REST_API_PATH} from "../constants/constants";
 
 // Get messages in the current room
-const ShowUserRooms = ({ username }) => {
+const ShowUserRooms = () => {
     const [rooms, setRooms] = useState([]);
     const [newRoom, setNewRoom] = useState({ name: '', roomId: '' });
     const [open, setOpen] = useState(false);
@@ -14,7 +15,9 @@ const ShowUserRooms = ({ username }) => {
     // Username is now passed as a prop
     const [roomId, setRoomId] = useState("");
     const navigate = useNavigate();
-    const token = localStorage.getItem('token');
+    const {username} = useParams();
+    console.log("props ", username);
+
 
     const handleOpen = () => setOpen(!open);
     useEffect(() => {
@@ -25,14 +28,12 @@ const ShowUserRooms = ({ username }) => {
     }
         const fetchRooms = async () => {
             try {
-                const response = await fetch(`http://localhost:8000/rooms/`, {
+                const response = await fetch(`${REST_API_PATH}/rooms/${username}`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify({
-                        username: username
-                    })
+
                 });
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -54,11 +55,10 @@ const ShowUserRooms = ({ username }) => {
         
         setLoading(true);
         try {
-            const response = await fetch('http://localhost:8000/create_room/', {
+            const response = await fetch(`${REST_API_PATH}/create_room/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Token ${token}`
                 },
                 body: JSON.stringify({
                     room_name: newRoom.name,
@@ -66,18 +66,20 @@ const ShowUserRooms = ({ username }) => {
                     username: username
                 })
             });
+            const data = await response.json();
+            console.log("Create Room Data is :-",data);
 
             if (response.ok) {
-                const data = await response.json();
+
                 // Refresh rooms list
-                const roomsResponse = await fetch('http://localhost:8000/rooms/', {
+                const roomsResponse = await fetch(`${REST_API_PATH}/rooms/${username}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ username })
+                    }
                 });
                 const updatedRooms = await roomsResponse.json();
+                console.log("Updated Room Data:", updatedRooms);
                 setRooms(updatedRooms);
                 setNewRoom({ name: '', roomId: '' });
                 handleOpen();
@@ -94,7 +96,7 @@ const ShowUserRooms = ({ username }) => {
         if (!roomId.trim()) return;
 
         try {
-            const response = await fetch('http://localhost:8000/join_room/', {
+            const response = await fetch(`${REST_API_PATH}/join_room/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username: username, room_id: roomId }),
@@ -102,7 +104,7 @@ const ShowUserRooms = ({ username }) => {
             // localStorage.setItem('room_id', roomId);
             const data = await response.json();
             console.log('Join response:', data);
-            navigate(`/rooms/messages`);
+            navigate(`/rooms/${username}`);
         } catch (error) {
             console.error('Error joining room:', error);
         }

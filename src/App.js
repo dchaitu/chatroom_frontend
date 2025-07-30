@@ -8,7 +8,7 @@ import ShowUserRooms from "./components/showUserRooms";
 import GetMessagesFromRoom from "./components/getMessagesFromRoom";
 import UserProfile from "./components/userProfile";
 import InvalidRoute from "./components/invalidRoute";
-
+import {userContext} from "./context/context";
 
 function App() {
   const [username, setUsername] = useState('');
@@ -38,31 +38,32 @@ function App() {
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
   return (
+    <userContext.Provider value={username}>
       <Router>
         <div className="min-h-screen">
           <Routes>
             <Route exact path="/login" element={<Login />} />
             <Route exact path="/register" element={<Register />} />
             <Route exact path="/" element={<Home />} />
-            <Route 
-              exact 
-              path="/rooms" 
-              element={<ShowUserRooms username={username} />} 
+            <Route
+              path="/rooms/:username"
+              element={<ShowUserRooms/>}
             />
             <Route 
               exact 
-              path="/rooms/messages/" 
-              element={<GetMessagesFromRoom username={username} />} 
+              path="/rooms/:username/:room_id/messages/"
+              element={<GetMessagesFromRoom />}
             />
             <Route 
               exact 
-              path="/profile" 
-              element={<UserProfile username={username} />} 
+              path="/user/:username"
+              element={<UserProfile/>}
             />
             <Route path="*" element={<InvalidRoute />} />
           </Routes>
         </div>
       </Router>
+    </userContext.Provider>
   );
 }
 

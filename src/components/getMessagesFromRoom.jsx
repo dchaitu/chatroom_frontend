@@ -1,19 +1,25 @@
 import React, {useState, useEffect, useRef} from 'react';
 import {Button, Input, Typography} from "@material-tailwind/react";
 import {PaperAirplaneIcon, ArrowLeftIcon} from '@heroicons/react/24/solid';
-import {useNavigate} from 'react-router-dom';
+import {useNavigate, useParams} from 'react-router-dom';
+import {REST_API_PATH} from "../constants/constants";
 
-const GetMessagesFromRoom = ({ username }) => {
+const GetMessagesFromRoom = () => {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const [isConnected, setIsConnected] = useState(false);
+    const [activeUsers, setActiveUsers] = useState([]);
+    const [roomName, setRoomName] = useState("");
     const messagesEndRef = useRef(null);
     const navigate = useNavigate();
-    const roomId = localStorage.getItem("room_id");
-    const token = localStorage.getItem('token');
-
-    const currentUsername = username;
     const [ws, setWs] = useState(null);
+    console.log("params", useParams())
+    const {username,room_id} = useParams();
+    console.log("GetMessagesFromRoom", username, room_id);
+    const currentUsername = username;
+    const roomId = room_id;
+
+
 
     // Scroll to bottom of messages
     const scrollToBottom = () => {
@@ -52,6 +58,9 @@ const GetMessagesFromRoom = ({ username }) => {
                     const messageData = JSON.parse(event.data);
                     console.log("Received message:", messageData);
                     setMessages(prevMessages => [...prevMessages, messageData]);
+                    ws.send(JSON.stringify(messageData));
+                    console.log("Received message:", messageData);
+                    
                 } catch (error) {
                     console.error("Error parsing message:", error, event.data);
                 }
@@ -86,7 +95,14 @@ const GetMessagesFromRoom = ({ username }) => {
             if (reconnectTimeout) clearTimeout(reconnectTimeout);
             if (socket) socket.close();
         };
-    }, [currentUsername, roomId]);
+    }, [currentUsername, roomId,messages]);
+
+    // Fetch room details when component mounts or roomId changes
+    useEffect(() => {
+        if (roomId) {
+            fetchRoomDetails();
+        }
+    }, [roomId]);
 
     // Auto-scroll to bottom when messages change
     useEffect(() => {
@@ -114,7 +130,7 @@ const GetMessagesFromRoom = ({ username }) => {
             console.log("Sending message:", message);
             console.log("Sending message (string):", JSON.stringify(message));
             ws.send(JSON.stringify(message));
-            setMessages(prevMessages => [...prevMessages, message]);
+            // setMessages(prevMessages => [...prevMessages, message]);
             setNewMessage('');
         } catch (error) {
             console.error("Error sending message:", error);
@@ -127,8 +143,25 @@ const GetMessagesFromRoom = ({ username }) => {
             ws.close();
         }
         localStorage.removeItem('room_id');
-        navigate('/rooms');
+        navigate(`/rooms/${username}`);
     }
+    const fetchRoomDetails = async () => {
+        try {
+            const response = await fetch(`${REST_API_PATH}/room_details/${roomId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+            });
+            console.log("Room details response status:", response.status);
+            const data = await response.json();
+            console.log("Room details response:", data);
+            if (response.ok) {
+                setRoomName(data.room_name || 'Unnamed Room');
+                setActiveUsers(data.active_users || []);
+            }
+        } catch (error) {
+            console.error("Error fetching room details:", error);
+        }
+    };
 
 
 
@@ -156,13 +189,21 @@ const GetMessagesFromRoom = ({ username }) => {
 
             {/* Chat Area */}
             <div className="flex-1 flex flex-col">
+            <div className="bg-white border-b p-4">
+                    <Typography variant="h4" color="blue-gray" className="font-bold">
+                        {roomName} Room
+                    </Typography>
+                    <Typography variant="small" color="gray" className="mt-1">
+                        Users: {activeUsers.join(', ') || 'No users present'}
+                    </Typography>
+                </div>
                 {/* Messages */}
                 <div className="flex-1 overflow-y-auto p-6 bg-gray-50">
                     <div className="space-y-4">
                         {messages.map((message, index) => (
                             <div
                                 key={index}
-                                className={`flex ${message.username === localStorage.getItem('username') ? 'justify-end' : 'justify-start'}`}
+                                className={`flex ${message.username === username ? 'justify-end' : 'justify-start'}`}
                             >
                                 <div
                                     className={`max-w-xs lg:max-w-md p-3 rounded-xl ${message.username === currentUsername ? 'bg-indigo-500 text-white ml-auto' : 'bg-white shadow-md'}`}>
@@ -170,7 +211,7 @@ const GetMessagesFromRoom = ({ username }) => {
                                     <p className="text-md break-words">{message.content}</p>
 
                                     <p className="text-xs opacity-75 mt-1 text-right">
-                                        {new Date(message.timestamp).toLocaleTimeString([], {
+                                        {message.timestamp && new Date(message.timestamp).toLocaleTimeString([], {
                                             hour: '2-digit',
                                             minute: '2-digit'
                                         })}

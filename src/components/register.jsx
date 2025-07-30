@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import ReCAPTCHA from 'react-google-recaptcha';
-import { siteKey } from "../constants/constants";
+import {REST_API_PATH, siteKey} from "../constants/constants";
 import { Card, Input, Button } from "@material-tailwind/react";
 import { CardBody, CardFooter } from "@material-tailwind/react";
 import { UserCircleIcon, LockClosedIcon, IdentificationIcon, UserGroupIcon } from '@heroicons/react/24/outline';
@@ -21,7 +21,7 @@ const Register = () => {
 
     const handleSubmit = async e => {
         e.preventDefault();
-        const response = await fetch('http://localhost:8000/register/', {
+        const response = await fetch(`${REST_API_PATH}/register/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

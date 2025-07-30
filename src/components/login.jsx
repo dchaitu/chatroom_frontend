@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import ReCAPTCHA from 'react-google-recaptcha';
-import { siteKey } from "../constants/constants";
+import {REST_API_PATH, siteKey} from "../constants/constants";
 import { Card, Input, Button } from "@material-tailwind/react";
 import { CardHeader, CardBody, CardFooter, Typography } from "@material-tailwind/react";
 import { LockClosedIcon, UserCircleIcon } from '@heroicons/react/24/outline';
@@ -21,7 +21,7 @@ const Login = () => {
             return;
         }
         try {
-            const response = await fetch('http://127.0.0.1:8000/login/', {
+            const response = await fetch(`${REST_API_PATH}/login/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -40,19 +40,10 @@ const Login = () => {
             console.log("Response data:", data);
 
             if (data.status_code===200) {
-                // Store the authentication data
-                localStorage.setItem('token', data.access);
-                localStorage.setItem('refresh', data.refresh);
-                localStorage.setItem('username', username);
-                
+                // Store only the necessary authentication data
+                // Pass the username as state when navigating
                 console.log("Login successful, navigating to rooms");
-                
-
-                
-                // Small delay to ensure state updates before navigation
-                setTimeout(() => {
-                    navigate('/rooms');
-                }, 100);
+                navigate(`/rooms/${username}`);
             } else if (data.status_code === 401)
                 {
                     setError('Invalid username or password');

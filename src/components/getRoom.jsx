@@ -2,14 +2,16 @@ import {
     Card,
     CardBody, Typography, CardFooter, Button,
 } from "@material-tailwind/react";
-import {Link, useNavigate} from "react-router-dom";
+import {Link, useNavigate, useParams} from "react-router-dom";
 
-const GetRoom = ({ room, username }) => {
+const GetRoom = ({ room }) => {
     const { room_id, room_name } = room;
+    console.log("GetRoom", room);
     const navigate = useNavigate();
+    const {username, roomId} = useParams()
+    console.log("GetRoom", username, roomId);
     const goToRoomMessages = () => {
-     localStorage.setItem("room_id", room_id);
-     navigate(`/rooms/messages`);   
+     navigate(`/rooms/${username}/${room_id}/messages`);
     }
 
     return (

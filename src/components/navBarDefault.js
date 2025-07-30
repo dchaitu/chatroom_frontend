@@ -20,13 +20,10 @@ const NavbarDefault = ({username}) => {
     }, []);
 
     const userProfile = () => {
-        localStorage.setItem("username", username);
-        navigate("/profile");
+        navigate(`/user/${username}`);
     }
 
     const userLogout = () => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("username");
         navigate("/");
     }
 
