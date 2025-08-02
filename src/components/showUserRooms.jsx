@@ -55,15 +55,14 @@ const ShowUserRooms = () => {
         
         setLoading(true);
         try {
-            const response = await fetch(`${REST_API_PATH}/create_room/`, {
+            const response = await fetch(`${REST_API_PATH}/create_room/${username}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
                     room_name: newRoom.name,
-                    room_id: newRoom.roomId || null,
-                    username: username
+                    room_id: newRoom.roomId
                 })
             });
             const data = await response.json();

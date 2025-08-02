@@ -58,7 +58,7 @@ const GetMessagesFromRoom = () => {
                     const messageData = JSON.parse(event.data);
                     console.log("Received message:", messageData);
                     setMessages(prevMessages => [...prevMessages, messageData]);
-                    ws.send(JSON.stringify(messageData));
+                    // ws.send(JSON.stringify(messageData));
                     console.log("Received message:", messageData);
                     
                 } catch (error) {
@@ -99,9 +99,8 @@ const GetMessagesFromRoom = () => {
 
     // Fetch room details when component mounts or roomId changes
     useEffect(() => {
-        if (roomId) {
+
             fetchRoomDetails();
-        }
     }, [roomId]);
 
     // Auto-scroll to bottom when messages change
@@ -130,7 +129,7 @@ const GetMessagesFromRoom = () => {
             console.log("Sending message:", message);
             console.log("Sending message (string):", JSON.stringify(message));
             ws.send(JSON.stringify(message));
-            // setMessages(prevMessages => [...prevMessages, message]);
+            setMessages(prevMessages => [...prevMessages, message]);
             setNewMessage('');
         } catch (error) {
             console.error("Error sending message:", error);
@@ -153,6 +152,8 @@ const GetMessagesFromRoom = () => {
             });
             console.log("Room details response status:", response.status);
             const data = await response.json();
+            const text = await response.text();
+            console.log("Raw response:", text);
             console.log("Room details response:", data);
             if (response.ok) {
                 setRoomName(data.room_name || 'Unnamed Room');

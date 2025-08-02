@@ -12,7 +12,7 @@ const UserProfile = () => {
     const {username} = useParams();
 
     const goToRooms = () => {
-        navigate('/rooms');
+        navigate(`/rooms/${username}`);
     }
 
     useEffect(() => {

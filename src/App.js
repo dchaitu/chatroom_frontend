@@ -9,6 +9,7 @@ import GetMessagesFromRoom from "./components/getMessagesFromRoom";
 import UserProfile from "./components/userProfile";
 import InvalidRoute from "./components/invalidRoute";
 import {userContext} from "./context/context";
+import GetMessages from "./components/getMessages";
 
 function App() {
   const [username, setUsername] = useState('');
@@ -59,6 +60,7 @@ function App() {
               path="/user/:username"
               element={<UserProfile/>}
             />
+            <Route path="/messages/:roomId" element={<GetMessages/>}/>
             <Route path="*" element={<InvalidRoute />} />
           </Routes>
         </div>

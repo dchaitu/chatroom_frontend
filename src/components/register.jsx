@@ -35,6 +35,7 @@ const Register = () => {
             }),
         });
 
+
         const data = await response.json();
         console.log("Response Status:", data);
         console.log("username:", data.username);
