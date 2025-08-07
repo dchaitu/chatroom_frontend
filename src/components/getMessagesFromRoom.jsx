@@ -3,6 +3,7 @@ import {Button, Input, Typography} from "@material-tailwind/react";
 import {PaperAirplaneIcon, ArrowLeftIcon} from '@heroicons/react/24/solid';
 import {useNavigate, useParams} from 'react-router-dom';
 import {REST_API_PATH} from "../constants/constants";
+import GetOldMessages from "./getOldMessages";
 
 const GetMessagesFromRoom = () => {
     const [messages, setMessages] = useState([]);
@@ -16,7 +17,7 @@ const GetMessagesFromRoom = () => {
     console.log("params", useParams())
     const {username,room_id} = useParams();
     console.log("GetMessagesFromRoom", username, room_id);
-    const currentUsername = username;
+    // const username = username;
     const roomId = room_id;
 
 
@@ -28,11 +29,11 @@ const GetMessagesFromRoom = () => {
 
     // Establish WebSocket connection
     useEffect(() => {
-        if (!currentUsername || !roomId) return;
-        
-        const websocketUrl = `wss://c4plozmo3f.execute-api.us-east-1.amazonaws.com/production?username=${encodeURIComponent(currentUsername)}&room_id=${encodeURIComponent(roomId)}`;
-        console.log("Attempting to connect:", { currentUsername, roomId, websocketUrl });
-        
+        if (!username || !roomId) return;
+
+        const websocketUrl = `wss://c4plozmo3f.execute-api.us-east-1.amazonaws.com/production?username=${encodeURIComponent(username)}&room_id=${encodeURIComponent(roomId)}`;
+        console.log("Attempting to connect:", { username, roomId, websocketUrl });
+
         let socket;
         let reconnectAttempts = 0;
         const maxReconnectAttempts = 5;
@@ -57,10 +58,12 @@ const GetMessagesFromRoom = () => {
                 try {
                     const messageData = JSON.parse(event.data);
                     console.log("Received message:", messageData);
-                    setMessages(prevMessages => [...prevMessages, messageData]);
+                    if (!(messageData.username === username && messageData.content === newMessage.trim())) {
+                        setMessages(prevMessages => [...prevMessages, messageData]);
+                    }
                     // ws.send(JSON.stringify(messageData));
                     console.log("Received message:", messageData);
-                    
+
                 } catch (error) {
                     console.error("Error parsing message:", error, event.data);
                 }
@@ -69,7 +72,7 @@ const GetMessagesFromRoom = () => {
             socket.onclose = (event) => {
                 setIsConnected(false);
                 console.log("WebSocket disconnected. Code:", event.code, "Reason:", event.reason);
-                
+
                 // Attempt to reconnect with exponential backoff
                 if (event.code !== 1000) { // 1000 is a normal closure
                     const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 30000); // Max 30s delay
@@ -95,7 +98,7 @@ const GetMessagesFromRoom = () => {
             if (reconnectTimeout) clearTimeout(reconnectTimeout);
             if (socket) socket.close();
         };
-    }, [currentUsername, roomId,messages]);
+    }, [username, roomId]);
 
     // Fetch room details when component mounts or roomId changes
     useEffect(() => {
@@ -120,7 +123,7 @@ const GetMessagesFromRoom = () => {
         const message = {
             action: "sendmessage",
             content: messageToSend,
-            username: currentUsername,
+            username: username,
             room_id: roomId,
             timestamp: new Date().toISOString()
         };
@@ -129,7 +132,7 @@ const GetMessagesFromRoom = () => {
             console.log("Sending message:", message);
             console.log("Sending message (string):", JSON.stringify(message));
             ws.send(JSON.stringify(message));
-            setMessages(prevMessages => [...prevMessages, message]);
+            // setMessages(prevMessages => [...prevMessages, message]);
             setNewMessage('');
         } catch (error) {
             console.error("Error sending message:", error);
@@ -141,7 +144,7 @@ const GetMessagesFromRoom = () => {
         if (ws) {
             ws.close();
         }
-        localStorage.removeItem('room_id');
+        // localStorage.removeItem('room_id');
         navigate(`/rooms/${username}`);
     }
     const fetchRoomDetails = async () => {
@@ -152,8 +155,6 @@ const GetMessagesFromRoom = () => {
             });
             console.log("Room details response status:", response.status);
             const data = await response.json();
-            const text = await response.text();
-            console.log("Raw response:", text);
             console.log("Room details response:", data);
             if (response.ok) {
                 setRoomName(data.room_name || 'Unnamed Room');
@@ -199,6 +200,7 @@ const GetMessagesFromRoom = () => {
                     </Typography>
                 </div>
                 {/* Messages */}
+              <GetOldMessages/>
                 <div className="flex-1 overflow-y-auto p-6 bg-gray-50">
                     <div className="space-y-4">
                         {messages.map((message, index) => (
@@ -207,7 +209,7 @@ const GetMessagesFromRoom = () => {
                                 className={`flex ${message.username === username ? 'justify-end' : 'justify-start'}`}
                             >
                                 <div
-                                    className={`max-w-xs lg:max-w-md p-3 rounded-xl ${message.username === currentUsername ? 'bg-indigo-500 text-white ml-auto' : 'bg-white shadow-md'}`}>
+                                    className={`max-w-xs lg:max-w-md p-3 rounded-xl ${message.username === username ? 'bg-indigo-500 text-white ml-auto' : 'bg-white shadow-md'}`}>
                                     <p className="font-semibold text-sm">{message.username}</p>
                                     <p className="text-md break-words">{message.content}</p>
 

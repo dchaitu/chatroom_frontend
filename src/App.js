@@ -9,7 +9,7 @@ import GetMessagesFromRoom from "./components/getMessagesFromRoom";
 import UserProfile from "./components/userProfile";
 import InvalidRoute from "./components/invalidRoute";
 import {userContext} from "./context/context";
-import GetMessages from "./components/getMessages";
+import GetOldMessages from "./components/getOldMessages";
 
 function App() {
   const [username, setUsername] = useState('');
@@ -18,7 +18,7 @@ function App() {
   const updateAuthState = () => {
     const storedUsername = localStorage.getItem('username');
     const token = localStorage.getItem('token');
-    
+
     if (storedUsername && token) {
       setUsername(storedUsername);
       return true;
@@ -29,12 +29,12 @@ function App() {
   // Check auth state on mount and when localStorage changes
   useEffect(() => {
     updateAuthState();
-    
+
     // Listen for storage events to handle login/logout from other tabs
     const handleStorageChange = () => {
       updateAuthState();
     };
-    
+
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
@@ -50,17 +50,17 @@ function App() {
               path="/rooms/:username"
               element={<ShowUserRooms/>}
             />
-            <Route 
-              exact 
+            <Route
+              exact
               path="/rooms/:username/:room_id/messages/"
               element={<GetMessagesFromRoom />}
             />
-            <Route 
-              exact 
+            <Route
+              exact
               path="/user/:username"
               element={<UserProfile/>}
             />
-            <Route path="/messages/:roomId" element={<GetMessages/>}/>
+            <Route path="/messages/:roomId" element={<GetOldMessages/>}/>
             <Route path="*" element={<InvalidRoute />} />
           </Routes>
         </div>
