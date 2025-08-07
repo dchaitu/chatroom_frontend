@@ -132,7 +132,7 @@ const GetMessagesFromRoom = () => {
             console.log("Sending message:", message);
             console.log("Sending message (string):", JSON.stringify(message));
             ws.send(JSON.stringify(message));
-            // setMessages(prevMessages => [...prevMessages, message]);
+            setMessages(prevMessages => [...prevMessages, message]);
             setNewMessage('');
         } catch (error) {
             console.error("Error sending message:", error);
@@ -200,7 +200,7 @@ const GetMessagesFromRoom = () => {
                     </Typography>
                 </div>
                 {/* Messages */}
-              <GetOldMessages/>
+              <GetOldMessages roomId={roomId}/>
                 <div className="flex-1 overflow-y-auto p-6 bg-gray-50">
                     <div className="space-y-4">
                         {messages.map((message, index) => (

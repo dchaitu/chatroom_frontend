@@ -2,17 +2,18 @@ import { useState, useEffect } from "react";
 import {useParams} from "react-router-dom";
 import {REST_API_PATH} from "../constants/constants";
 
-const GetOldMessages = () => {
+const GetOldMessages = ({roomId}) => {
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const { roomId } = useParams();
 
+    console.log("GetOldMessages from console", roomId);
     useEffect(() => {
         const fetchMessages = async () => {
             try {
                 setLoading(true);
-                const response = await fetch(`${REST_API_PATH}/messages/${roomId}/`);
+                console.log("GetOldMessages from console requesting...", roomId);
+                const response = await fetch(`${REST_API_PATH}/messages/${roomId}`);
                 const data = await response.json();
                 console.log("Get old messages ",data);
                 setMessages(data);
@@ -25,6 +26,8 @@ const GetOldMessages = () => {
                 setLoading(false);
             }
         };
+        console.log("GetOldMessagesFromRoom", roomId);
+
 
         if (roomId) {
             fetchMessages();
