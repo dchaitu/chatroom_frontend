@@ -29,8 +29,10 @@ const GetMessagesFromRoom = () => {
 
     // Establish WebSocket connection
     useEffect(() => {
-        if (!username || !roomId) return;
-
+        if (!username || !roomId)  {
+            console.warn("Missing username or roomId, skipping WebSocket connection");
+            return;
+        }
         const websocketUrl = `wss://c4plozmo3f.execute-api.us-east-1.amazonaws.com/production?username=${encodeURIComponent(username)}&room_id=${encodeURIComponent(roomId)}`;
         console.log("Attempting to connect:", { username, roomId, websocketUrl });
 
@@ -58,10 +60,16 @@ const GetMessagesFromRoom = () => {
                 try {
                     const messageData = JSON.parse(event.data);
                     console.log("Received message:", messageData);
-                    if (!(messageData.username === username && messageData.content === newMessage.trim())) {
-                        setMessages(prevMessages => [...prevMessages, messageData]);
-                    }
+                    setMessages(prevMessages => {
+                        if (messageData.message_id && prevMessages.some(msg => msg.message_id === messageData.message_id)) {
+                            console.log("Duplicate message ignored:", messageData.message_id);
+                            return prevMessages;
+                        }
+                        return [...prevMessages, messageData];
+                    });
+
                     // ws.send(JSON.stringify(messageData));
+                    // setNewMessage('');
                     console.log("Received message:", messageData);
 
                 } catch (error) {
@@ -95,6 +103,7 @@ const GetMessagesFromRoom = () => {
         connectWebSocket();
         // Cleanup on unmount
         return () => {
+            console.log("Cleaning up WebSocket");
             if (reconnectTimeout) clearTimeout(reconnectTimeout);
             if (socket) socket.close();
         };
@@ -193,15 +202,16 @@ const GetMessagesFromRoom = () => {
             <div className="flex-1 flex flex-col">
             <div className="bg-white border-b p-4">
                     <Typography variant="h4" color="blue-gray" className="font-bold">
-                        {roomName} Room
+                        Current Room {roomName}
                     </Typography>
                     <Typography variant="small" color="gray" className="mt-1">
                         Users: {activeUsers.join(', ') || 'No users present'}
                     </Typography>
                 </div>
                 {/* Messages */}
-              <GetOldMessages roomId={roomId}/>
+
                 <div className="flex-1 overflow-y-auto p-6 bg-gray-50">
+                    <GetOldMessages roomId={roomId} currentUser={username} />
                     <div className="space-y-4">
                         {messages.map((message, index) => (
                             <div

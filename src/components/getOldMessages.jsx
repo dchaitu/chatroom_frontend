@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import {useParams} from "react-router-dom";
 import {REST_API_PATH} from "../constants/constants";
 
-const GetOldMessages = ({roomId}) => {
+const GetOldMessages = ({roomId, currentUser}) => {
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -13,7 +13,10 @@ const GetOldMessages = ({roomId}) => {
             try {
                 setLoading(true);
                 console.log("GetOldMessages from console requesting...", roomId);
-                const response = await fetch(`${REST_API_PATH}/messages/${roomId}`);
+                const response = await fetch(`${REST_API_PATH}/messages/${roomId}`,{
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                });
                 const data = await response.json();
                 console.log("Get old messages ",data);
                 setMessages(data);
@@ -44,22 +47,31 @@ const GetOldMessages = ({roomId}) => {
 
     return (
         <div className="space-y-4 p-4">
-            <h1 className="text-4xl font-bold text-white">Messages of room {roomId}</h1>
             {messages.length === 0 ? (
                 <div className="text-gray-500 text-center">No messages in this room yet.</div>
             ) : (
                 messages.map((message) => (
                     <div
                         key={`${message.room_id}-${message.timestamp}`}
-                        className="bg-white p-4 rounded-lg shadow"
+                        className={`flex ${message.username === currentUser ? 'justify-end' : 'justify-start'}`}
                     >
-                        <div className="flex justify-between items-baseline mb-1">
-                            <span className="font-semibold">{message.username}</span>
-                            <span className="text-sm text-gray-500">
-                                {message.timestamp ? new Date(message.timestamp).toLocaleString() : 'No timestamp'}
-                            </span>
+                        <div className={`max-w-xs lg:max-w-md xl:max-w-lg 2xl:max-w-xl p-4 rounded-lg shadow ${
+                            message.username === currentUser 
+                                ? 'bg-blue-500 text-white rounded-br-none' 
+                                : 'bg-white text-gray-800 rounded-bl-none'
+                        }`}>
+                            <div className="flex justify-between items-baseline mb-1">
+                                <span className={`font-semibold ${message.username === currentUser ? 'text-blue-100' : 'text-gray-700'}`}>
+                                    {message.username}
+                                </span>
+                                <span className={`text-xs ${message.username === currentUser ? 'text-blue-200' : 'text-gray-500'}`}>
+                                    {message.timestamp ? new Date(message.timestamp).toLocaleTimeString() : ''}
+                                </span>
+                            </div>
+                            <p className={message.username === currentUser ? 'text-white' : 'text-gray-800'}>
+                                {message.content}
+                            </p>
                         </div>
-                        <p className="text-gray-800">{message.content}</p>
                     </div>
                 ))
             )}
