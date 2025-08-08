@@ -25,6 +25,7 @@ const NavbarDefault = ({username}) => {
 
     const userLogout = () => {
         navigate("/");
+        localStorage.removeItem("token");
     }
 
     const navList = (

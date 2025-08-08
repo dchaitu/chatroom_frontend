@@ -42,6 +42,8 @@ const Login = () => {
             if (data.status_code===200) {
                 // Store only the necessary authentication data
                 // Pass the username as state when navigating
+                localStorage.setItem("token", data.access_token);
+                console.log(`Access Token is ${data.access_token}`);
                 console.log("Login successful, navigating to rooms");
                 navigate(`/rooms/${username}`);
             } else if (data.status_code === 401)
