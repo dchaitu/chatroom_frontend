@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import ReCAPTCHA from 'react-google-recaptcha';
-import {REST_API_PATH, siteKey} from "../constants/constants";
+import {LOCAL_API_PATH, REST_API_PATH, siteKey} from "../constants/constants";
 import { Card, Input, Button } from "@material-tailwind/react";
 import { CardHeader, CardBody, CardFooter, Typography } from "@material-tailwind/react";
 import { LockClosedIcon, UserCircleIcon } from '@heroicons/react/24/outline';
@@ -21,7 +21,7 @@ const Login = () => {
             return;
         }
         try {
-            const response = await fetch(`${REST_API_PATH}/login/`, {
+            const response = await fetch(`${LOCAL_API_PATH}/login/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -38,14 +38,16 @@ const Login = () => {
             console.log("Response:", response);
 
             console.log("Response data:", data);
+            console.log("Response response:", response);
 
-            if (data.status_code===200) {
+            if (response.ok) {
                 // Store only the necessary authentication data
                 // Pass the username as state when navigating
-                localStorage.setItem("token", data.access_token);
+                // localStorage.setItem("token", data.access_token);
                 console.log(`Access Token is ${data.access_token}`);
                 console.log("Login successful, navigating to rooms");
-                navigate(`/rooms/${username}`);
+                localStorage.setItem('access_token', data.access_token)
+                navigate(`/rooms/`);
             } else if (data.status_code === 401)
                 {
                     setError('Invalid username or password');

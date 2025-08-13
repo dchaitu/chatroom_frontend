@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {Button, Typography} from "@material-tailwind/react";
 import {useNavigate, useParams} from "react-router-dom";
-import {REST_API_PATH} from "../constants/constants";
+import {LOCAL_API_PATH, REST_API_PATH} from "../constants/constants";
 
 const UserProfile = () => {
     const [user, setUser] = useState(null);
@@ -9,23 +9,21 @@ const UserProfile = () => {
     const [error, setError] = useState(null);
     const navigate = useNavigate();
     // Username is now passed as a prop
-    const {username} = useParams();
+    const accessToken = localStorage.getItem("access_token");
 
     const goToRooms = () => {
-        navigate(`/rooms/${username}`);
+        navigate(`/rooms/`);
     }
 
     useEffect(() => {
-        if (!username) {
-            navigate('/login');
-            return;
-        }
         const fetchUserProfile = async () => {
             try {
-                const response = await fetch(`${REST_API_PATH}/user/${username}`, {
-                    method: "POST",
+                const response = await fetch(`${LOCAL_API_PATH}/user/`, {
+                    method: "GET",
                     headers: {
-                        "Content-Type": "application/json"
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${accessToken}`,
+
                     }
                 });
                 if (!response.ok) {
@@ -43,7 +41,7 @@ const UserProfile = () => {
             }
         };
         fetchUserProfile();
-    },[username, navigate]);
+    },[navigate]);
 
     if (loading) {
         return <Typography>Loading user profile...</Typography>;

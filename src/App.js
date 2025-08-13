@@ -13,34 +13,8 @@ import GetOldMessages from "./components/getOldMessages";
 import ProtectedRoute from "./components/protectedRoute";
 
 function App() {
-  const [username, setUsername] = useState('');
 
-  // Function to update auth state from localStorage
-  const updateAuthState = () => {
-    const storedUsername = localStorage.getItem('username');
-    const token = localStorage.getItem('token');
-
-    if (storedUsername && token) {
-      setUsername(storedUsername);
-      return true;
-    }
-    return false;
-  };
-
-  // Check auth state on mount and when localStorage changes
-  useEffect(() => {
-    updateAuthState();
-
-    // Listen for storage events to handle login/logout from other tabs
-    const handleStorageChange = () => {
-      updateAuthState();
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
   return (
-    <userContext.Provider value={username}>
       <Router>
         <div className="min-h-screen">
           <Routes>
@@ -48,20 +22,9 @@ function App() {
             <Route exact path="/register" element={<Register />} />
             <Route exact path="/" element={<Home />} />
             <Route path="/" element={<ProtectedRoute />} >
-              <Route
-                  path="/rooms/:username"
-                  element={<ShowUserRooms/>}
-              />
-              <Route
-                  exact
-                  path="/rooms/:username/:room_id/messages/"
-                  element={<GetMessagesFromRoom />}
-              />
-              <Route
-                  exact
-                  path="/user/:username"
-                  element={<UserProfile/>}
-              />
+              <Route path="/rooms/" element={<ShowUserRooms/>} />
+              <Route exact path="/rooms/:room_id/messages/" element={<GetMessagesFromRoom/>}/>
+              <Route exact path="/user/" element={<UserProfile/>}/>
               <Route path="/messages/:roomId" element={<GetOldMessages/>}/>
               <Route path="/invalid" element={<InvalidRoute />} />
             </Route>
@@ -70,7 +33,6 @@ function App() {
           </Routes>
         </div>
       </Router>
-    </userContext.Provider>
   );
 }
 

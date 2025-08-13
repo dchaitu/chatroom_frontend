@@ -9,7 +9,7 @@ const GetMessagesFromRoom = () => {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const [isConnected, setIsConnected] = useState(false);
-    const [activeUsers, setActiveUsers] = useState([]);
+    const [roomMembers, setRoomMembers] = useState([]);
     const [roomName, setRoomName] = useState("");
     const messagesEndRef = useRef(null);
     const navigate = useNavigate();
@@ -17,8 +17,8 @@ const GetMessagesFromRoom = () => {
     console.log("params", useParams())
     const {username,room_id} = useParams();
     console.log("GetMessagesFromRoom", username, room_id);
-    // const username = username;
     const roomId = room_id;
+    const access_token = localStorage.getItem("access_token");
 
 
 
@@ -33,7 +33,7 @@ const GetMessagesFromRoom = () => {
             console.warn("Missing username or roomId, skipping WebSocket connection");
             return;
         }
-        const websocketUrl = `wss://c4plozmo3f.execute-api.us-east-1.amazonaws.com/production?username=${encodeURIComponent(username)}&room_id=${encodeURIComponent(roomId)}`;
+        const websocketUrl = `wss://c4plozmo3f.execute-api.us-east-1.amazonaws.com/production?username=${username}&room_id=${roomId}`;
         console.log("Attempting to connect:", { username, roomId, websocketUrl });
 
         let socket;
@@ -61,16 +61,10 @@ const GetMessagesFromRoom = () => {
                     const messageData = JSON.parse(event.data);
                     console.log("Received message:", messageData);
                     setMessages(prevMessages => {
-                        if (messageData.message_id && prevMessages.some(msg => msg.message_id === messageData.message_id)) {
-                            console.log("Duplicate message ignored:", messageData.message_id);
-                            return prevMessages;
-                        }
-                        return [...prevMessages, messageData];
+                        const updated = [...prevMessages, messageData];
+                        return updated.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
                     });
-
-                    // ws.send(JSON.stringify(messageData));
-                    // setNewMessage('');
-                    console.log("Received message:", messageData);
+                    setNewMessage('');
 
                 } catch (error) {
                     console.error("Error parsing message:", error, event.data);
@@ -105,7 +99,7 @@ const GetMessagesFromRoom = () => {
         return () => {
             console.log("Cleaning up WebSocket");
             if (reconnectTimeout) clearTimeout(reconnectTimeout);
-            if (socket) socket.close();
+            if (ws) ws.close();
         };
     }, [username, roomId]);
 
@@ -141,7 +135,7 @@ const GetMessagesFromRoom = () => {
             console.log("Sending message:", message);
             console.log("Sending message (string):", JSON.stringify(message));
             ws.send(JSON.stringify(message));
-            setMessages(prevMessages => [...prevMessages, message]);
+            // setMessages(prevMessages => [...prevMessages, message]);
             setNewMessage('');
         } catch (error) {
             console.error("Error sending message:", error);
@@ -154,20 +148,23 @@ const GetMessagesFromRoom = () => {
             ws.close();
         }
         // localStorage.removeItem('room_id');
-        navigate(`/rooms/${username}`);
+        navigate(`/rooms/`);
     }
     const fetchRoomDetails = async () => {
         try {
             const response = await fetch(`${REST_API_PATH}/room_details/${roomId}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${access_token}`
+                }
             });
             console.log("Room details response status:", response.status);
             const data = await response.json();
             console.log("Room details response:", data);
             if (response.ok) {
                 setRoomName(data.room_name || 'Unnamed Room');
-                setActiveUsers(data.active_users || []);
+                setRoomMembers(data.room_members || []);
             }
         } catch (error) {
             console.error("Error fetching room details:", error);
@@ -205,7 +202,7 @@ const GetMessagesFromRoom = () => {
                         Current Room {roomName}
                     </Typography>
                     <Typography variant="small" color="gray" className="mt-1">
-                        Users: {activeUsers.join(', ') || 'No users present'}
+                        Users: {roomMembers.join(', ') || 'No users present'}
                     </Typography>
                 </div>
                 {/* Messages */}
@@ -219,7 +216,7 @@ const GetMessagesFromRoom = () => {
                                 className={`flex ${message.username === username ? 'justify-end' : 'justify-start'}`}
                             >
                                 <div
-                                    className={`max-w-xs lg:max-w-md p-3 rounded-xl ${message.username === username ? 'bg-indigo-500 text-white ml-auto' : 'bg-white shadow-md'}`}>
+                                    className={`max-w-xs lg:max-w-md p-3 rounded-xl ${message.username === username ? 'bg-blue-500 text-white rounded-br-none' : 'bg-white shadow-md'}`}>
                                     <p className="font-semibold text-sm">{message.username}</p>
                                     <p className="text-md break-words">{message.content}</p>
 
@@ -242,7 +239,7 @@ const GetMessagesFromRoom = () => {
                             type="text"
                             value={newMessage}
                             onChange={(e) => setNewMessage(e.target.value)}
-                            onKeyPress={(e) => e.key === 'Enter' && handleSendMessage(e)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleSendMessage(e)}
                             placeholder="Type your message..."
                             className="!border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent placeholder:text-gray-500 focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10"
                             labelProps={{

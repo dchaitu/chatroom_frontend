@@ -38,11 +38,11 @@ const Register = () => {
 
         const data = await response.json();
         console.log("Response Status:", data);
-        console.log("username:", data.username);
+        // console.log("username:", data.username);
         // console.log("email:", data.email);
         if (response.status === 201) {
             // Redirect to tasks page if login is successful
-            console.log("New User created",data.username);
+            console.log("New User created",username);
             navigate('/login');
         } else {
             setError(data.error || 'Login failed');

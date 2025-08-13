@@ -6,6 +6,8 @@ const GetOldMessages = ({roomId, currentUser}) => {
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const sortedMessages = messages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    const access_token = localStorage.getItem("access_token");
 
     console.log("GetOldMessages from console", roomId);
     useEffect(() => {
@@ -14,11 +16,15 @@ const GetOldMessages = ({roomId, currentUser}) => {
                 setLoading(true);
                 console.log("GetOldMessages from console requesting...", roomId);
                 const response = await fetch(`${REST_API_PATH}/messages/${roomId}`,{
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${access_token}`
+                    }
                 });
                 const data = await response.json();
                 console.log("Get old messages ",data);
+
                 setMessages(data);
                 console.log(response);
                 setError(null);
@@ -65,7 +71,10 @@ const GetOldMessages = ({roomId, currentUser}) => {
                                     {message.username}
                                 </span>
                                 <span className={`text-xs ${message.username === currentUser ? 'text-blue-200' : 'text-gray-500'}`}>
-                                    {message.timestamp ? new Date(message.timestamp).toLocaleTimeString() : ''}
+                                    {message.timestamp ? new Date(message.timestamp).toLocaleTimeString([], {
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                    }) : ''}
                                 </span>
                             </div>
                             <p className={message.username === currentUser ? 'text-white' : 'text-gray-800'}>

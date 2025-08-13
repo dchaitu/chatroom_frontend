@@ -20,7 +20,7 @@ const NavbarDefault = ({username}) => {
     }, []);
 
     const userProfile = () => {
-        navigate(`/user/${username}`);
+        navigate(`/user/`);
     }
 
     const userLogout = () => {

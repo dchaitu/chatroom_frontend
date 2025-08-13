@@ -13,6 +13,11 @@ const Home = () => {
     const navigate = useNavigate();
 
     const handleLoginClick = () => {
+        const username = localStorage.getItem("username");
+        const token = localStorage.getItem("token");
+        if(username && token){
+            navigate(`/rooms/${username}`);
+        }
         navigate('/login');  // Redirect to login page on button click
     };
 

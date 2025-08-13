@@ -11,7 +11,7 @@ const GetRoom = ({ room }) => {
     const {username, roomId} = useParams()
     console.log("GetRoom", username, roomId);
     const goToRoomMessages = () => {
-     navigate(`/rooms/${username}/${room_id}/messages`);
+     navigate(`/rooms/${room_id}/messages`);
     }
 
     return (

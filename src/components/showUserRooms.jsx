@@ -4,7 +4,7 @@ import {Input, Typography, Button, Dialog, DialogHeader, DialogBody, DialogFoote
 import {useNavigate, useParams} from "react-router-dom";
 import NavbarDefault from "./navBarDefault";
 import { PlusIcon, ArrowRightIcon } from '@heroicons/react/24/solid';
-import {REST_API_PATH} from "../constants/constants";
+import {LOCAL_API_PATH, REST_API_PATH} from "../constants/constants";
 
 // Get messages in the current room
 const ShowUserRooms = () => {
@@ -12,26 +12,44 @@ const ShowUserRooms = () => {
     const [newRoom, setNewRoom] = useState({ name: '', roomId: '' });
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
-    // Username is now passed as a prop
     const [roomId, setRoomId] = useState("");
+    const [username, setUsername] = useState("");
     const navigate = useNavigate();
-    const {username} = useParams();
-    console.log("props ", username);
+    const access_token = localStorage.getItem("access_token");
+
 
 
     const handleOpen = () => setOpen(!open);
-    useEffect(() => {
-        console.log(`username in room is ${username}`);
-        if (!username) {
-        navigate('/login');
-        return;
-    }
-        const fetchRooms = async () => {
-            try {
-                const response = await fetch(`${REST_API_PATH}/rooms/${username}`, {
-                    method: "POST",
+
+    useEffect(()=> {
+        const getUserName = async () => {
+            if (access_token) {
+                const response = await fetch(`${REST_API_PATH}/user`,{
+                    method: 'GET',
                     headers: {
                         "Content-Type": "application/json",
+                        "Authorization": `Bearer ${access_token}`
+                    },
+                });
+                if(response.ok) {
+                    const data = await response.json();
+                    console.log("user data", data);
+                    setUsername(data.username);
+                }
+            }
+        }
+        getUserName();
+
+    },[access_token]);
+
+    useEffect(() => {
+        const fetchRooms = async () => {
+            try {
+                const response = await fetch(`${LOCAL_API_PATH}/rooms/`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${access_token}`
                     },
 
                 });
@@ -48,17 +66,18 @@ const ShowUserRooms = () => {
 
         fetchRooms();
 
-    }, [username, navigate]);
+    }, [navigate]);
 
     const handleCreateRoom = async () => {
         if (!newRoom.name.trim()) return;
         
         setLoading(true);
         try {
-            const response = await fetch(`${REST_API_PATH}/create_room/${username}`, {
+            const response = await fetch(`${LOCAL_API_PATH}/create_room/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${access_token}`
                 },
                 body: JSON.stringify({
                     room_name: newRoom.name,
@@ -71,10 +90,11 @@ const ShowUserRooms = () => {
             if (response.ok) {
 
                 // Refresh rooms list
-                const roomsResponse = await fetch(`${REST_API_PATH}/rooms/${username}`, {
-                    method: 'POST',
+                const roomsResponse = await fetch(`${REST_API_PATH}/rooms/`, {
+                    method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${access_token}`
                     }
                 });
                 const updatedRooms = await roomsResponse.json();
@@ -95,15 +115,17 @@ const ShowUserRooms = () => {
         if (!roomId.trim()) return;
 
         try {
-            const response = await fetch(`${REST_API_PATH}/join_room/`, {
+            const response = await fetch(`${REST_API_PATH}/join_room/?room_id=${roomId}`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: username, room_id: roomId }),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${access_token}`
+                },
             });
             // localStorage.setItem('room_id', roomId);
             const data = await response.json();
             console.log('Join response:', data);
-            navigate(`/rooms/${username}`);
+            navigate(`/rooms/`);
         } catch (error) {
             console.error('Error joining room:', error);
         }
