@@ -2,7 +2,7 @@ import React, {useState, useEffect, useRef} from 'react';
 import {Button, Input, Typography} from "@material-tailwind/react";
 import {PaperAirplaneIcon, ArrowLeftIcon} from '@heroicons/react/24/solid';
 import {useNavigate, useParams} from 'react-router-dom';
-import {REST_API_PATH} from "../constants/constants";
+import {POLLING_INTERVAL, REST_API_PATH} from "../constants/constants";
 import GetOldMessages from "./getOldMessages";
 
 const GetMessagesFromRoom = () => {
@@ -13,12 +13,10 @@ const GetMessagesFromRoom = () => {
     const [roomName, setRoomName] = useState("");
     const messagesEndRef = useRef(null);
     const navigate = useNavigate();
-    const [ws, setWs] = useState(null);
-    console.log("params", useParams())
-    const {username,room_id} = useParams();
-    console.log("GetMessagesFromRoom", username, room_id);
+    const { room_id } = useParams();
     const roomId = room_id;
     const access_token = localStorage.getItem("access_token");
+    const username = localStorage.getItem("username");
 
 
 
@@ -27,81 +25,6 @@ const GetMessagesFromRoom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
-    // Establish WebSocket connection
-    useEffect(() => {
-        if (!username || !roomId)  {
-            console.warn("Missing username or roomId, skipping WebSocket connection");
-            return;
-        }
-        const websocketUrl = `wss://c4plozmo3f.execute-api.us-east-1.amazonaws.com/production?username=${username}&room_id=${roomId}`;
-        console.log("Attempting to connect:", { username, roomId, websocketUrl });
-
-        let socket;
-        let reconnectAttempts = 0;
-        const maxReconnectAttempts = 5;
-        let reconnectTimeout;
-
-        const connectWebSocket = () => {
-            if (reconnectAttempts >= maxReconnectAttempts) {
-                console.error("Max reconnection attempts reached");
-                return;
-            }
-
-            socket = new WebSocket(websocketUrl);
-
-            socket.onopen = () => {
-                console.log("WebSocket connected");
-                setIsConnected(true);
-                reconnectAttempts = 0; // Reset reconnection attempts on successful connection
-            };
-
-            socket.onmessage = (event) => {
-                console.log("Received raw data:", event.data);
-                try {
-                    const messageData = JSON.parse(event.data);
-                    console.log("Received message:", messageData);
-                    setMessages(prevMessages => {
-                        const updated = [...prevMessages, messageData];
-                        return updated.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-                    });
-                    setNewMessage('');
-
-                } catch (error) {
-                    console.error("Error parsing message:", error, event.data);
-                }
-            };
-
-            socket.onclose = (event) => {
-                setIsConnected(false);
-                console.log("WebSocket disconnected. Code:", event.code, "Reason:", event.reason);
-
-                // Attempt to reconnect with exponential backoff
-                if (event.code !== 1000) { // 1000 is a normal closure
-                    const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 30000); // Max 30s delay
-                    console.log(`Reconnecting in ${delay}ms...`);
-                    reconnectTimeout = setTimeout(() => {
-                        reconnectAttempts++;
-                        connectWebSocket();
-                    }, delay);
-                }
-            };
-
-            socket.onerror = (error) => {
-                console.error("WebSocket error:", error);
-                socket.close();
-            };
-
-            setWs(socket);
-        };
-
-        connectWebSocket();
-        // Cleanup on unmount
-        return () => {
-            console.log("Cleaning up WebSocket");
-            if (reconnectTimeout) clearTimeout(reconnectTimeout);
-            if (ws) ws.close();
-        };
-    }, [username, roomId]);
 
     // Fetch room details when component mounts or roomId changes
     useEffect(() => {
@@ -114,40 +37,75 @@ const GetMessagesFromRoom = () => {
         scrollToBottom();
     }, [messages]);
 
-    // Handle sending a new message via WebSocket
-    const handleSendMessage = (e) => {
-        e.preventDefault();
-        const messageToSend = newMessage.trim();
-        if (!messageToSend || !ws || ws.readyState !== WebSocket.OPEN) {
-            console.warn("Cannot send message - WebSocket not ready");
-            return;
-        }
+    // Polling effect
+    useEffect(() => {
+        let intervalId;
 
-        const message = {
-            action: "sendmessage",
-            content: messageToSend,
-            username: username,
-            room_id: roomId,
-            timestamp: new Date().toISOString()
+        const fetchMessages = async () => {
+            try {
+                const response = await fetch(
+                    `${REST_API_PATH}/messages/${roomId}`,
+                    {
+                        method: "GET",
+                        headers: {
+                            "Content-Type": "application/json",
+                            'Authorization': `Bearer ${access_token}`
+                        }
+                    }
+                );
+                if (response.ok) {
+                    const data = await response.json();
+                    setMessages(data);
+                    setIsConnected(true);
+                } else {
+                    setIsConnected(false);
+                }
+            } catch (error) {
+                console.error("Polling error:", error);
+                setIsConnected(false);
+            }
         };
 
+        if (roomId) {
+            fetchMessages(); // initial fetch
+            intervalId = setInterval(fetchMessages, POLLING_INTERVAL);
+        }
+
+        return () => clearInterval(intervalId);
+    }, [roomId, access_token]);
+
+
+    const handleSendMessage = async (e) => {
+        e.preventDefault();
+
         try {
-            console.log("Sending message:", message);
-            console.log("Sending message (string):", JSON.stringify(message));
-            ws.send(JSON.stringify(message));
-            // setMessages(prevMessages => [...prevMessages, message]);
-            setNewMessage('');
-        } catch (error) {
-            console.error("Error sending message:", error);
+            const response = await fetch(`${REST_API_PATH}/send_message/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${access_token}`,
+                },
+                body: JSON.stringify({
+                    content: newMessage,
+                    room_id: roomId,
+                }),
+            });
+            const data = await response.json();
+            console.log("Data is ...",data);
+            if (response.ok) {
+                setMessages(prevMessages => [...prevMessages, data]);
+                setNewMessage(""); // reset input
+                // Optional: immediately append pending message
+                // Will be refreshed by polling automatically
+            }
+        } catch (err) {
+            console.error("Send message error:", err);
         }
     };
 
     // Handle leaving the room
     const handleLeaveRoom = () => {
-        if (ws) {
-            ws.close();
-        }
-        // localStorage.removeItem('room_id');
+        localStorage.removeItem('room_id');
         navigate(`/rooms/`);
     }
     const fetchRoomDetails = async () => {
@@ -170,6 +128,7 @@ const GetMessagesFromRoom = () => {
             console.error("Error fetching room details:", error);
         }
     };
+    const sortedMessages = [...messages].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
 
 
@@ -210,7 +169,7 @@ const GetMessagesFromRoom = () => {
                 <div className="flex-1 overflow-y-auto p-6 bg-gray-50">
                     <GetOldMessages roomId={roomId} currentUser={username} />
                     <div className="space-y-4">
-                        {messages.map((message, index) => (
+                        {sortedMessages.map((message, index) => (
                             <div
                                 key={index}
                                 className={`flex ${message.username === username ? 'justify-end' : 'justify-start'}`}

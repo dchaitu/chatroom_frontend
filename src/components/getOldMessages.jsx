@@ -6,7 +6,7 @@ const GetOldMessages = ({roomId, currentUser}) => {
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const sortedMessages = messages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    const sortedMessages = [...messages].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
     const access_token = localStorage.getItem("access_token");
 
     console.log("GetOldMessages from console", roomId);
@@ -53,10 +53,10 @@ const GetOldMessages = ({roomId, currentUser}) => {
 
     return (
         <div className="space-y-4 p-4">
-            {messages.length === 0 ? (
+            {sortedMessages.length === 0 ? (
                 <div className="text-gray-500 text-center">No messages in this room yet.</div>
             ) : (
-                messages.map((message) => (
+                sortedMessages.map((message) => (
                     <div
                         key={`${message.room_id}-${message.timestamp}`}
                         className={`flex ${message.username === currentUser ? 'justify-end' : 'justify-start'}`}

@@ -14,9 +14,10 @@ const Home = () => {
 
     const handleLoginClick = () => {
         const username = localStorage.getItem("username");
-        const token = localStorage.getItem("token");
-        if(username && token){
-            navigate(`/rooms/${username}`);
+        const token = localStorage.getItem("access_token");
+        console.log("login token",token);
+        if(token){
+            navigate(`/rooms/`);
         }
         navigate('/login');  // Redirect to login page on button click
     };
@@ -120,3 +121,10 @@ const Home = () => {
 
 }
 export default Home;
+
+
+//setInterval(async () => {
+//   const res = await fetch("/messages");
+//   const data = await res.json();
+//   console.log("New messages:", data);
+// }, 2000);
