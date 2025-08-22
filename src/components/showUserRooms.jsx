@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import GetRoom from "./getRoom";
 import {Input, Typography, Button, Dialog, DialogHeader, DialogBody, DialogFooter} from "@material-tailwind/react";
-import {useNavigate, useParams} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import NavbarDefault from "./navBarDefault";
 import { PlusIcon, ArrowRightIcon } from '@heroicons/react/24/solid';
-import {LOCAL_API_PATH, REST_API_PATH} from "../constants/constants";
+import {REST_API_PATH} from "../constants/constants";
 
 // Get messages in the current room
 const ShowUserRooms = () => {
@@ -23,8 +23,9 @@ const ShowUserRooms = () => {
 
     useEffect(()=> {
         const getUserName = async () => {
+            console.log("access_token ",access_token);
             if (access_token) {
-                const response = await fetch(`${REST_API_PATH}/user`,{
+                const response = await fetch(`${REST_API_PATH}/user/`,{
                     method: 'GET',
                     headers: {
                         "Content-Type": "application/json",
@@ -45,7 +46,7 @@ const ShowUserRooms = () => {
     useEffect(() => {
         const fetchRooms = async () => {
             try {
-                const response = await fetch(`${LOCAL_API_PATH}/rooms/`, {
+                const response = await fetch(`${REST_API_PATH}/rooms/`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
@@ -73,7 +74,7 @@ const ShowUserRooms = () => {
         
         setLoading(true);
         try {
-            const response = await fetch(`${LOCAL_API_PATH}/create_room/`, {
+            const response = await fetch(`${REST_API_PATH}/create_room/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import ReCAPTCHA from 'react-google-recaptcha';
-import {LOCAL_API_PATH, REST_API_PATH, siteKey} from "../constants/constants";
+import {REST_API_PATH, siteKey} from "../constants/constants";
 import { Card, Input, Button } from "@material-tailwind/react";
 import { CardHeader, CardBody, CardFooter, Typography } from "@material-tailwind/react";
 import { LockClosedIcon, UserCircleIcon } from '@heroicons/react/24/outline';
@@ -21,7 +21,7 @@ const Login = () => {
             return;
         }
         try {
-            const response = await fetch(`${LOCAL_API_PATH}/login/`, {
+            const response = await fetch(`${REST_API_PATH}/login/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

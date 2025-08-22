@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {Button, Typography} from "@material-tailwind/react";
-import {useNavigate, useParams} from "react-router-dom";
-import {LOCAL_API_PATH, REST_API_PATH} from "../constants/constants";
+import {useNavigate} from "react-router-dom";
+import {REST_API_PATH} from "../constants/constants";
 
 const UserProfile = () => {
     const [user, setUser] = useState(null);
@@ -18,7 +18,7 @@ const UserProfile = () => {
     useEffect(() => {
         const fetchUserProfile = async () => {
             try {
-                const response = await fetch(`${LOCAL_API_PATH}/user/`, {
+                const response = await fetch(`${REST_API_PATH}/user/`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
