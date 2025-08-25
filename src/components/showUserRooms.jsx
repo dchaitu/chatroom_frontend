@@ -1,21 +1,26 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import GetRoom from "./getRoom";
 import {Input, Typography, Button, Dialog, DialogHeader, DialogBody, DialogFooter} from "@material-tailwind/react";
 import {useNavigate} from "react-router-dom";
 import NavbarDefault from "./navBarDefault";
 import { PlusIcon, ArrowRightIcon } from '@heroicons/react/24/solid';
 import {REST_API_PATH} from "../constants/constants";
+import {AuthContext} from "../context/context";
 
 // Get messages in the current room
 const ShowUserRooms = () => {
+    console.log("Show User Rooms ");
     const [rooms, setRooms] = useState([]);
     const [newRoom, setNewRoom] = useState({ name: '', roomId: '' });
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
     const [roomId, setRoomId] = useState("");
-    const [username, setUsername] = useState("");
     const navigate = useNavigate();
     const access_token = localStorage.getItem("access_token");
+    const contextValue = useContext(AuthContext);
+    const { username } = contextValue;
+    console.log("ShowUserRooms access_token", access_token);
+    console.log("username ",username);
 
 
 
@@ -35,7 +40,7 @@ const ShowUserRooms = () => {
                 if(response.ok) {
                     const data = await response.json();
                     console.log("user data", data);
-                    setUsername(data.username);
+                    // setUsername(data.username);
                 }
             }
         }
@@ -67,7 +72,7 @@ const ShowUserRooms = () => {
 
         fetchRooms();
 
-    }, [navigate]);
+    }, [navigate, access_token]);
 
     const handleCreateRoom = async () => {
         if (!newRoom.name.trim()) return;
@@ -134,7 +139,7 @@ const ShowUserRooms = () => {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            <NavbarDefault username={username} />
+            <NavbarDefault/>
             <div className="max-w-7xl mx-auto px-4 py-8">
                 <Typography variant="h1" className="text-2xl font-bold text-gray-900">Hi {username} !</Typography>
                 <div className="flex justify-between items-center mb-8">
@@ -164,7 +169,7 @@ const ShowUserRooms = () => {
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {rooms.map((room) => (
-                            <GetRoom key={room.room_id} room={room} username={username} />
+                            <GetRoom key={room.room_id} room={room}/>
                         ))}
                     </div>
                 )}
@@ -177,7 +182,7 @@ const ShowUserRooms = () => {
                             <Input
                                 type="text"
                                 label="Enter Room ID"
-                                size="sm"
+                                size="md"
                                 className="pl-10"
                                 value={roomId}
                                 onChange={(e) => setRoomId(e.target.value)}

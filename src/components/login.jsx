@@ -1,17 +1,20 @@
-import React, { useState } from 'react';
+import React, {useContext, useState} from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import ReCAPTCHA from 'react-google-recaptcha';
 import {REST_API_PATH, siteKey} from "../constants/constants";
 import { Card, Input, Button } from "@material-tailwind/react";
-import { CardHeader, CardBody, CardFooter, Typography } from "@material-tailwind/react";
+import {CardBody, CardFooter } from "@material-tailwind/react";
 import { LockClosedIcon, UserCircleIcon } from '@heroicons/react/24/outline';
+import {AuthContext} from "../context/context";
 
 const Login = () => {
-    const [username, setUsername] = useState('');
+    const [inputUsername, setInputUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
     const [recaptchaValue, setRecaptchaValue] = useState(null);
+    const {setUsername} = useContext(AuthContext);
+
 
 
     const handleSubmit = async (e) => {
@@ -27,7 +30,7 @@ const Login = () => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    username: username,
+                    username: inputUsername,
                     password: password,
                     recaptcha_token: recaptchaValue
                 }),
@@ -47,6 +50,7 @@ const Login = () => {
                 console.log(`Access Token is ${data.access_token}`);
                 console.log("Login successful, navigating to rooms");
                 localStorage.setItem('access_token', data.access_token)
+                setUsername(inputUsername)
                 navigate(`/rooms/`);
             } else if (data.status_code === 401)
                 {
@@ -111,8 +115,8 @@ const Login = () => {
                                         label="Username"
                                         size="lg"
                                         className="pl-10"
-                                        value={username}
-                                        onChange={(e) => setUsername(e.target.value)}
+                                        value={inputUsername}
+                                        onChange={(e) => setInputUsername(e.target.value)}
                                         required
                                     />
                                 </div>

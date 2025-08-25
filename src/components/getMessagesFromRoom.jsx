@@ -1,9 +1,10 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect, useRef, useContext} from 'react';
 import {Button, Input, Typography} from "@material-tailwind/react";
 import {PaperAirplaneIcon, ArrowLeftIcon} from '@heroicons/react/24/solid';
 import {useNavigate, useParams} from 'react-router-dom';
 import {REST_API_PATH} from "../constants/constants";
 import GetOldMessages from "./getOldMessages";
+import {AuthContext} from "../context/context";
 
 const GetMessagesFromRoom = () => {
     const [messages, setMessages] = useState([]);
@@ -15,10 +16,14 @@ const GetMessagesFromRoom = () => {
     const navigate = useNavigate();
     const [ws, setWs] = useState(null);
     console.log("params", useParams())
-    const {username,room_id} = useParams();
-    console.log("GetMessagesFromRoom", username, room_id);
+    const {room_id} = useParams();
+    console.log("GetMessagesFromRoom", room_id);
     const roomId = room_id;
     const access_token = localStorage.getItem("access_token");
+    console.log("GetMessagesFromRoom username", useContext(AuthContext));
+    const contextValue = useContext(AuthContext);
+    const { username } = contextValue;
+
 
 
 
@@ -28,85 +33,85 @@ const GetMessagesFromRoom = () => {
     };
 
     // Establish WebSocket connection
-    useEffect(() => {
-        if (!username || !roomId)  {
-            console.warn("Missing username or roomId, skipping WebSocket connection");
-            return;
-        }
-        const websocketUrl = `wss://c4plozmo3f.execute-api.us-east-1.amazonaws.com/production?username=${username}&room_id=${roomId}`;
-        console.log("Attempting to connect:", { username, roomId, websocketUrl });
-
-        let socket;
-        let reconnectAttempts = 0;
-        const maxReconnectAttempts = 5;
-        let reconnectTimeout;
-
-        const connectWebSocket = () => {
-            if (reconnectAttempts >= maxReconnectAttempts) {
-                console.error("Max reconnection attempts reached");
-                return;
-            }
-
-            socket = new WebSocket(websocketUrl);
-
-            socket.onopen = () => {
-                console.log("WebSocket connected");
-                setIsConnected(true);
-                reconnectAttempts = 0; // Reset reconnection attempts on successful connection
-            };
-
-            socket.onmessage = (event) => {
-                console.log("Received raw data:", event.data);
-                try {
-                    const messageData = JSON.parse(event.data);
-                    console.log("Received message:", messageData);
-                    setMessages(prevMessages => {
-                        const updated = [...prevMessages, messageData];
-                        return updated.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-                    });
-                    setNewMessage('');
-
-                } catch (error) {
-                    console.error("Error parsing message:", error, event.data);
-                }
-            };
-
-            socket.onclose = (event) => {
-                setIsConnected(false);
-                console.log("WebSocket disconnected. Code:", event.code, "Reason:", event.reason);
-
-                // Attempt to reconnect with exponential backoff
-                if (event.code !== 1000) { // 1000 is a normal closure
-                    const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 30000); // Max 30s delay
-                    console.log(`Reconnecting in ${delay}ms...`);
-                    reconnectTimeout = setTimeout(() => {
-                        reconnectAttempts++;
-                        connectWebSocket();
-                    }, delay);
-                }
-            };
-
-            socket.onerror = (error) => {
-                console.error("WebSocket error:", error);
-                socket.close();
-            };
-
-            setWs(socket);
-        };
-
-        connectWebSocket();
-        // Cleanup on unmount
-        return () => {
-            console.log("Cleaning up WebSocket");
-            if (reconnectTimeout) clearTimeout(reconnectTimeout);
-            if (ws) ws.close();
-        };
-    }, [username, roomId]);
+    // useEffect(() => {
+    //     if (!access_token || !roomId)  {
+    //         console.warn("Missing username or roomId, skipping WebSocket connection");
+    //         return;
+    //     }
+    //     const websocketUrl = `wss://c4plozmo3f.execute-api.us-east-1.amazonaws.com/production?token=${access_token}`;
+    //     console.log("Attempting to connect:", { username, roomId, websocketUrl });
+    //
+    //     let socket;
+    //     let reconnectAttempts = 0;
+    //     const maxReconnectAttempts = 5;
+    //     let reconnectTimeout;
+    //
+    //     const connectWebSocket = () => {
+    //         if (reconnectAttempts >= maxReconnectAttempts) {
+    //             console.error("Max reconnection attempts reached");
+    //             return;
+    //         }
+    //
+    //         socket = new WebSocket(websocketUrl);
+    //
+    //         socket.onopen = () => {
+    //             console.log("WebSocket connected");
+    //             setIsConnected(true);
+    //             reconnectAttempts = 0; // Reset reconnection attempts on successful connection
+    //         };
+    //
+    //         socket.onmessage = (event) => {
+    //             console.log("Received raw data:", event.data);
+    //             try {
+    //                 const messageData = JSON.parse(event.data);
+    //                 console.log("Received message:", messageData);
+    //                 setMessages(prevMessages => {
+    //                     const updated = [...prevMessages, messageData];
+    //                     return updated.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+    //                 });
+    //                 setNewMessage('');
+    //
+    //             } catch (error) {
+    //                 console.error("Error parsing message:", error, event.data);
+    //             }
+    //         };
+    //
+    //         socket.onclose = (event) => {
+    //             setIsConnected(false);
+    //             console.log("WebSocket disconnected. Code:", event.code, "Reason:", event.reason);
+    //
+    //             // Attempt to reconnect with exponential backoff
+    //             if (event.code !== 1000) { // 1000 is a normal closure
+    //                 const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 30000); // Max 30s delay
+    //                 console.log(`Reconnecting in ${delay}ms...`);
+    //                 reconnectTimeout = setTimeout(() => {
+    //                     reconnectAttempts++;
+    //                     connectWebSocket();
+    //                 }, delay);
+    //             }
+    //         };
+    //
+    //         socket.onerror = (error) => {
+    //             console.error("WebSocket error:", error);
+    //             socket.close();
+    //         };
+    //
+    //         setWs(socket);
+    //     };
+    //
+    //     connectWebSocket();
+    //     // Cleanup on unmount
+    //     return () => {
+    //         console.log("Cleaning up WebSocket");
+    //         if (reconnectTimeout) clearTimeout(reconnectTimeout);
+    //         if (ws) ws.close();
+    //     };
+    // }, [username, roomId,ws]);
 
     // Fetch room details when component mounts or roomId changes
     useEffect(() => {
 
-            fetchRoomDetails();
+        fetchRoomDetails();
     }, [roomId]);
 
     // Auto-scroll to bottom when messages change
@@ -126,8 +131,6 @@ const GetMessagesFromRoom = () => {
         const message = {
             action: "sendmessage",
             content: messageToSend,
-            username: username,
-            room_id: roomId,
             timestamp: new Date().toISOString()
         };
 
@@ -170,7 +173,7 @@ const GetMessagesFromRoom = () => {
             console.error("Error fetching room details:", error);
         }
     };
-
+    console.log("Current username ", username);
 
 
 

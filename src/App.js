@@ -10,10 +10,12 @@ import UserProfile from "./components/userProfile";
 import InvalidRoute from "./components/invalidRoute";
 import GetOldMessages from "./components/getOldMessages";
 import ProtectedRoute from "./components/protectedRoute";
+import {AuthProvider} from "./context/context";
 
 function App() {
 
   return (
+      <AuthProvider>
       <Router>
         <div className="min-h-screen">
           <Routes>
@@ -32,6 +34,7 @@ function App() {
           </Routes>
         </div>
       </Router>
+      </AuthProvider>
   );
 }
 

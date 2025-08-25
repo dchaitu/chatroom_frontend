@@ -2,14 +2,18 @@ import {
     Card,
     CardBody, Typography, CardFooter, Button,
 } from "@material-tailwind/react";
-import {Link, useNavigate, useParams} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
+import {useContext} from "react";
+import {AuthContext} from "../context/context";
 
 const GetRoom = ({ room }) => {
+    console.log("room ",room);
     const { room_id, room_name } = room;
     console.log("GetRoom", room);
     const navigate = useNavigate();
-    const {username, roomId} = useParams()
-    console.log("GetRoom", username, roomId);
+    const contextValue = useContext(AuthContext);
+    const { username } = contextValue;
+    console.log("GetRoom", username, room_id);
     const goToRoomMessages = () => {
      navigate(`/rooms/${room_id}/messages`);
     }
