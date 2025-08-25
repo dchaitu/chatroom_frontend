@@ -1,6 +1,6 @@
 import './App.css';
 import {BrowserRouter as Router, Navigate, Route, Routes} from 'react-router-dom';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Login from "./components/login";
 import Register from "./components/register";
 import Home from "./components/home";

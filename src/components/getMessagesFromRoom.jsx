@@ -4,6 +4,7 @@ import {PaperAirplaneIcon, ArrowLeftIcon} from '@heroicons/react/24/solid';
 import {useNavigate, useParams} from 'react-router-dom';
 import {POLLING_INTERVAL, REST_API_PATH} from "../constants/constants";
 import GetOldMessages from "./getOldMessages";
+import AvatarWithInitials from "../constants/AvatarWithInitials";
 
 const GetMessagesFromRoom = () => {
     const [messages, setMessages] = useState([]);
@@ -157,9 +158,9 @@ const GetMessagesFromRoom = () => {
             {/* Chat Area */}
             <div className="flex-1 flex flex-col">
             <div className="bg-white border-b p-4">
-                    <Typography variant="h4" color="blue-gray" className="font-bold">
+                    <h4 color="blue-gray" className="text-2xl font-bold">
                         Current Room {roomName}
-                    </Typography>
+                    </h4>
                     <Typography variant="small" color="gray" className="mt-1">
                         Users: {roomMembers.join(', ') || 'No users present'}
                     </Typography>
@@ -172,23 +173,35 @@ const GetMessagesFromRoom = () => {
                         {sortedMessages.map((message, index) => (
                             <div
                                 key={index}
-                                className={`flex ${message.username === username ? 'justify-end' : 'justify-start'}`}
+                                className={`flex items-start gap-3 ${message.username === username ? 'justify-end' : 'justify-start'}`}
                             >
-                                <div
-                                    className={`max-w-xs lg:max-w-md p-3 rounded-xl ${message.username === username ? 'bg-blue-500 text-white rounded-br-none' : 'bg-white shadow-md'}`}>
-                                    <p className="font-semibold text-sm">{message.username}</p>
-                                    <p className="text-md break-words">{message.content}</p>
-
-                                    <p className="text-xs opacity-75 mt-1 text-right">
-                                        {message.timestamp && new Date(message.timestamp).toLocaleTimeString([], {
-                                            hour: '2-digit',
-                                            minute: '2-digit'
-                                        })}
-                                    </p>
+                                {message.username !== username && (
+                                    <div className="flex-shrink-0">
+                                        <AvatarWithInitials username={message.username} />
+                                    </div>
+                                )}
+                                <div className={`flex-1 ${message.username === username ? 'flex justify-end' : ''}`}>
+                                    <div className={`max-w-xs lg:max-w-md p-3 rounded-xl ${message.username === username ? 'bg-blue-500 text-white rounded-br-none' : 'bg-white shadow-md'}`}>
+                                        {message.username !== username && (
+                                            <p className="font-semibold text-sm">{message.username}</p>
+                                        )}
+                                        <p className="text-md break-words">{message.content}</p>
+                                        <p className={`text-xs opacity-75 mt-1 ${message.username === username ? 'text-right' : ''}`}>
+                                            {message.timestamp && new Date(message.timestamp).toLocaleTimeString([], {
+                                                hour: '2-digit',
+                                                minute: '2-digit'
+                                            })}
+                                        </p>
+                                    </div>
                                 </div>
+                                {message.username === username && (
+                                    <div className="flex-shrink-0">
+                                        <AvatarWithInitials username={message.username} />
+                                    </div>
+                                )}
                             </div>
                         ))}
-                        <div ref={messagesEndRef} />
+                        {/*<div ref={messagesEndRef} />*/}
                     </div>
                 </div>
 
