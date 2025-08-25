@@ -1,6 +1,6 @@
 import {
     Card,
-    CardBody, Typography, CardFooter, Button,
+    CardBody, CardFooter, Button,
 } from "@material-tailwind/react";
 import {Link, useNavigate, useParams} from "react-router-dom";
 

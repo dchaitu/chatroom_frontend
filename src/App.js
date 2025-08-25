@@ -8,13 +8,14 @@ import ShowUserRooms from "./components/showUserRooms";
 import GetMessagesFromRoom from "./components/getMessagesFromRoom";
 import UserProfile from "./components/userProfile";
 import InvalidRoute from "./components/invalidRoute";
-import {userContext} from "./context/context";
 import GetOldMessages from "./components/getOldMessages";
 import ProtectedRoute from "./components/protectedRoute";
+import {AuthProvider} from "./context/context";
 
 function App() {
 
   return (
+      <AuthProvider>
       <Router>
         <div className="min-h-screen">
           <Routes>
@@ -33,6 +34,7 @@ function App() {
           </Routes>
         </div>
       </Router>
+      </AuthProvider>
   );
 }
 

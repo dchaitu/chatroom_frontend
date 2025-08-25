@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import {useParams} from "react-router-dom";
 import {REST_API_PATH} from "../constants/constants";
+import UserMessage from "../constants/UserMessage";
 
 const GetOldMessages = ({roomId, currentUser}) => {
     const [messages, setMessages] = useState([]);
@@ -57,30 +57,8 @@ const GetOldMessages = ({roomId, currentUser}) => {
                 <div className="text-gray-500 text-center">No messages in this room yet.</div>
             ) : (
                 sortedMessages.map((message) => (
-                    <div
-                        key={`${message.room_id}-${message.timestamp}`}
-                        className={`flex ${message.username === currentUser ? 'justify-end' : 'justify-start'}`}
-                    >
-                        <div className={`max-w-xs lg:max-w-md xl:max-w-lg 2xl:max-w-xl p-4 rounded-lg shadow ${
-                            message.username === currentUser 
-                                ? 'bg-blue-500 text-white rounded-br-none' 
-                                : 'bg-white text-gray-800 rounded-bl-none'
-                        }`}>
-                            <div className="flex justify-between items-baseline mb-1">
-                                <span className={`font-semibold ${message.username === currentUser ? 'text-blue-100' : 'text-gray-700'}`}>
-                                    {message.username}
-                                </span>
-                                <span className={`text-xs ${message.username === currentUser ? 'text-blue-200' : 'text-gray-500'}`}>
-                                    {message.timestamp ? new Date(message.timestamp).toLocaleTimeString([], {
-                                        hour: '2-digit',
-                                        minute: '2-digit'
-                                    }) : ''}
-                                </span>
-                            </div>
-                            <p className={message.username === currentUser ? 'text-white' : 'text-gray-800'}>
-                                {message.content}
-                            </p>
-                        </div>
+                    <div key={message.id}>
+                    <UserMessage message={message} currentUser={currentUser} />
                     </div>
                 ))
             )}

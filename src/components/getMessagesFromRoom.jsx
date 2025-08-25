@@ -1,10 +1,12 @@
 import React, {useState, useEffect, useRef} from 'react';
-import {Button, Input, Typography} from "@material-tailwind/react";
-import {PaperAirplaneIcon, ArrowLeftIcon} from '@heroicons/react/24/solid';
+import {Button, Input} from "@material-tailwind/react";
+import {PaperAirplaneIcon, ArrowLeftIcon, BeakerIcon} from '@heroicons/react/24/solid';
+import { FaRegUser } from "react-icons/fa";
+
 import {useNavigate, useParams} from 'react-router-dom';
 import {POLLING_INTERVAL, REST_API_PATH} from "../constants/constants";
 import GetOldMessages from "./getOldMessages";
-import AvatarWithInitials from "../constants/AvatarWithInitials";
+import UserMessage from "../constants/UserMessage";
 
 const GetMessagesFromRoom = () => {
     const [messages, setMessages] = useState([]);
@@ -159,46 +161,24 @@ const GetMessagesFromRoom = () => {
             <div className="flex-1 flex flex-col">
             <div className="bg-white border-b p-4">
                     <h4 color="blue-gray" className="text-2xl font-bold">
-                        Current Room {roomName}
+                        {roomName}
                     </h4>
-                    <Typography variant="small" color="gray" className="mt-1">
-                        Users: {roomMembers.join(', ') || 'No users present'}
-                    </Typography>
+                    <small className="mt-1 text-gray-800">
+                        Users: <FaRegUser/> {roomMembers.join(', ') || 'No users present'}
+                    </small>
                 </div>
                 {/* Messages */}
 
                 <div className="flex-1 overflow-y-auto p-6 bg-gray-50">
                     <GetOldMessages roomId={roomId} currentUser={username} />
-                    <div className="space-y-4">
+                    <div className="space-y-4 p-4">
                         {sortedMessages.map((message, index) => (
                             <div
                                 key={index}
-                                className={`flex items-start gap-3 ${message.username === username ? 'justify-end' : 'justify-start'}`}
+                                className={`${message.username === username ? 'justify-end' : 'justify-start'}`}
                             >
-                                {message.username !== username && (
-                                    <div className="flex-shrink-0">
-                                        <AvatarWithInitials username={message.username} />
-                                    </div>
-                                )}
-                                <div className={`flex-1 ${message.username === username ? 'flex justify-end' : ''}`}>
-                                    <div className={`max-w-xs lg:max-w-md p-3 rounded-xl ${message.username === username ? 'bg-blue-500 text-white rounded-br-none' : 'bg-white shadow-md'}`}>
-                                        {message.username !== username && (
-                                            <p className="font-semibold text-sm">{message.username}</p>
-                                        )}
-                                        <p className="text-md break-words">{message.content}</p>
-                                        <p className={`text-xs opacity-75 mt-1 ${message.username === username ? 'text-right' : ''}`}>
-                                            {message.timestamp && new Date(message.timestamp).toLocaleTimeString([], {
-                                                hour: '2-digit',
-                                                minute: '2-digit'
-                                            })}
-                                        </p>
-                                    </div>
-                                </div>
-                                {message.username === username && (
-                                    <div className="flex-shrink-0">
-                                        <AvatarWithInitials username={message.username} />
-                                    </div>
-                                )}
+                            <UserMessage message={message} currentUser={username} />
+
                             </div>
                         ))}
                         {/*<div ref={messagesEndRef} />*/}

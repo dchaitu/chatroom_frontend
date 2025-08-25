@@ -8,7 +8,7 @@ import {
 } from "@material-tailwind/react";
 import {useNavigate} from "react-router-dom";
 
-const NavbarDefault = ({username}) => {
+const NavbarDefault = () => {
     const [openNav, setOpenNav] = React.useState(false);
     const navigate = useNavigate();
 

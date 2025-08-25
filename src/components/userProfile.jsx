@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {Button, Typography} from "@material-tailwind/react";
-import {useNavigate, useParams} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import {LOCAL_API_PATH, REST_API_PATH} from "../constants/constants";
 
 const UserProfile = () => {
