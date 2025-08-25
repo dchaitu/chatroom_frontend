@@ -53,17 +53,19 @@ const UserProfile = () => {
 
     return (
         <div className="p-4">
-            <Typography variant="h2" className="mb-4">User Details</Typography>
+            <h2 className="text-3xl mb-4">User Details</h2>
             {user ? (
                 <div className="space-y-2">
-                    <Typography variant="paragraph"><strong>Full Name:</strong> {user.fullname || 'Not provided'}</Typography>
-                    <Typography variant="paragraph"><strong>Email:</strong> {user.email || 'Not provided'}</Typography>
-                    <Typography variant="paragraph"><strong>Username:</strong> {user.username}</Typography>
-                
-                <Button onClick={goToRooms}>Go to Rooms</Button>
+                    <p className="text-black"><strong>Full Name:</strong> {user.fullname || 'Not provided'}
+                    </p>
+                    <p className="text-black"><strong>Email:</strong> {user.email || 'Not provided'}</p>
+                    <p><strong>Username:</strong> {user.username}</p>
+                    {/*<button className="">*/}
+
+                    <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={goToRooms}>Go to Rooms</button>
                 </div>
             ) : (
-                <Typography>No user data available</Typography>
+                <p>No user data available</p>
             )}
         </div>
     )

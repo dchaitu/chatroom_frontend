@@ -18,12 +18,12 @@ const GetRoom = ({ room }) => {
             <Card className="mt-6 w-96">
                 <CardBody>
 
-                    <Typography variant="h5" color="blue-gray" className="mb-2">
+                    <h4  color="blue-gray" className="mb-2">
                         Room id: {room_id}
-                    </Typography>
-                    <Typography>
+                    </h4>
+                    <h3>
                         {room_name}
-                    </Typography>
+                    </h3>
 
                 </CardBody>
                 <CardFooter className="pt-0">
