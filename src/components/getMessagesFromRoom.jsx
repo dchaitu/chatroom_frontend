@@ -1,12 +1,15 @@
 import React, {useState, useEffect, useRef} from 'react';
-import {Button, Input} from "@material-tailwind/react";
-import {PaperAirplaneIcon, ArrowLeftIcon, BeakerIcon} from '@heroicons/react/24/solid';
-import { FaRegUser } from "react-icons/fa";
+import { Button, Input } from "@material-tailwind/react";
+import {PaperAirplaneIcon, ArrowLeftIcon, ChevronDownIcon} from '@heroicons/react/24/solid';
+import {FaRegUser, FaUser} from "react-icons/fa";
 
 import {useNavigate, useParams} from 'react-router-dom';
 import {POLLING_INTERVAL, REST_API_PATH} from "../constants/constants";
 import GetOldMessages from "./getOldMessages";
 import UserMessage from "../constants/UserMessage";
+import RoomHeader from "../constants/roomHeader";
+import * as PropTypes from "prop-types";
+import RoomSideBar from "./roomSideBar";
 
 const GetMessagesFromRoom = () => {
     const [messages, setMessages] = useState([]);
@@ -107,7 +110,19 @@ const GetMessagesFromRoom = () => {
     };
 
     // Handle leaving the room
-    const handleLeaveRoom = () => {
+    const handleLeaveRoom = async (e) => {
+        const response = await fetch(`${REST_API_PATH}/leave_room/`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${access_token}`,
+            },
+            body: JSON.stringify({
+                room_id: roomId,
+            })
+        })
+        const data = await response.json();
+        console.log("Leave room ", data);
         localStorage.removeItem('room_id');
         navigate(`/rooms/`);
     }
@@ -140,44 +155,29 @@ const GetMessagesFromRoom = () => {
     return (
         <div className="flex h-screen bg-gray-100 font-sans">
             {/* Sidebar */}
-            <div className="w-1/4 bg-white border-r border-gray-200 p-4 flex flex-col">
-                <Button
-                    onClick={handleLeaveRoom}
-                    color="red"
-                    variant="outlined"
-                    className="flex items-center gap-2 mb-4"
-                >
-                    <ArrowLeftIcon className="h-4 w-4" />
-                    Leave Room
-                </Button>
-                <div className="mt-auto">
-                    <p className={`text-sm ${isConnected ? 'text-green-500' : 'text-red-500'}`}>
-                        Status: {isConnected ? 'Connected' : 'Disconnected'}
-                    </p>
-                </div>
-            </div>
+            <RoomSideBar onClick={handleLeaveRoom} connected={isConnected}/>
 
             {/* Chat Area */}
             <div className="flex-1 flex flex-col">
-            <div className="bg-white border-b p-4">
-                    <h4 color="blue-gray" className="text-2xl font-bold">
-                        {roomName}
-                    </h4>
-                    <small className="mt-1 text-gray-800">
-                        Users: <FaRegUser/> {roomMembers.join(', ') || 'No users present'}
-                    </small>
+                <div className="bg-white border-b p-4">
+                    <RoomHeader roomName={roomName} roomMembers={roomMembers} leaveRoom={handleLeaveRoom} />
+                    {/*<span className="text-sm text-gray-800 flex items-center gap-1"><FaUser />{roomMembers.length}</span>*/}
+                    {/*<small className="mt-1 ">*/}
+                    {/*    {roomMembers.join(', ') || 'No users present'}*/}
+                    {/*</small>*/}
+
                 </div>
                 {/* Messages */}
 
                 <div className="flex-1 overflow-y-auto p-6 bg-gray-50">
-                    <GetOldMessages roomId={roomId} currentUser={username} />
+                    <GetOldMessages roomId={roomId} currentUser={username}/>
                     <div className="space-y-4 p-4">
                         {sortedMessages.map((message, index) => (
                             <div
                                 key={index}
                                 className={`${message.username === username ? 'justify-end' : 'justify-start'}`}
                             >
-                            <UserMessage message={message} currentUser={username} />
+                                <UserMessage message={message} currentUser={username}/>
 
                             </div>
                         ))}
