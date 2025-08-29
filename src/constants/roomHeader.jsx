@@ -1,15 +1,3 @@
-import {
-    NavigationMenu,
-    NavigationMenuLink,
-    NavigationMenuContent,
-    NavigationMenuItem,
-    NavigationMenuList,
-    NavigationMenuTrigger
-} from "@radix-ui/react-navigation-menu";
-
-
-// import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuTrigger } from "@radix-ui/react-dropdown-menu";
-
 import { ChevronDownIcon, StarIcon } from "@heroicons/react/24/outline";
 import { FaUser } from "react-icons/fa";
 import {Popover, PopoverContent, PopoverTrigger} from "@radix-ui/react-popover";
@@ -22,7 +10,6 @@ import {
 } from "@radix-ui/react-dropdown-menu";
 import {ArrowLeftIcon} from "@heroicons/react/24/solid";
 import React from "react";
-import {DropdownMenuShortcut} from "../components/ui/dropdown-menu";
 
 const RoomHeader = ({ roomName, roomMembers, leaveRoom }) => {
     return (
@@ -50,10 +37,10 @@ const RoomHeader = ({ roomName, roomMembers, leaveRoom }) => {
                         <DropdownMenuItem className="px-4 py-2 hover:bg-gray-50 cursor-pointer">Rename Room</DropdownMenuItem>
                         <DropdownMenuItem className="px-4 py-2 hover:bg-gray-50 cursor-pointer">Archive Room</DropdownMenuItem>
                             <DropdownMenuSeparator className="h-px bg-gray-200 my-1"/>
-                            <DropdownMenuItem className="px-4 py-2 text-red-500 hover:bg-red-50 cursor-pointer" onClick={leaveRoom}>
-
-                            <DropdownMenuShortcut><ArrowLeftIcon className="h-4 w-4"/></DropdownMenuShortcut>
-                            Leave Room</DropdownMenuItem>
+                            <DropdownMenuItem className="px-4 py-2 text-red-500 hover:bg-red-50 cursor-pointer flex items-center gap-2" onClick={leaveRoom}>
+                                <ArrowLeftIcon className="h-4 w-4"/>
+                                <span>Leave Room</span>
+                            </DropdownMenuItem>
                         </DropdownMenuGroup>
                     </DropdownMenuContent>
                 </DropdownMenu>

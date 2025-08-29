@@ -1,13 +1,40 @@
-import { useState, useEffect } from "react";
-import {REST_API_PATH} from "../constants/constants";
+import { useState, useEffect, useMemo } from "react";
+import { REST_API_PATH, formatMessageDate } from "../constants/constants";
 import UserMessage from "../constants/UserMessage";
+import { Separator } from "./ui/separator";
 
-const GetOldMessages = ({roomId, currentUser}) => {
+const GetOldMessages = ({ roomId, currentUser }) => {
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const sortedMessages = [...messages].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
     const access_token = localStorage.getItem("access_token");
+    
+    const groupedMessages = useMemo(() => {
+        const grouped = [];
+        let currentDate = null;
+        
+        const sorted = [...messages].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+        
+        sorted.forEach((message) => {
+            const messageDate = formatMessageDate(message.timestamp);
+            
+            if (messageDate !== currentDate) {
+                grouped.push({
+                    type: 'date',
+                    date: messageDate,
+                    id: `date-${messageDate}`
+                });
+                currentDate = messageDate;
+            }
+            
+            grouped.push({
+                ...message,
+                type: 'message'
+            });
+        });
+        
+        return grouped;
+    }, [messages]);
 
     console.log("GetOldMessages from console", roomId);
     useEffect(() => {
@@ -52,13 +79,26 @@ const GetOldMessages = ({roomId, currentUser}) => {
     }
 
     return (
-        <div className="space-y-4 p-4">
-            {sortedMessages.length === 0 ? (
+        <div className="space-y-1 p-4">
+            {groupedMessages.length === 0 ? (
                 <div className="text-gray-500 text-center">No messages in this room yet.</div>
             ) : (
-                sortedMessages.map((message) => (
-                    <div key={message.id}>
-                    <UserMessage message={message} currentUser={currentUser} />
+                groupedMessages.map((item) => (
+                    <div key={item.id}>
+                        {item.type === 'date' ? (
+                            <div className="relative my-4">
+                                <div className="absolute inset-0 flex items-center">
+                                    <span className="w-full border-t" />
+                                </div>
+                                <div className="relative flex justify-center text-xs">
+                                    <span className="bg-background px-2 text-muted-foreground">
+                                        {item.date}
+                                    </span>
+                                </div>
+                            </div>
+                        ) : (
+                            <UserMessage message={item} currentUser={currentUser} />
+                        )}
                     </div>
                 ))
             )}

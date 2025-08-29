@@ -159,10 +159,6 @@ const GetMessagesFromRoom = () => {
             <div className="flex-1 flex flex-col">
                 <div className="bg-white border-b p-4">
                     <RoomHeader roomName={roomName} roomMembers={roomMembers} leaveRoom={handleLeaveRoom} />
-                    {/*<span className="text-sm text-gray-800 flex items-center gap-1"><FaUser />{roomMembers.length}</span>*/}
-                    {/*<small className="mt-1 ">*/}
-                    {/*    {roomMembers.join(', ') || 'No users present'}*/}
-                    {/*</small>*/}
 
                 </div>
                 {/* Messages */}

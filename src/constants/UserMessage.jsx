@@ -1,4 +1,5 @@
 import AvatarWithInitials from "./AvatarWithInitials";
+import {getTimeStamp} from "./constants";
 
 const UserMessage = ({message, currentUser}) => {
     return (
@@ -18,10 +19,7 @@ const UserMessage = ({message, currentUser}) => {
                                     {message.username}
                                 </span>
                     <span className={`text-xs ${message.username === currentUser ? 'text-blue-200' : 'text-gray-500'}`}>
-                                    {message.timestamp ? new Date(message.timestamp).toLocaleTimeString([], {
-                                        hour: '2-digit',
-                                        minute: '2-digit'
-                                    }) : ''}
+                                    {message.timestamp ? getTimeStamp(message.timestamp) : ''}
                                 </span>
                 </div>
                 <p className={message.username === currentUser ? 'text-white' : 'text-gray-800'}>

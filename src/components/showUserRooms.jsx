@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import GetRoom from "./getRoom";
 import {Input, Typography, Button, Dialog, DialogHeader, DialogBody, DialogFooter} from "@material-tailwind/react";
-import {useNavigate, useParams} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import NavbarDefault from "./navBarDefault";
 import { PlusIcon, ArrowRightIcon } from '@heroicons/react/24/solid';
 import {LOCAL_API_PATH, REST_API_PATH} from "../constants/constants";
