@@ -1,14 +1,11 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect, useRef, useCallback} from 'react';
 import { Button, Input } from "@material-tailwind/react";
-import {PaperAirplaneIcon, ArrowLeftIcon, ChevronDownIcon} from '@heroicons/react/24/solid';
-import {FaRegUser, FaUser} from "react-icons/fa";
-
+import {PaperAirplaneIcon} from '@heroicons/react/24/solid';
 import {useNavigate, useParams} from 'react-router-dom';
 import {POLLING_INTERVAL, REST_API_PATH} from "../constants/constants";
 import GetOldMessages from "./getOldMessages";
 import UserMessage from "../constants/UserMessage";
 import RoomHeader from "../constants/roomHeader";
-import * as PropTypes from "prop-types";
 import RoomSideBar from "./roomSideBar";
 
 const GetMessagesFromRoom = () => {
@@ -26,17 +23,35 @@ const GetMessagesFromRoom = () => {
 
 
 
-    // Scroll to bottom of messages
-    const scrollToBottom = () => {
+    const scrollToBottom = useCallback(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    };
+    }, []);
 
+    const fetchRoomDetails = useCallback(async () => {
+        try {
+            const response = await fetch(`${REST_API_PATH}/room_details/${roomId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${access_token}`
+                }
+            });
+            const data = await response.json();
+            if (response.ok) {
+                setRoomName(data.room_name || 'Unnamed Room');
+                setRoomMembers(data.room_members || []);
+            }
+        } catch (error) {
+            console.error("Error fetching room details:", error);
+        }
+    }, [roomId, access_token]);
 
     // Fetch room details when component mounts or roomId changes
     useEffect(() => {
-
+        if (roomId) {
             fetchRoomDetails();
-    }, [roomId]);
+        }
+    }, [roomId, fetchRoomDetails]);
 
     // Auto-scroll to bottom when messages change
     useEffect(() => {
@@ -110,40 +125,20 @@ const GetMessagesFromRoom = () => {
     };
 
     // Handle leaving the room
-    const handleLeaveRoom = async (e) => {
-        const response = await fetch(`${REST_API_PATH}/leave_room/`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${access_token}`,
-            },
-            body: JSON.stringify({
-                room_id: roomId,
-            })
-        })
-        const data = await response.json();
-        console.log("Leave room ", data);
-        localStorage.removeItem('room_id');
-        navigate(`/rooms/`);
-    }
-    const fetchRoomDetails = async () => {
+    const handleLeaveRoom = async () => {
         try {
-            const response = await fetch(`${REST_API_PATH}/room_details/${roomId}`, {
-                method: 'GET',
+            const response = await fetch(`${REST_API_PATH}/leave_room/?room_id=${roomId}`, {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${access_token}`
-                }
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${access_token}`,
+                },
             });
-            console.log("Room details response status:", response.status);
             const data = await response.json();
-            console.log("Room details response:", data);
-            if (response.ok) {
-                setRoomName(data.room_name || 'Unnamed Room');
-                setRoomMembers(data.room_members || []);
-            }
+            console.log("Leave room ", data);
+            navigate(`/rooms/`);
         } catch (error) {
-            console.error("Error fetching room details:", error);
+            console.error("Error leaving room:", error);
         }
     };
     const sortedMessages = [...messages].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
@@ -155,7 +150,10 @@ const GetMessagesFromRoom = () => {
     return (
         <div className="flex h-screen bg-gray-100 font-sans">
             {/* Sidebar */}
-            <RoomSideBar onClick={handleLeaveRoom} connected={isConnected}/>
+            <RoomSideBar 
+                connected={isConnected} 
+                currentRoomId={roomId}
+            />
 
             {/* Chat Area */}
             <div className="flex-1 flex flex-col">

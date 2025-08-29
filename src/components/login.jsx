@@ -51,6 +51,7 @@ const Login = () => {
                 console.log("Login successful, navigating to rooms");
                 localStorage.setItem('access_token', data.access_token)
                 setUsername(inputUsername)
+                localStorage.setItem('username', inputUsername)
                 navigate(`/rooms/`);
             } else if (data.status_code === 401)
                 {
