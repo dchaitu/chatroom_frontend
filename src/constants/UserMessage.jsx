@@ -9,10 +9,10 @@ const UserMessage = ({message, currentUser}) => {
             key={`${message.room_id}-${message.timestamp}`}
             className={`flex-1 ${message.username === currentUser ? 'justify-end' : 'justify-start'}`}
         >
-            <div className={`max-w-xs lg:max-w-md xl:max-w-lg 2xl:max-w-xl p-3 rounded-2xl shadow ${
+            <div className={`max-w-xs lg:max-w-md xl:max-w-lg 2xl:max-w-xl p-3 m-2 rounded-2xl shadow ${
                 message.username === currentUser
                     ? 'bg-blue-500 text-white rounded-br-none'
-                    : 'bg-white text-gray-800 rounded-bl-none'
+                    : 'bg-gray-100 text-gray-800 rounded-bl-none'
             }`}>
                 <div className="flex justify-between items-baseline mb-1">
                                 <span className={`font-semibold ${message.username === currentUser ? 'text-blue-100' : 'text-gray-700'}`}>

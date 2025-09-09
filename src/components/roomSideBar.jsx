@@ -12,7 +12,7 @@ const RoomSideBar = ({ connected, currentRoomId }) => {
     useEffect(() => {
         const getUserRooms = async() => {
             try {
-                const userRooms = await fetch(`${REST_API_PATH}/rooms/`, {
+                const userRooms = await fetch(`${REST_API_PATH}/room/user/`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',

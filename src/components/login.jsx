@@ -52,7 +52,7 @@ const Login = () => {
                 localStorage.setItem('access_token', data.access_token)
                 setUsername(inputUsername)
                 localStorage.setItem('username', inputUsername)
-                navigate(`/rooms/`);
+                navigate(`/room/user/`);
             } else if (data.status_code === 401)
                 {
                     setError('Invalid username or password');
@@ -62,7 +62,7 @@ const Login = () => {
                 else if(data.status_code===404)
                 {
                     setError('User Not Found');
-                    navigate(`/register`);
+                    navigate(`/register/`);
                 }
                 else {
                     setError(data.detail || 'Login failed. Please try again.');

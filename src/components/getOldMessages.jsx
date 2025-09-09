@@ -1,13 +1,13 @@
-import { useState, useEffect, useMemo } from "react";
-import { REST_API_PATH, formatMessageDate } from "../constants/constants";
+import {useState, useEffect, useMemo, useRef} from "react";
+import {REST_API_PATH, formatMessageDate, POLLING_INTERVAL} from "../constants/constants";
 import UserMessage from "../constants/UserMessage";
-import { Separator } from "./ui/separator";
 
 const GetOldMessages = ({ roomId, currentUser }) => {
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const access_token = localStorage.getItem("access_token");
+    const scrollToBottomRef = useRef(null);
     
     const groupedMessages = useMemo(() => {
         const grouped = [];
@@ -29,15 +29,24 @@ const GetOldMessages = ({ roomId, currentUser }) => {
             
             grouped.push({
                 ...message,
-                type: 'message'
+                type: 'message',
+                id: message.message_id
             });
         });
         
         return grouped;
     }, [messages]);
 
+    // Scroll to bottom
+    useEffect(() => {
+        scrollToBottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [messages.length]);
+
     console.log("GetOldMessages from console", roomId);
     useEffect(() => {
+        if(!roomId) return;
+        let intervalId;
+
         const fetchMessages = async () => {
             try {
                 setLoading(true);
@@ -64,11 +73,10 @@ const GetOldMessages = ({ roomId, currentUser }) => {
         };
         console.log("GetOldMessagesFromRoom", roomId);
 
-
-        if (roomId) {
-            fetchMessages();
-        }
-    }, [roomId]);
+        fetchMessages();
+        intervalId = setInterval(fetchMessages, POLLING_INTERVAL)
+        return () => clearInterval(intervalId);
+    }, [roomId,access_token]);
 
     if (loading) {
         return <div>Loading messages...</div>;
@@ -102,6 +110,7 @@ const GetOldMessages = ({ roomId, currentUser }) => {
                     </div>
                 ))
             )}
+            <div ref={scrollToBottomRef}></div>
         </div>
     );
 };

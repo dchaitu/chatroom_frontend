@@ -1,3 +1,4 @@
+import React, {useEffect, useState} from "react";
 import { ChevronDownIcon, StarIcon } from "@heroicons/react/24/outline";
 import { FaUser } from "react-icons/fa";
 import {Popover, PopoverContent, PopoverTrigger} from "@radix-ui/react-popover";
@@ -9,28 +10,131 @@ import {
     DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
 import {ArrowLeftIcon} from "@heroicons/react/24/solid";
-import React from "react";
+import {REST_API_PATH} from "./constants";
+import {Button, Dialog, DialogBody, DialogFooter, DialogHeader, Typography} from "@material-tailwind/react";
 
-const RoomHeader = ({ roomName, roomMembers, leaveRoom }) => {
+const RoomHeader = ({ room, leaveRoom}) => {
+    const {
+        room_id = "",
+        room_name = "",
+        description = "",
+        users = [],
+        admins = []
+    } = room;
+    const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
+    const [loadingUsers, setLoadingUsers] = useState(false);
+    const [availableUsers, setAvailableUsers] = useState([]);
+    const [invitedUsers, setInvitedUsers] = useState(new Set());
+    const [viewInfoDialogOpen, setViewInfoDialogOpen] = useState(false);
+    const [isUserAdmin, setIsUserAdmin] = useState(false);
+    const access_token = localStorage.getItem("access_token");
+    const username = localStorage.getItem("username");
+
+    useEffect(() => {
+        console.log(`${admins} admins`);
+        if(admins.includes(username)) {
+            setIsUserAdmin(true);
+            console.log(`${username} is admin`);
+        }
+        else {
+            console.log(`${username} is not admin`);
+        }
+    },[admins, username]);
+
+
+    const fetchAvailableUsers = async () => {
+        setLoadingUsers(true);
+        try {
+            const response = await fetch(`${REST_API_PATH}/room/all-users/`, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    'Authorization': `Bearer ${access_token}`
+                },
+            });
+            if (response.ok) {
+                const data = await response.json();
+                const allUsers = data.map((user) => user.username);
+                console.log("data ", data);
+                console.log("Available users ",allUsers);
+                console.log("Room Members " ,users);
+
+                const filtered = allUsers.filter((u) => !users.includes(u));
+                console.log("filtered", filtered);
+                setAvailableUsers(filtered);
+            }
+        } catch (err) {
+            console.error("Error fetching users:", err);
+        } finally {
+            setLoadingUsers(false);
+        }
+    };
+
+    const handleInvite = async (username) => {
+        try {
+        console.log("Invite user:", username, "roomId ", room_id);
+        const response = await fetch(`${REST_API_PATH}/room/invite/`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${access_token}`
+
+            },
+            body: JSON.stringify({
+                room_id: room_id,
+                added_user: username,
+
+            }), // adjust if room_id is separate
+        });
+        if (response.ok) {
+            alert(`Invite sent to ${username}`);
+            setInvitedUsers((prev) => new Set([...prev, username]));
+        } else {
+            alert("Failed to send invite");
+        }
+    } catch (err) {
+        console.error("Invite error:", err);
+        }
+    };
+
+    const checkAdmin = (username) => {
+        if(admins.includes(username)) {
+            return (
+                <span className="ml-2 border bg-green-500 text-light-green-100 text-xs px-2 py-0.5 rounded">
+                Group Admin
+                </span>
+            )
+        }
+        return null
+    }
+
+
+
     return (
         <div className="flex flex-col">
             {/* Top Header with Dropdown */}
             <div className="flex items-center gap-2 text-lg">
                 <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
+                    <DropdownMenuTrigger asChild disabled={isUserAdmin}>
                         <button className="flex items-center gap-1 text-blue-600 hover:text-blue-800 focus:outline-none">
-                            {roomName}
+                            {room_name}
                             <ChevronDownIcon className="h-5 w-5 text-gray-500" />
                         </button>
                     </DropdownMenuTrigger>
 
                     <DropdownMenuContent align="start" sideOffset={8} className="w-60 mt-2 rounded-lg shadow-lg border border-gray-200 bg-white z-50 py-2">
                         <DropdownMenuGroup>
-                        <DropdownMenuItem className="px-4 py-2 hover:bg-gray-50 cursor-pointer">View Info</DropdownMenuItem>
+                        <DropdownMenuItem className="px-4 py-2 hover:bg-gray-50 cursor-pointer" onClick={()=> {
+                            setViewInfoDialogOpen(true);
+                        }}>View Info</DropdownMenuItem>
                         <DropdownMenuItem className="px-4 py-2 hover:bg-gray-50 cursor-pointer">Notification Preferences</DropdownMenuItem>
                         <DropdownMenuItem className="px-4 py-2 hover:bg-gray-50 cursor-pointer">Mute Room</DropdownMenuItem>
                         <DropdownMenuSeparator className="h-px bg-gray-200 my-1"/>
-                        <DropdownMenuItem className="px-4 py-2 hover:bg-gray-50 cursor-pointer">Add Members</DropdownMenuItem>
+                        <DropdownMenuItem className="px-4 py-2 hover:bg-gray-50 cursor-pointer"
+                                          onClick={() => {
+                                              fetchAvailableUsers();
+                                              setInviteDialogOpen(true);
+                                          }}>Add Members</DropdownMenuItem>
                         <DropdownMenuItem className="px-4 py-2 hover:bg-gray-50 cursor-pointer">Manage Members</DropdownMenuItem>
                         <DropdownMenuItem className="px-4 py-2 hover:bg-gray-50 cursor-pointer">Edit Room Header</DropdownMenuItem>
                         <DropdownMenuItem className="px-4 py-2 hover:bg-gray-50 cursor-pointer">Edit Room Purpose</DropdownMenuItem>
@@ -46,21 +150,74 @@ const RoomHeader = ({ roomName, roomMembers, leaveRoom }) => {
                 </DropdownMenu>
             </div>
 
+            {/* View Room Info*/}
+            <Dialog open={viewInfoDialogOpen} handler={setViewInfoDialogOpen}>
+                <DialogHeader>Room Details</DialogHeader>
+                <DialogBody className="space-y-3">
+                        <div>
+                        <Typography variant="h2">{room_name}</Typography>
+                            <Typography variant="body">{description}</Typography>
+                            <Typography variant="body2" className="mt-2">Users: {users.map((user)=> <span>{user} </span>)}</Typography>
+                            <Typography variant="body2" className="mt-2">Admin: {admins.map((user)=> <span>{user} </span>)}</Typography>
+                        </div>
+
+                </DialogBody>
+                <DialogFooter>
+                    <Button variant="text" color="red" onClick={() => setViewInfoDialogOpen(false)}>
+                        Close
+                    </Button>
+                </DialogFooter>
+            </Dialog>
+
+            {/* Invite Members Dialog */}
+            <Dialog open={inviteDialogOpen} handler={setInviteDialogOpen}>
+                <DialogHeader>Invite Members</DialogHeader>
+                <DialogBody className="space-y-2">
+                    {loadingUsers ? (
+                        <p>Loading users...</p>
+                    ) : availableUsers.length === 0 ? (
+                        <p className="text-gray-500">No users available to invite</p>
+                    ) : (
+                        availableUsers.map((user) => (
+                            <div
+                                key={user}
+                                className="flex justify-between items-center p-2 border rounded"
+                            >
+                                <Typography>{user}</Typography>
+                                <Button
+                                    size="sm"
+                                    onClick={() => handleInvite(user)}
+                                    color={invitedUsers.has(user) ? "gray" : "indigo"}
+                                    disabled={invitedUsers.has(user)}
+                                >
+                                    {invitedUsers.has(user) ? "Invite Sent" : "Invite"}
+                                </Button>
+                            </div>
+                        ))
+                    )}
+                </DialogBody>
+                <DialogFooter>
+                    <Button variant="text" color="red" onClick={() => setInviteDialogOpen(false)}>
+                        Close
+                    </Button>
+                </DialogFooter>
+            </Dialog>
+
             {/* Sub Header Info */}
             <div className="flex items-center gap-4 text-sm text-gray-600 mt-1">
                 <Popover>
                     <PopoverTrigger asChild>
                         <button className="flex items-center gap-1 hover:text-gray-800">
-                            <FaUser /> {roomMembers.length}
+                            <FaUser /> {users.length}
                         </button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-48 p-2">
+                    <PopoverContent className="w-48 p-2 bg-gray-50 shadow-lg border rounded">
                         <h4 className="font-semibold mb-2">Members</h4>
                         <ul className="space-y-1">
-                            {roomMembers.length > 0 ? (
-                                roomMembers.map((member, idx) => (
+                            {users.length > 0 ? (
+                                users.map((member, idx) => (
                                     <li key={idx} className="text-gray-700 text-sm">
-                                        {member}
+                                        {member} {checkAdmin(member)}
                                     </li>
                                 ))
                             ) : (
@@ -74,7 +231,7 @@ const RoomHeader = ({ roomName, roomMembers, leaveRoom }) => {
                     <StarIcon className="h-4 w-4 text-gray-400" /> 2
                 </span>
                 <span className="cursor-pointer text-gray-500 hover:text-gray-700">
-                    Add a channel description
+                    {description}
                 </span>
             </div>
         </div>

@@ -12,7 +12,7 @@ const UserProfile = () => {
     const accessToken = localStorage.getItem("access_token");
 
     const goToRooms = () => {
-        navigate(`/rooms/`);
+        navigate(`/room/user/`);
     }
 
     useEffect(() => {

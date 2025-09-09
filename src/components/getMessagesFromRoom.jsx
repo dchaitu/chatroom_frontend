@@ -4,7 +4,6 @@ import {PaperAirplaneIcon} from '@heroicons/react/24/solid';
 import {useNavigate, useParams} from 'react-router-dom';
 import {POLLING_INTERVAL, REST_API_PATH} from "../constants/constants";
 import GetOldMessages from "./getOldMessages";
-import UserMessage from "../constants/UserMessage";
 import RoomHeader from "../constants/roomHeader";
 import RoomSideBar from "./roomSideBar";
 
@@ -12,8 +11,13 @@ const GetMessagesFromRoom = () => {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const [isConnected, setIsConnected] = useState(false);
-    const [roomMembers, setRoomMembers] = useState([]);
-    const [roomName, setRoomName] = useState("");
+    const [room, setRoom] = useState({
+        room_id: "",
+        room_name: "",
+        description: "",
+        users: [],
+        admins: []
+    });
     const messagesEndRef = useRef(null);
     const navigate = useNavigate();
     const { room_id } = useParams();
@@ -29,7 +33,7 @@ const GetMessagesFromRoom = () => {
 
     const fetchRoomDetails = useCallback(async () => {
         try {
-            const response = await fetch(`${REST_API_PATH}/room_details/${roomId}`, {
+            const response = await fetch(`${REST_API_PATH}/room/room_details/${roomId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -38,8 +42,8 @@ const GetMessagesFromRoom = () => {
             });
             const data = await response.json();
             if (response.ok) {
-                setRoomName(data.room_name || 'Unnamed Room');
-                setRoomMembers(data.room_members || []);
+                console.log("Room details response", data);
+                setRoom(data);
             }
         } catch (error) {
             console.error("Error fetching room details:", error);
@@ -136,12 +140,11 @@ const GetMessagesFromRoom = () => {
             });
             const data = await response.json();
             console.log("Leave room ", data);
-            navigate(`/rooms/`);
+            navigate(`/room/user/`);
         } catch (error) {
             console.error("Error leaving room:", error);
         }
     };
-    const sortedMessages = [...messages].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
 
 
@@ -158,25 +161,14 @@ const GetMessagesFromRoom = () => {
             {/* Chat Area */}
             <div className="flex-1 flex flex-col">
                 <div className="bg-white border-b p-4">
-                    <RoomHeader roomName={roomName} roomMembers={roomMembers} leaveRoom={handleLeaveRoom} />
+                    <RoomHeader room={room} leaveRoom={handleLeaveRoom} />
 
                 </div>
                 {/* Messages */}
 
                 <div className="flex-1 overflow-y-auto p-6 bg-gray-50">
-                    <GetOldMessages roomId={roomId} currentUser={username}/>
-                    <div className="space-y-4 p-4">
-                        {sortedMessages.map((message, index) => (
-                            <div
-                                key={index}
-                                className={`${message.username === username ? 'justify-end' : 'justify-start'}`}
-                            >
-                                <UserMessage message={message} currentUser={username}/>
+                    <GetOldMessages roomId={roomId} currentUser={username} />
 
-                            </div>
-                        ))}
-                        {/*<div ref={messagesEndRef} />*/}
-                    </div>
                 </div>
 
                 <div className="p-4 bg-white border-t">
@@ -204,6 +196,7 @@ const GetMessagesFromRoom = () => {
                     </form>
                 </div>
             </div>
+            <div ref={scrollToBottom}></div>
         </div>
     );
 };
