@@ -38,9 +38,9 @@ const GetOldMessages = ({ roomId, currentUser }) => {
     }, [messages]);
 
     // Scroll to bottom
-    useEffect(() => {
-        scrollToBottomRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [messages.length]);
+    // useEffect(() => {
+    //     scrollToBottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    // }, [messages.length]);
 
     console.log("GetOldMessages from console", roomId);
     useEffect(() => {
@@ -74,8 +74,8 @@ const GetOldMessages = ({ roomId, currentUser }) => {
         console.log("GetOldMessagesFromRoom", roomId);
 
         fetchMessages();
-        intervalId = setInterval(fetchMessages, POLLING_INTERVAL)
-        return () => clearInterval(intervalId);
+        // intervalId = setInterval(fetchMessages, POLLING_INTERVAL)
+        // return () => clearInterval(intervalId);
     }, [roomId,access_token]);
 
     if (loading) {

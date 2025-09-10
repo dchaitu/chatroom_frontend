@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useRef, useCallback} from 'react';
-import { Button, Input } from "@material-tailwind/react";
+import { Button, Input, Textarea } from "@material-tailwind/react";
 import {PaperAirplaneIcon} from '@heroicons/react/24/solid';
 import {useNavigate, useParams} from 'react-router-dom';
 import {POLLING_INTERVAL, REST_API_PATH} from "../constants/constants";
@@ -93,10 +93,10 @@ const GetMessagesFromRoom = () => {
 
         if (roomId) {
             fetchMessages(); // initial fetch
-            intervalId = setInterval(fetchMessages, POLLING_INTERVAL);
+            // intervalId = setInterval(fetchMessages, POLLING_INTERVAL);
         }
 
-        return () => clearInterval(intervalId);
+        // return () => clearInterval(intervalId);
     }, [roomId, access_token]);
 
 
@@ -173,7 +173,7 @@ const GetMessagesFromRoom = () => {
 
                 <div className="p-4 bg-white border-t">
                     <form onSubmit={handleSendMessage} className="flex items-center gap-2">
-                        <Input
+                        <Textarea
                             type="text"
                             value={newMessage}
                             onChange={(e) => setNewMessage(e.target.value)}
