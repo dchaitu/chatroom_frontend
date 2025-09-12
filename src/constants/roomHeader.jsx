@@ -11,7 +11,16 @@ import {
 } from "@radix-ui/react-dropdown-menu";
 import {ArrowLeftIcon} from "@heroicons/react/24/solid";
 import {REST_API_PATH} from "./constants";
-import {Button, Dialog, DialogBody, DialogFooter, DialogHeader, Typography} from "@material-tailwind/react";
+import {
+    Button,
+    Dialog,
+    DialogBody,
+    DialogFooter,
+    DialogHeader,
+    Input,
+    Textarea,
+    Typography
+} from "@material-tailwind/react";
 
 const RoomHeader = ({ room, leaveRoom}) => {
     const {
@@ -27,6 +36,9 @@ const RoomHeader = ({ room, leaveRoom}) => {
     const [invitedUsers, setInvitedUsers] = useState(new Set());
     const [viewInfoDialogOpen, setViewInfoDialogOpen] = useState(false);
     const [isUserAdmin, setIsUserAdmin] = useState(false);
+    const [roomDialogOpen, setRoomDialogOpen] = useState(false);
+    const [updatedRoomName, setUpdatedRoomName] = useState(null);
+    const [updatedDescription, setUpdatedDescription] = useState(null);
     const access_token = localStorage.getItem("access_token");
     const username = localStorage.getItem("username");
 
@@ -45,7 +57,7 @@ const RoomHeader = ({ room, leaveRoom}) => {
     const fetchAvailableUsers = async () => {
         setLoadingUsers(true);
         try {
-            const response = await fetch(`${REST_API_PATH}/room/all-users/`, {
+            const response = await fetch(`${REST_API_PATH}/all-users/`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -97,6 +109,13 @@ const RoomHeader = ({ room, leaveRoom}) => {
         }
     };
 
+    const handleUpdateRoom = async () => {
+        await updateRoom(updatedRoomName, updatedDescription);
+        setRoomDialogOpen(false); // Close dialog after update
+        setUpdatedRoomName(null);
+        setUpdatedDescription(null);
+    };
+
     const checkAdmin = (username) => {
         if(admins.includes(username)) {
             return (
@@ -107,6 +126,42 @@ const RoomHeader = ({ room, leaveRoom}) => {
         }
         return null
     }
+    const updateRoom = async (updatedRoomName,updatedDescription) => {
+        try{
+            let updatedBody;
+            if(updatedRoomName !== null && updatedDescription !== null ) {
+                updatedBody = JSON.stringify({
+                    room_id: room_id,
+                    description: updatedDescription,
+                    room_name: updatedRoomName,
+                })
+            }
+            else if(updatedRoomName === null && updatedDescription !== null ) {
+                updatedBody = JSON.stringify({
+                    room_id: room_id,
+                    description: updatedDescription,
+                })
+            }
+            else if(updatedRoomName !== null && updatedDescription === null ) {
+                updatedBody = JSON.stringify({
+                    room_id: room_id,
+                    room_name: updatedRoomName,
+                })
+            }
+
+            // if room name passed or description passed
+            const response = await fetch(`${REST_API_PATH}/room/create`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${access_token}`
+                },
+                body: updatedBody
+            })
+        } catch (e) {
+            console.error("Error updating room:", e)
+        }
+    }
 
 
 
@@ -115,7 +170,7 @@ const RoomHeader = ({ room, leaveRoom}) => {
             {/* Top Header with Dropdown */}
             <div className="flex items-center gap-2 text-lg">
                 <DropdownMenu>
-                    <DropdownMenuTrigger asChild disabled={isUserAdmin}>
+                    <DropdownMenuTrigger asChild disabled={!isUserAdmin}>
                         <button className="flex items-center gap-1 text-blue-600 hover:text-blue-800 focus:outline-none">
                             {room_name}
                             <ChevronDownIcon className="h-5 w-5 text-gray-500" />
@@ -136,9 +191,15 @@ const RoomHeader = ({ room, leaveRoom}) => {
                                               setInviteDialogOpen(true);
                                           }}>Add Members</DropdownMenuItem>
                         <DropdownMenuItem className="px-4 py-2 hover:bg-gray-50 cursor-pointer">Manage Members</DropdownMenuItem>
-                        <DropdownMenuItem className="px-4 py-2 hover:bg-gray-50 cursor-pointer">Edit Room Header</DropdownMenuItem>
-                        <DropdownMenuItem className="px-4 py-2 hover:bg-gray-50 cursor-pointer">Edit Room Purpose</DropdownMenuItem>
-                        <DropdownMenuItem className="px-4 py-2 hover:bg-gray-50 cursor-pointer">Rename Room</DropdownMenuItem>
+                        <DropdownMenuItem className="px-4 py-2 hover:bg-gray-50 cursor-pointer" onClick={() => {
+                            updateRoom()
+                            setRoomDialogOpen(true);
+                        }}>Edit Room Header</DropdownMenuItem>
+                        {/*<DropdownMenuItem className="px-4 py-2 hover:bg-gray-50 cursor-pointer">Edit Room Purpose</DropdownMenuItem>*/}
+                        <DropdownMenuItem className="px-4 py-2 hover:bg-gray-50 cursor-pointer" onClick={()=> {
+                            updateRoom()
+                            setRoomDialogOpen(true);
+                        }}>Rename Room</DropdownMenuItem>
                         <DropdownMenuItem className="px-4 py-2 hover:bg-gray-50 cursor-pointer">Archive Room</DropdownMenuItem>
                             <DropdownMenuSeparator className="h-px bg-gray-200 my-1"/>
                             <DropdownMenuItem className="px-4 py-2 text-red-500 hover:bg-red-50 cursor-pointer flex items-center gap-2" onClick={leaveRoom}>
@@ -149,6 +210,39 @@ const RoomHeader = ({ room, leaveRoom}) => {
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>
+            {/*Edit Room Info*/}
+            <Dialog open={roomDialogOpen} handler={setRoomDialogOpen}>
+                <DialogHeader>Edit Room Details</DialogHeader>
+                <DialogBody className="space-y-3">
+                    <Input
+                        label="Room Name"
+                        defaultValue={room.room_name}
+                        onChange={(e) => setUpdatedRoomName(e.target.value || null)}
+                    />
+                    <Textarea
+                        label="Room Description"
+                        defaultValue={room.description}
+                        onChange={(e) => setUpdatedDescription(e.target.value || null)}
+                    />
+                </DialogBody>
+                <DialogFooter>
+                    <Button
+                        variant="text"
+                        color="red"
+                        onClick={() => setRoomDialogOpen(false)}
+                        className="mr-2"
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        color="indigo"
+                        onClick={handleUpdateRoom}
+                        disabled={!updatedRoomName && !updatedDescription}
+                    >
+                        Save Changes
+                    </Button>
+                </DialogFooter>
+            </Dialog>
 
             {/* View Room Info*/}
             <Dialog open={viewInfoDialogOpen} handler={setViewInfoDialogOpen}>

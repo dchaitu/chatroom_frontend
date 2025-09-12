@@ -93,6 +93,7 @@ const GetOldMessages = ({ roomId, currentUser }) => {
             ) : (
                 groupedMessages.map((item) => (
                     <div key={item.id}>
+                        {/*date related separator */}
                         {item.type === 'date' ? (
                             <div className="relative my-4">
                                 <div className="absolute inset-0 flex items-center">

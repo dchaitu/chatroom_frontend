@@ -5,6 +5,9 @@ export const LOCAL_API_PATH = 'http://localhost:8080'
 export const REST_API_PATH = LOCAL_API_PATH
     // = 'https://d1119200q7.execute-api.us-east-1.amazonaws.com/dev'
 
+export const JOIN_REQUEST = `${REST_API_PATH}/admin/pending-requests/?request_type=join_request`
+export const PENDING_INVITES = `${REST_API_PATH}/admin/pending-requests/?request_type=invite`
+export const RESPOND_REQUEST = (roomId) => `${REST_API_PATH}/admin/request/${roomId}/respond/`
 export const POLLING_INTERVAL = 3000
 
 

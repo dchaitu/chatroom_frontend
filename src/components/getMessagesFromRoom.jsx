@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useRef, useCallback} from 'react';
-import { Button, Input, Textarea } from "@material-tailwind/react";
+import { Button, Textarea } from "@material-tailwind/react";
 import {PaperAirplaneIcon} from '@heroicons/react/24/solid';
 import {useNavigate, useParams} from 'react-router-dom';
 import {POLLING_INTERVAL, REST_API_PATH} from "../constants/constants";
@@ -49,6 +49,19 @@ const GetMessagesFromRoom = () => {
             console.error("Error fetching room details:", error);
         }
     }, [roomId, access_token]);
+
+
+    useEffect(() => {
+        if (roomId) {
+            fetch(`${REST_API_PATH}/room/${roomId}/mark-read/`, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${access_token}`,
+                    "Content-Type": "application/json"
+                }
+            });
+        }
+    }, [roomId]);
 
     // Fetch room details when component mounts or roomId changes
     useEffect(() => {
@@ -177,7 +190,12 @@ const GetMessagesFromRoom = () => {
                             type="text"
                             value={newMessage}
                             onChange={(e) => setNewMessage(e.target.value)}
-                            onKeyDown={(e) => e.key === 'Enter' && handleSendMessage(e)}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter" && !e.shiftKey) {
+                                e.preventDefault(); // prevent newline on Enter
+                                handleSendMessage(e);
+                            }
+                            }}
                             placeholder="Type your message..."
                             className="!border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent placeholder:text-gray-500 focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10"
                             labelProps={{

@@ -4,7 +4,7 @@ import {Input, Typography, Button, Dialog, DialogHeader, DialogBody, DialogFoote
 import {useNavigate} from "react-router-dom";
 import NavbarDefault from "./navBarDefault";
 import { PlusIcon, ArrowRightIcon } from '@heroicons/react/24/solid';
-import {LOCAL_API_PATH, REST_API_PATH} from "../constants/constants";
+import {JOIN_REQUEST, LOCAL_API_PATH, REST_API_PATH} from "../constants/constants";
 import AdminInvites from "./adminInvites";
 
 // Get messages in the current room
@@ -39,7 +39,7 @@ const ShowUserRooms = () => {
                 const rooms = await response.json();
                 console.log("Available rooms",rooms);
                 setAvailableRooms(rooms || []);
-                const pendingJoinRequest = await fetch(`${REST_API_PATH}/room/admin/pending-join-requests/`, {
+                const pendingJoinRequest = await fetch(JOIN_REQUEST, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${access_token}`

@@ -1,5 +1,10 @@
 import { useEffect, useState } from 'react';
-import {getDatesFromTimeStamp, getTimeStamp, LOCAL_API_PATH} from '../constants/constants';
+import {
+    getDatesFromTimeStamp,
+    getTimeStamp,
+    JOIN_REQUEST,
+    PENDING_INVITES, RESPOND_REQUEST
+} from '../constants/constants';
 
 const AdminInvites = () => {
     const [invites, setInvites] = useState([]);
@@ -9,7 +14,7 @@ const AdminInvites = () => {
 
     const fetchInvites = async () => {
         try {
-            const response = await fetch(`${LOCAL_API_PATH}/room/admin/pending-invites/`, {
+            const response = await fetch(PENDING_INVITES, {
                 headers: {
                     'Authorization': `Bearer ${accessToken}`
                 }
@@ -26,7 +31,7 @@ const AdminInvites = () => {
 
     const fetchJoinRequests = async () => {
        try{
-        const response = await fetch(`${LOCAL_API_PATH}/room/admin/pending-join-requests/`, {
+        const response = await fetch(JOIN_REQUEST, {
             headers: {
                 'Authorization': `Bearer ${accessToken}`
             }
@@ -43,7 +48,7 @@ const AdminInvites = () => {
 
     const handleRespond = async (roomId, action, requested_user) => {
         try {
-            const response = await fetch(`${LOCAL_API_PATH}/room/admin/request/${roomId}/respond/`, {
+            const response = await fetch(RESPOND_REQUEST(roomId), {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${accessToken}`,
