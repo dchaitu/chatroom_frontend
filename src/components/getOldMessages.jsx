@@ -1,6 +1,8 @@
-import {useState, useEffect, useMemo, useRef} from "react";
+import React, {useState, useEffect, useMemo, useRef} from "react";
 import {REST_API_PATH, formatMessageDate, POLLING_INTERVAL} from "../constants/constants";
 import UserMessage from "../constants/UserMessage";
+import {useReply} from "../context/ReplyContext";
+import DateSeparationLine from "../constants/dateSeparationLine";
 
 const GetOldMessages = ({ roomId, currentUser }) => {
     const [messages, setMessages] = useState([]);
@@ -8,14 +10,14 @@ const GetOldMessages = ({ roomId, currentUser }) => {
     const [error, setError] = useState(null);
     const access_token = localStorage.getItem("access_token");
     const scrollToBottomRef = useRef(null);
-    
+    const {showReply} = useReply();
+
+
     const groupedMessages = useMemo(() => {
         const grouped = [];
         let currentDate = null;
-        
-        const sorted = [...messages].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-        
-        sorted.forEach((message) => {
+
+        messages.forEach((message) => {
             const messageDate = formatMessageDate(message.timestamp);
             
             if (messageDate !== currentDate) {
@@ -87,24 +89,16 @@ const GetOldMessages = ({ roomId, currentUser }) => {
     }
 
     return (
+        <div>
         <div className="space-y-1 p-4">
             {groupedMessages.length === 0 ? (
                 <div className="text-gray-500 text-center">No messages in this room yet.</div>
             ) : (
                 groupedMessages.map((item) => (
                     <div key={item.id}>
-                        {/*date related separator */}
+                        {/*date related separator*/}
                         {item.type === 'date' ? (
-                            <div className="relative my-4">
-                                <div className="absolute inset-0 flex items-center">
-                                    <span className="w-full border-t" />
-                                </div>
-                                <div className="relative flex justify-center text-xs">
-                                    <span className="bg-background px-2 text-muted-foreground">
-                                        {item.date}
-                                    </span>
-                                </div>
-                            </div>
+                            <DateSeparationLine item={item} />
                         ) : (
                             <UserMessage message={item} currentUser={currentUser} />
                         )}
@@ -112,6 +106,10 @@ const GetOldMessages = ({ roomId, currentUser }) => {
                 ))
             )}
             <div ref={scrollToBottomRef}></div>
+        </div>
+
+
+
         </div>
     );
 };

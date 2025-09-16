@@ -1,46 +1,30 @@
-import {useEffect, useState} from "react";
-import {LOCAL_API_PATH} from "./constants";
+import { useEffect, useState } from "react";
+import {useUser} from "../context/userContext";
 
-const AvatarWithInitials = ({username}) => {
-    // const initalizedUsername = username[0].toUpperCase();
-    const [user, setUser] = useState({
-        "username": "",
-        "fullname": "",
-        "email": "",
-        "avatar": ""
-    })
-    const accessToken = localStorage.getItem("access_token");
+const AvatarWithInitials = ({ username }) => {
+    const { users, fetchUser } = useUser();
+    const [avatar, setAvatar] = useState("");
+
     useEffect(() => {
-        const fetchUserProfile = async () => {
-            try {
-                const response = await fetch(`${LOCAL_API_PATH}/user-details/${username}`, {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${accessToken}`,
-
-                    }
-                });
-                if (!response.ok) {
-                    throw new Error("Failed to fetch user profile");
+        const loadUser = async () => {
+            if (users[username]) {
+                setAvatar(users[username].avatar);
+            } else {
+                const userData = await fetchUser(username);
+                if (userData) {
+                    setAvatar(userData.avatar);
                 }
-                const data = await response.json();
-                console.log("user profile", data);
-                setUser(data);
-            }
-            catch (error) {
-                console.error("Error fetching user profile:", error);
             }
         };
-        fetchUserProfile();
-    },[]);
+
+        loadUser();
+    }, [username, users, fetchUser]);
 
     return (
-        <div
-            className="inline-flex items-center justify-center w-16 h-16 text-5xl text-white rounded-full">
-            {/*/!*{initalizedUsername}*!/ 😁*/}
-            {user.avatar}
+        <div className="inline-flex items-center justify-center w-16 h-16 text-5xl text-white rounded-full">
+            {avatar || username[0].toUpperCase()}
         </div>
-    )
-}
-export default AvatarWithInitials
+    );
+};
+
+export default AvatarWithInitials;

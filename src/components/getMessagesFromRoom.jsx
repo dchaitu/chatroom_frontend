@@ -1,13 +1,14 @@
 import React, {useState, useEffect, useRef, useCallback} from 'react';
-import { Button, Textarea } from "@material-tailwind/react";
-import {PaperAirplaneIcon} from '@heroicons/react/24/solid';
 import {useNavigate, useParams} from 'react-router-dom';
 import {POLLING_INTERVAL, REST_API_PATH} from "../constants/constants";
 import GetOldMessages from "./getOldMessages";
 import RoomHeader from "../constants/roomHeader";
 import RoomSideBar from "./roomSideBar";
+import {useReply} from "../context/ReplyContext";
+import GetReplyDrawer from "./getReplyDrawer";
+import SendMessageForm from "../constants/sendMessageForm";
 
-const GetMessagesFromRoom = () => {
+const GetMessagesFromRoom = (props) => {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const [isConnected, setIsConnected] = useState(false);
@@ -18,6 +19,7 @@ const GetMessagesFromRoom = () => {
         users: [],
         admins: []
     });
+    const {showReply} = useReply();
     const messagesEndRef = useRef(null);
     const navigate = useNavigate();
     const { room_id } = useParams();
@@ -164,57 +166,45 @@ const GetMessagesFromRoom = () => {
 
 
     return (
-        <div className="flex h-screen bg-gray-100 font-sans">
+        <div className="flex flex-col h-screen">
+        <div className="flex flex-1 overflow-hidden bg-gray-100 font-sans">
             {/* Sidebar */}
-            <RoomSideBar 
-                connected={isConnected} 
+            <RoomSideBar
+                connected={isConnected}
                 currentRoomId={roomId}
             />
 
             {/* Chat Area */}
-            <div className="flex-1 flex flex-col">
+            <div className={`flex-1 flex flex-col overflow-hidden ${showReply ? 'w-2/3' : 'w-full'}`}>
                 <div className="bg-white border-b p-4">
                     <RoomHeader room={room} leaveRoom={handleLeaveRoom} />
 
                 </div>
                 {/* Messages */}
 
-                <div className="flex-1 overflow-y-auto p-6 bg-gray-50">
-                    <GetOldMessages roomId={roomId} currentUser={username} />
+                <div className={`flex flex-row overflow-y-auto p-6  ${showReply ? 'w-2/3' : 'w-full'}`}>
+                    <div className="flex-1 " id="all-messages">
+                        <GetOldMessages roomId={roomId} currentUser={username}/>
+                        <div ref={messagesEndRef}/>
+                    </div>
 
                 </div>
+                <SendMessageForm handleSendMessage={handleSendMessage}
+                                 initialMessage={newMessage}
+                                 onMessageChange={setNewMessage}
+                />
 
-                <div className="p-4 bg-white border-t">
-                    <form onSubmit={handleSendMessage} className="flex items-center gap-2">
-                        <Textarea
-                            type="text"
-                            value={newMessage}
-                            onChange={(e) => setNewMessage(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === "Enter" && !e.shiftKey) {
-                                e.preventDefault(); // prevent newline on Enter
-                                handleSendMessage(e);
-                            }
-                            }}
-                            placeholder="Type your message..."
-                            className="!border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4 ring-transparent placeholder:text-gray-500 focus:!border-gray-900 focus:!border-t-gray-900 focus:ring-gray-900/10"
-                            labelProps={{
-                                className: "hidden",
-                            }}
-                            containerProps={{className: "min-w-0 flex-1"}}
-                        />
-                        <Button
-                            type="submit"
-                            size="md"
-                            className="rounded-lg flex items-center justify-center"
-                            disabled={!newMessage.trim()}
-                        >
-                            <PaperAirplaneIcon className="h-5 w-5"/>
-                        </Button>
-                    </form>
-                </div>
             </div>
-            <div ref={scrollToBottom}></div>
+
+
+            {/*<div ref={scrollToBottom}></div>*/}
+            { showReply && (
+                <div className={`fixed inset-y-0 right-0 w-1/3 bg-white border-l border-gray-200 transform transition-transform duration-300 ease-in-out ${
+                    showReply ? 'translate-x-0' : 'translate-x-full'
+                }`}><GetReplyDrawer/>
+                </div>
+            )}
+        </div>
         </div>
     );
 };

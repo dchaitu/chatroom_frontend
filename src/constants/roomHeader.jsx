@@ -248,8 +248,8 @@ const RoomHeader = ({ room, leaveRoom}) => {
             <Dialog open={viewInfoDialogOpen} handler={setViewInfoDialogOpen}>
                 <DialogHeader>Room Details</DialogHeader>
                 <DialogBody className="space-y-3">
-                        <div>
-                        <Typography variant="h2">{room_name}</Typography>
+                        <div key={room_id}>
+                            <Typography variant="h2">{room_name}</Typography>
                             <Typography variant="body">{description}</Typography>
                             <Typography variant="body2" className="mt-2">Users: {users.map((user)=> <span>{user} </span>)}</Typography>
                             <Typography variant="body2" className="mt-2">Admin: {admins.map((user)=> <span>{user} </span>)}</Typography>

@@ -11,11 +11,16 @@ import InvalidRoute from "./components/invalidRoute";
 import GetOldMessages from "./components/getOldMessages";
 import ProtectedRoute from "./components/protectedRoute";
 import {AuthProvider} from "./context/context";
+import {ReplyProvider} from "./context/ReplyContext";
+import {UserProvider} from "./context/userContext";
+import AddEmojiToMessage from "./constants/addEmojiToMessage";
 
 function App() {
 
   return (
       <AuthProvider>
+        <ReplyProvider>
+          <UserProvider>
       <Router>
         <div className="min-h-screen">
           <Routes>
@@ -29,12 +34,16 @@ function App() {
               <Route path="/messages/:roomId" element={<GetOldMessages/>}/>
               <Route path="/invalid" element={<InvalidRoute />} />
             </Route>
+              <Route path="/emoji" element={<AddEmojiToMessage/>}/>
             <Route path="*" element={<Navigate to="/invalid" />} />
 
           </Routes>
         </div>
       </Router>
+          </UserProvider>
+        </ReplyProvider>
       </AuthProvider>
+
   );
 }
 
