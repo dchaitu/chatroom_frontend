@@ -14,6 +14,7 @@ import {AuthProvider} from "./context/context";
 import {ReplyProvider} from "./context/ReplyContext";
 import {UserProvider} from "./context/userContext";
 import AddEmojiToMessage from "./constants/addEmojiToMessage";
+import {TooltipProvider} from "./components/ui/tooltip";
 
 function App() {
 
@@ -21,7 +22,8 @@ function App() {
       <AuthProvider>
         <ReplyProvider>
           <UserProvider>
-      <Router>
+              <TooltipProvider>
+              <Router>
         <div className="min-h-screen">
           <Routes>
             <Route exact path="/login" element={<Login />} />
@@ -40,6 +42,7 @@ function App() {
           </Routes>
         </div>
       </Router>
+              </TooltipProvider>
           </UserProvider>
         </ReplyProvider>
       </AuthProvider>

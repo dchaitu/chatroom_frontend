@@ -1,9 +1,16 @@
 import React, {useEffect, useState} from "react";
 import { useNavigate } from "react-router-dom";
 import {REST_API_PATH} from "../constants/constants";
+import AvatarWithInitials from "../constants/AvatarWithInitials";
+import ToolTipComponent from "../constants/toolTipComponent";
+import UserProfile from "./userProfile";
+import {Button} from "./ui/button";
+import { SheetContent, SheetHeader, SheetTitle} from "./ui/sheet";
+import {Sheet} from "./ui/sheet";
 
 const RoomSideBar = ({ connected, currentRoomId }) => {
     const [rooms, setRooms] = useState([]);
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
     const access_token = localStorage.getItem("access_token");
     const username = localStorage.getItem("username")
     console.log(`username ${username}`)
@@ -34,8 +41,13 @@ const RoomSideBar = ({ connected, currentRoomId }) => {
         }
     };
 
+    const toggleProfile = () => {
+        setIsProfileOpen(!isProfileOpen);
+    };
+
+
     return (
-        <div className="w-1/4 bg-white border-r border-gray-200 p-4 flex flex-col">
+        <div className="w-1/4 bg-white border-r border-gray-200 p-4 flex flex-col h-screen">
             <h2 className="text-lg font-semibold mb-4">{username}'s Rooms</h2>
             <div className="flex-1 overflow-y-auto">
                 {rooms.map((room) => (
@@ -51,10 +63,40 @@ const RoomSideBar = ({ connected, currentRoomId }) => {
                     </div>
                 ))}
             </div>
+            <ToolTipComponent displayText={username}>
+            <Button
+                variant="ghost"
+                className="h-auto p-2 rounded-full hover:bg-gray-100 self-start border-2 m-2"
+                onClick={toggleProfile}
+            >
+                <AvatarWithInitials username={username} />
+            </Button>
+            </ToolTipComponent>
             <div className="mt-auto pt-4 border-t">
                 <p className={`text-sm ${connected ? "text-green-500" : "text-red-500"}`}>
                     Status: {connected ? "Connected" : "Disconnected"}
                 </p>
+            </div>
+            <div className="w-1/2 bg-yellow-400">
+            <Sheet  open={isProfileOpen} onOpenChange={setIsProfileOpen}>
+                <SheetContent className=" bg-white !important:w-[800px] sm:w-[800px] md:w-[50vw] max-w-none" side="right">
+                    <SheetHeader className="border-b">
+                        <div className="flex justify-between items-center">
+                            <SheetTitle>User Profile</SheetTitle>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={toggleProfile}
+                                className="h-8 w-8 p-0"
+                            >
+                            </Button>
+                        </div>
+                    </SheetHeader>
+                    <div className="p-4 overflow-y-auto">
+                        <UserProfile />
+                    </div>
+                </SheetContent>
+            </Sheet>
             </div>
         </div>
     );

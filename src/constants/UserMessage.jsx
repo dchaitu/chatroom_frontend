@@ -5,18 +5,17 @@ import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import {ChevronDownIcon} from "@heroicons/react/24/outline";
-import React, {useEffect, useState} from "react";
+import React, {memo, useEffect, useState} from "react";
 
 import {Popover, PopoverContent, PopoverTrigger} from "@radix-ui/react-popover";
 import {useReply} from "../context/ReplyContext";
 import {PiDotsThreeOutlineVerticalFill} from "react-icons/pi";
 import {BiMessageRoundedDetail} from "react-icons/bi";
-import {LuSmilePlus} from "react-icons/lu";
 import AddEmojiToMessage from "./addEmojiToMessage";
 import ShowReactionsToMessage from "./showReactionsToMessage";
 
 const UserMessage = (props) => {
-    const {message, currentUser, notReply=true} = props;
+    const {message, notReply=true} = props;
     const [userMessages, setUserMessages] = useState([]);
     const [showMessageOptions, setShowMessageOptions] = useState(false);
     const [showButton, setShowButton] = useState(false);
@@ -28,14 +27,11 @@ const UserMessage = (props) => {
         toggleReply(message);
     };
 
-    const handleEmojiSelect = (emoji, messageId) => {
-        // The emoji is already handled by AddEmojiToMessage
-        // This callback is kept for any future needs
-    };
 
-    const fetchMessageDetails = async (message_id) => {
-        console.log(message_id,"message last seen pressed");
-        const response = await fetch(`${REST_API_PATH}/message-info?message_id=${message_id}`,{
+
+    const fetchMessageDetails = async (roomId) => {
+        console.log(roomId,"message last seen pressed");
+        const response = await fetch(`${REST_API_PATH}/message-info?room_id=${roomId}`,{
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -50,23 +46,31 @@ const UserMessage = (props) => {
     }
 
 
-    const showReplies = (count)=> {
-        if (count)
-            return <div>{count} replies</div>
-        else
-            return null;
-    }
-
     const showButtonFunc = ()=> {
         console.log("show button");
         setShowButton(!showButton);
     }
 
+    const getFileType = (filename) => {
+        if (!filename) return 'file';
+        const ext = filename.split('.').pop().toLowerCase();
+        const imageTypes = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'];
+        const docTypes = ['doc', 'docx', 'txt', 'pdf', 'xls', 'xlsx', 'ppt', 'pptx'];
 
+        if (imageTypes.includes(ext)) return 'image';
+        if (docTypes.includes(ext)) return 'document';
+        return 'file';
+    };
+
+    useEffect(() => {
+        if (message?.room_id) {
+            fetchMessageDetails(message.room_id);
+        }
+    }, [ message?.room_id]);
 
 
     useEffect(() => {
-        fetchMessageDetails(message.message_id);
+
         const fetchReply = async () => {
             try {
                 const response = await fetch(`${REST_API_PATH}/reply/${message.message_id}/count/`, {
@@ -84,8 +88,8 @@ const UserMessage = (props) => {
         };
 
         fetchReply();
-        console.log("message.message_id ", message.message_id);
-    },[message.message_id, access_token]);
+        console.log(`files for ${message.file_url} ${Object.entries(message)}`);
+    },[access_token]);
 
 
     const markdownComponents = {
@@ -148,6 +152,41 @@ const UserMessage = (props) => {
                         <span className="font-semibold text-gray-700">{message.username}</span>
                         <span className="text-xs text-gray-500 px-2" >{message.timestamp ? getTimeStamp(message.timestamp) : ""}</span>
                     </div>
+                    {message.file_url && (
+                        <div className="my-2 border border-gray-200 rounded-md bg-white">
+                            {getFileType(message.file_url) === 'image' ? (
+                                <a
+                                    href={message.file_url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="block"
+                                >
+                                    <img
+                                        src={message.file_url}
+                                        alt="Attachment"
+                                        className="max-w-xs max-h-48 rounded-md border cursor-pointer hover:opacity-90 transition-opacity"
+                                    />
+                                </a>
+                            ) : (
+                                <a
+                                    href={message.file_url}
+                                    download
+                                    className="flex items-center gap-2 p-2 hover:bg-gray-50 rounded-md transition-colors"
+                                >
+                                    <span className="text-xl">📄</span>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-medium text-gray-900 truncate">
+                                            {message.file_url.split('/').pop()}
+                                        </p>
+                                        <p className="text-xs text-gray-500">
+                                            {getFileType(message.file_url).toUpperCase()} File
+                                        </p>
+                                    </div>
+                                    <span className="text-blue-600 text-sm font-medium">Download</span>
+                                </a>
+                            )}
+                        </div>
+                    )}
 
 
                     {/* Markdown content */}
@@ -177,7 +216,6 @@ const UserMessage = (props) => {
                         {/* ✅ Single source of truth */}
                         <AddEmojiToMessage
                             messageId={message.message_id}
-                            onEmojiSelect={handleEmojiSelect}
                         />
 
                         <button
@@ -220,6 +258,7 @@ const UserMessage = (props) => {
                                 </ul>
                             </PopoverContent>
                         </Popover>
+
                     </div>
                 </PopoverContent>
             </Popover>
@@ -249,4 +288,4 @@ const UserMessage = (props) => {
         </div>
     )
 }
-export default UserMessage;
+export default memo(UserMessage);

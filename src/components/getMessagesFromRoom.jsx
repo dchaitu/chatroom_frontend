@@ -19,6 +19,7 @@ const GetMessagesFromRoom = (props) => {
         users: [],
         admins: []
     });
+    const [file, setFile] = useState(null);
     const {showReply} = useReply();
     const messagesEndRef = useRef(null);
     const navigate = useNavigate();
@@ -115,26 +116,34 @@ const GetMessagesFromRoom = (props) => {
     }, [roomId, access_token]);
 
 
-    const handleSendMessage = async (e) => {
+    const handleSendMessage = async (e, messageContent, file) => {
         e.preventDefault();
+
+        const formData = new FormData();
+        formData.append("room_id", roomId);
+        if(messageContent) {
+            formData.append("content", messageContent);
+        }
+        if(file){
+            formData.append("file", file);
+        }
 
         try {
             const response = await fetch(`${REST_API_PATH}/send_message/`, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
                     Authorization: `Bearer ${access_token}`,
                 },
-                body: JSON.stringify({
-                    content: newMessage,
-                    room_id: roomId,
-                }),
+                body: formData
             });
             const data = await response.json();
-            console.log("Data is ...",data);
+            // console.log("Data is ...",data);
             if (response.ok) {
                 setMessages(prevMessages => [...prevMessages, data]);
-                setNewMessage(""); // reset input
+                console.log("File Data is ", data)
+                setNewMessage("");
+                setFile(null);
+                // reset input
                 // Optional: immediately append pending message
                 // Will be refreshed by polling automatically
             }
@@ -184,7 +193,7 @@ const GetMessagesFromRoom = (props) => {
 
                 <div className={`flex flex-row overflow-y-auto p-6  ${showReply ? 'w-2/3' : 'w-full'}`}>
                     <div className="flex-1 " id="all-messages">
-                        <GetOldMessages roomId={roomId} currentUser={username}/>
+                        <GetOldMessages roomId={roomId}/>
                         <div ref={messagesEndRef}/>
                     </div>
 

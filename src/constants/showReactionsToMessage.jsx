@@ -27,7 +27,10 @@ const ShowReactionsToMessage = ({roomId, messageId}) => {
     },[roomId])
 
 
-    const handleEmojiClick = async (emoji) => {
+    const handleEmojiClick = async (emojiData) => {
+        console.log("emojiData ", emojiData);
+        const emoji = emojiData[0];
+        console.log("emoji", emoji);
         try{
             const response = await fetch(`${REST_API_PATH}/reaction/create/`, {
                 method: "POST",
@@ -73,16 +76,17 @@ const ShowReactionsToMessage = ({roomId, messageId}) => {
     return (<div className="flex-1 flex-row gap-2 mt-1">
         {Object.entries(groupedReactions).map((emoji,count) => {
           return(
-              <button key={emoji} onClick={()=>handleEmojiClick(emoji)}>
               <span key={`${emoji}-${messageId}`}
                          className="px-2 py-1 bg-gray-200 rounded-full text-sm">
-                <span>{emoji}</span>
+              <button onClick={()=>handleEmojiClick(emoji)}>
+                  <span>{emoji}</span>
+              </button>
+
               {count>0 &&
                <span key={`${emoji}-${messageId}-${count}`} className="text-sm ">
                   {count}
               </span>}
             </span>
-              </button>
                   )
 
         })}
