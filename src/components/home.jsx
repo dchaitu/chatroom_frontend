@@ -27,7 +27,7 @@ const Home = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+        <div className="min-h-screen bg-gradient-to-br from-purple-700 to-purple-900">
             <div className="relative overflow-hidden">
                 <div className="max-w-7xl mx-auto">
                     <div className="relative z-10 pb-8 sm:pb-16 md:pb-20 lg:max-w-2xl lg:w-full lg:pb-28 xl:pb-32">
@@ -35,7 +35,7 @@ const Home = () => {
                             <div className="sm:text-center lg:text-left">
                                 <h1 className="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
                                     <span className="block xl:inline">Welcome to</span>{' '}
-                                    <span className="block text-indigo-600 xl:inline">ChatRoom</span>
+                                    <span className="block text-gray-300 xl:inline">ChatRoom</span>
                                 </h1>
                                 <p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
                                     Connect with friends and colleagues in real-time. Create or join chat rooms and start conversations instantly.
@@ -44,7 +44,7 @@ const Home = () => {
                                     <div className="rounded-md shadow">
                                         <Button
                                             onClick={handleLoginClick}
-                                            className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 md:py-4 md:text-lg md:px-10"
+                                            className="w-full flex bg-purple-700 items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white hover:bg-purple-400 md:py-4 md:text-lg md:px-10"
                                         >
                                             <ArrowRightOnRectangleIcon className="-ml-1 mr-2 h-4 w-4" />
                                             Sign In

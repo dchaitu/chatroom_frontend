@@ -15,35 +15,19 @@ import AddEmojiToMessage from "./addEmojiToMessage";
 import ShowReactionsToMessage from "./showReactionsToMessage";
 
 const UserMessage = (props) => {
-    const {message, notReply=true} = props;
-    const [userMessages, setUserMessages] = useState([]);
+    const {message, replyCount,userMessages,notReply=true} = props;
     const [showMessageOptions, setShowMessageOptions] = useState(false);
     const [showButton, setShowButton] = useState(false);
-    const [replyCount, setReplyCount] = useState(null);
+    // const [replyCount, setReplyCount] = useState(null);
     const {toggleReply} = useReply();
     const access_token = localStorage.getItem("access_token");
+    console.log("userMessages data ",userMessages)
+    console.log("messages data ",message)
 
     const handleReplyClick = (message) => {
         toggleReply(message);
     };
 
-
-
-    const fetchMessageDetails = async (roomId) => {
-        console.log(roomId,"message last seen pressed");
-        const response = await fetch(`${REST_API_PATH}/message-info?room_id=${roomId}`,{
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${access_token}`
-            }
-
-        });
-        const data = await response.json()
-        console.log("UserMessage data",data)
-        setUserMessages(data);
-        return data
-    }
 
 
     const showButtonFunc = ()=> {
@@ -62,34 +46,7 @@ const UserMessage = (props) => {
         return 'file';
     };
 
-    useEffect(() => {
-        if (message?.room_id) {
-            fetchMessageDetails(message.room_id);
-        }
-    }, [ message?.room_id]);
 
-
-    useEffect(() => {
-
-        const fetchReply = async () => {
-            try {
-                const response = await fetch(`${REST_API_PATH}/reply/${message.message_id}/count/`, {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${access_token}`
-                    }
-                });
-                const data = await response.json(); // { message_id: count }
-                setReplyCount(data[message.message_id]);  // pick the count from response
-            } catch (error) {
-                console.error("Error fetching reply count:", error);
-            }
-        };
-
-        fetchReply();
-        console.log(`files for ${message.file_url} ${Object.entries(message)}`);
-    },[access_token]);
 
 
     const markdownComponents = {
@@ -131,14 +88,14 @@ const UserMessage = (props) => {
     };
 
     return (
-        <div key={message.id} className="flex items-center justify-start">
+        <div key={message.id} className="flex items-center justify-start bg-gray-100">
         <div className="flex self-start m-2">
             <AvatarWithInitials username={message.username}/>
         </div>
         <div className="flex-1 flex-col">
         <div
             key={`${message.room_id}-${message.timestamp}`} id="message-info"
-            className="flex bg-red-300"
+            className="flex "
         >
 
             <Popover open={showMessageOptions} onOpenChange={setShowMessageOptions}>
@@ -169,7 +126,8 @@ const UserMessage = (props) => {
                                 </a>
                             ) : (
                                 <a
-                                    href={message.file_url}
+                                    target="_blank"
+                                    href={`${REST_API_PATH}${message.file_url}`}
                                     download
                                     className="flex items-center gap-2 p-2 hover:bg-gray-50 rounded-md transition-colors"
                                 >
@@ -239,7 +197,8 @@ const UserMessage = (props) => {
                             >
                                 <p className="font-semibold mb-2">Last seen</p>
                                 <ul className="px-4 py-2 bg-white rounded-md">
-                                    {userMessages.map((item) => (
+                                    {userMessages.filter((item) =>  item.message_id === message.message_id).map(
+                                        (item) =>(
                                         <li
                                             key={`${item.message_id}-${item.username}`}
                                             className="mb-2 border-b border-gray-200 pb-1"
@@ -266,6 +225,7 @@ const UserMessage = (props) => {
         </div>
             <div className="mt-1">
                 <ShowReactionsToMessage roomId={message.room_id} messageId={message.message_id} />
+                {/*{replyCount}*/}
             </div>
 
             <div

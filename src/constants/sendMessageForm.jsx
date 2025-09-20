@@ -2,12 +2,15 @@ import {Button, Textarea} from "@material-tailwind/react";
 import {PaperAirplaneIcon} from "@heroicons/react/24/solid";
 import React, {useEffect, useState} from "react";
 import {FiPlusCircle} from "react-icons/fi";
+import {LuSmilePlus} from "react-icons/lu";
+import EmojiPicker from "emoji-picker-react";
 
 
 const SendMessageForm = (props) => {
     const {handleSendMessage,initialMessage='', onMessageChange} = props;
     const [newMessage, setNewMessage] = useState(initialMessage);
     const [file, setFile] = useState(null);
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
     useEffect(() => {
         setNewMessage(initialMessage);
@@ -24,6 +27,11 @@ const SendMessageForm = (props) => {
         handleSendMessage(e,newMessage,file);
         setFile(null);
     }
+    const handleEmojiSelect = (emojiData) => {
+        const emoji = emojiData.emoji;
+        setNewMessage((prev) => prev + emoji); // append emoji to message
+        setShowEmojiPicker(false);
+    };
 
     return (
         <div className="p-4 bg-white border-t">
@@ -65,7 +73,21 @@ const SendMessageForm = (props) => {
                            id="file-upload"
                            onChange={(e) => setFile(e.target.files[0])}
                            className="text-sm hidden" />
+                    <button
+                        type="button"
+                        onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                        className="text-gray-600 hover:text-black"
+                    >
+                        <LuSmilePlus className="h-6 w-6 mx-2"/>
+                    </button>
                 </div>
+
+                {/* Emoji Picker Dropdown */}
+                {showEmojiPicker && (
+                    <div className="absolute bottom-16 left-10 z-50">
+                        <EmojiPicker onEmojiClick={handleEmojiSelect} />
+                    </div>
+                )}
             </form>
             {file && (
                 <div className="mt-2 text-sm text-gray-500">

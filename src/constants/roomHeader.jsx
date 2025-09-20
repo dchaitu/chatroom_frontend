@@ -246,13 +246,13 @@ const RoomHeader = ({ room, leaveRoom}) => {
 
             {/* View Room Info*/}
             <Dialog open={viewInfoDialogOpen} handler={setViewInfoDialogOpen}>
-                <DialogHeader>Room Details</DialogHeader>
+                <DialogHeader>About Room</DialogHeader>
                 <DialogBody className="space-y-3">
                         <div key={room_id}>
                             <Typography variant="h2">{room_name}</Typography>
-                            <Typography variant="body">{description}</Typography>
-                            <Typography variant="body2" className="mt-2">Users: {users.map((user)=> <span>{user} </span>)}</Typography>
-                            <Typography variant="body2" className="mt-2">Admin: {admins.map((user)=> <span>{user} </span>)}</Typography>
+                            <Typography variant="h5">{description}</Typography>
+                            <Typography variant="h6" className="mt-2">Users: {users.map((user)=> <span>{user} </span>)}</Typography>
+                            <Typography variant="h6" className="mt-2">Admin: {admins.map((user)=> <span>{user} </span>)}</Typography>
                         </div>
 
                 </DialogBody>
@@ -310,7 +310,7 @@ const RoomHeader = ({ room, leaveRoom}) => {
                         <ul className="space-y-1">
                             {users.length > 0 ? (
                                 users.map((member, idx) => (
-                                    <li key={idx} className="text-gray-700 text-sm">
+                                    <li key={`${idx}-${member}`} className="text-gray-700 text-sm">
                                         {member} {checkAdmin(member)}
                                     </li>
                                 ))

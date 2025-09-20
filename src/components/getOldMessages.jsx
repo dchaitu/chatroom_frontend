@@ -4,14 +4,66 @@ import UserMessage from "../constants/UserMessage";
 import {useReply} from "../context/ReplyContext";
 import DateSeparationLine from "../constants/dateSeparationLine";
 
-const GetOldMessages = ({ roomId, currentUser }) => {
+const GetOldMessages = ({ roomId }) => {
+    console.log("GetOldMessages", roomId);
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [replyCounts, setReplyCounts] = useState({});
     const access_token = localStorage.getItem("access_token");
     const scrollToBottomRef = useRef(null);
+    const [userMessages, setUserMessages] = useState([]);
+
     const {showReply} = useReply();
 
+    useEffect(() => {
+        if (!messages.length) return;
+
+        const fetchReplyCounts = async () => {
+            try {
+                const messageIds = messages.map(msg => msg.message_id);
+                if (messageIds.length === 0) return;
+
+                const response = await fetch(`${REST_API_PATH}/reply/counts/`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${access_token}`
+                    },
+                    // body: JSON.stringify({ message_ids: messageIds })
+                });
+                const data = await response.json();
+                setReplyCounts(prev => ({ ...prev, ...data }));
+            } catch (error) {
+                console.error("Error fetching reply counts:", error);
+            }
+        };
+
+        fetchReplyCounts();
+    }, [messages, access_token]);
+
+    const fetchMessageDetails = async (roomId) => {
+        console.log(roomId,"message last seen pressed");
+        const response = await fetch(`${REST_API_PATH}/message-info?room_id=${roomId}`,{
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${access_token}`
+            }
+
+        });
+        const data = await response.json()
+        console.log("UserMessage last seen data from fetch",data);
+        setUserMessages(data);
+        return data
+    }
+
+    useEffect(() => {
+
+        fetchMessageDetails(roomId)
+        console.log("UserMessage last seen data",userMessages)
+
+    },[roomId])
 
     const groupedMessages = useMemo(() => {
         const grouped = [];
@@ -100,7 +152,11 @@ const GetOldMessages = ({ roomId, currentUser }) => {
                         {item.type === 'date' ? (
                             <DateSeparationLine item={item} />
                         ) : (
-                            <UserMessage message={item} currentUser={currentUser} />
+                            <UserMessage key={item.id}
+                                         message={item}
+                                         replyCount={replyCounts[item.message_id] || 0}
+                                         userMessages={userMessages}
+                            />
                         )}
                     </div>
                 ))

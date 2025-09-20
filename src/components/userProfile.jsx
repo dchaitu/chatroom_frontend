@@ -5,11 +5,13 @@ import {LOCAL_API_PATH, REST_API_PATH} from "../constants/constants";
 import {Separator} from "./ui/separator";
 import {Avatar, AvatarFallback, AvatarImage} from "./ui/avatar";
 import {IoMailOutline} from "react-icons/io5";
+import EditUserProfile from "./editUserProfile";
 
 const UserProfile = () => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [isEditOpen, setIsEditOpen] = useState(false);
     const navigate = useNavigate();
     // Username is now passed as a prop
     const accessToken = localStorage.getItem("access_token");
@@ -19,20 +21,45 @@ const UserProfile = () => {
         navigate(`/room/user/`);
     }
     // TODO: Edit Profile Feature
-    const updateUserProfile = async () => {
-        try{
+    const handleUpdateProfile = (updatedUser) => {
+        setUser(updatedUser);
+        setIsEditOpen(false);
+    };
+
+    // const updateUserProfile = async () => {
+    //     try{
+    //         const response = await fetch(`${LOCAL_API_PATH}/user/`, {
+    //             method: "PUT",
+    //             headers: {
+    //                 "Content-Type": "application/json",
+    //                 "Authorization": `Bearer ${accessToken}`,
+    //
+    //             },
+    //             body: JSON.stringify({
+    //
+    //
+    //             })
+    //         });
+    //         if (!response.ok) {
+    //             throw new Error("Failed to fetch user profile");
+    //         }
+    //         const data = await response.json();
+    //         console.log("user profile", data);
+    //         setUser(data);
+    //
+    //     }catch(err){
+    //         console.log("Error not updated properly",err);
+    //     }
+    // }
+    const fetchUserProfile = async () => {
+        try {
             const response = await fetch(`${LOCAL_API_PATH}/user/`, {
-                method: "PUT",
+                method: "GET",
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${accessToken}`,
 
-                },
-                body: JSON.stringify({
-                    fullname: "Chaitanya Bharat Dokara",
-
-
-                })
+                }
             });
             if (!response.ok) {
                 throw new Error("Failed to fetch user profile");
@@ -40,37 +67,17 @@ const UserProfile = () => {
             const data = await response.json();
             console.log("user profile", data);
             setUser(data);
-
-        }catch(err){
-            console.log("Error not updated properly",err);
         }
-    }
+        catch (error) {
+            console.error("Error fetching user profile:", error);
+            setError("Failed to load user profile. Please try again later.");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchUserProfile = async () => {
-            try {
-                const response = await fetch(`${LOCAL_API_PATH}/user/`, {
-                    method: "GET",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${accessToken}`,
 
-                    }
-                });
-                if (!response.ok) {
-                    throw new Error("Failed to fetch user profile");
-                }
-                const data = await response.json();
-                console.log("user profile", data);
-                setUser(data);
-            }
-            catch (error) {
-                console.error("Error fetching user profile:", error);
-                setError("Failed to load user profile. Please try again later.");
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchUserProfile();
     },[navigate]);
 
@@ -94,31 +101,42 @@ const UserProfile = () => {
     };
 
     return (
-        <div className="p-4">
-            <div className="p-6">
-                <div className="flex items-center justify-between mb-8">
-                    <h1 className="text-2xl font-bold">Profile</h1>
-                </div>
+        <div className="flex flex-col">
+            <div>
+                {/*<div className="flex items-center justify-between mb-8">*/}
+                {/*    <h1 className="text-2xl font-bold">Profile</h1>*/}
+                {/*</div>*/}
 
-                <div className="flex flex-col  mb-8">
-                    <Avatar className="h-24 self-center w-24 mb-4">
-                        <AvatarImage src={user?.avatar} alt={user?.fullname || username} />
+                <div className="flex flex-col mb-8">
+                    <Avatar className=" rounded-lg w-[75%] h-1/3 self-center  mb-4">
+                        <AvatarImage src={user?.pic_url} alt={user?.fullname || username} />
                         <AvatarFallback className="text-xl">
                             {getInitials(user?.fullname || username || '')}
                         </AvatarFallback>
                     </Avatar>
 
-                    <div className="flex justify-between">
+                    <div className="flex justify-between mt-20">
                         <h2 className="text-xl font-semibold">{user?.fullname || username}</h2>
-                        <a href="#"><strong>Edit</strong></a>
+                        {/*<a href="#"><strong>Edit</strong></a>*/}
+                        <Button variant="outlined"
+                                className="border-0 text-blue-600 hover:text-blue-800 hover:bg-transparent p-2"
+                                onClick={() => setIsEditOpen(true)}>
+                            Edit
+                        </Button>
                     </div>
                 </div>
-
+                <div className="w-full">
+                    <Separator className="bg-gray-400 h-[2px]" />
+                </div>
                 <div className="space-y-6">
-                    <div>
+                    <div className="py-2">
                         <div className="flex justify-between">
-                        <h3 className="text-black-500 text-sm font-medium mb-2">Contact Information</h3>
-                        <a href="#"><strong>Edit</strong></a>
+                        <h3 className="text-black-500 text-lg font-bold mb-2">Contact Information</h3>
+                            <Button variant="outlined"
+                                    className="border-0 text-blue-600 hover:text-blue-800 hover:bg-transparent p-2"
+                                    onClick={() => setIsEditOpen(true)}>
+                                Edit
+                            </Button>
                         </div>
                         <div className="space-y-4">
                             <div className="flex items-center space-x-3">
@@ -128,22 +146,34 @@ const UserProfile = () => {
                                     <a href="#">{user?.email || 'Not provided'}</a>
                                 </div>
                             </div>
-                            <Separator className="my-4"/>
+                            <div className="w-full">
+                                <Separator className="bg-gray-400 h-[2px]" />
+                                {/* gray color, 2px thick */}
+                            </div>
                             <div>
                                 <div className="flex justify-between">
-                                    <p className="text-sm text-gray-500">About me</p>
-                                    <a href="#"><b>Edit</b></a>
+                                    <p className="text-black-500 text-lg font-bold">About me</p>
+                                    <Button variant="outlined"
+                                            className="border-0 text-blue-600 hover:text-blue-800 hover:bg-transparent p-2"
+                                            onClick={() => setIsEditOpen(true)}>
+                                        Edit
+                                    </Button>
                                 </div>
                             </div>
 
                         </div>
                     </div>
 
-            <Separator className="my-4 "/>
-
-        </div>
             </div>
-            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={goToRooms}>Go to Rooms</button>
+                {
+                    isEditOpen && (
+                        <EditUserProfile user={user} onClose={() => setIsEditOpen(false)}
+                                         onUserUpdated={handleUpdateProfile}
+                        />
+                    )
+                }
+            </div>
+            <button className="self-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={goToRooms}>Go to Rooms</button>
 
         </div>
     )

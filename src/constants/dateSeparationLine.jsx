@@ -4,16 +4,17 @@ const DateSeparationLine = (props) => {
     const {item} = props
 
     return (
-        <div className="relative my-4">
-            <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs">
-                {/* line for datewise separation */}
-                <span className="bg-background px-2 text-muted-foreground">
-                   {item.date}
-                </span>
-            </div>
+        <div className="flex items-center my-4">
+            {/* Left line */}
+            <div className="flex-grow border-t border-blue-gray-300"></div>
+
+            {/* line for datewise separation */}
+            <span className="mx-2 text-xs text-muted-foreground whitespace-nowrap">
+        {item.date}
+        </span>
+
+            {/* Right line */}
+            <div className="flex-grow border-t border-blue-gray-300"></div>
         </div>
 
     )

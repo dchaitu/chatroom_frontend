@@ -47,15 +47,15 @@ const RoomSideBar = ({ connected, currentRoomId }) => {
 
 
     return (
-        <div className="w-1/4 bg-white border-r border-gray-200 p-4 flex flex-col h-screen">
-            <h2 className="text-lg font-semibold mb-4">{username}'s Rooms</h2>
+        <div className="w-1/4 bg-purple-700 border-r border-gray-200 p-2 flex flex-col h-screen shadow-purple-100 shadow-2xl">
+            <h2 className="text-lg text-white font-semibold mb-4">{username}'s Rooms</h2>
             <div className="flex-1 overflow-y-auto">
                 {rooms.map((room) => (
                     <div 
                         key={room.room_id}
                         onClick={() => handleRoomClick(room.room_id)}
                         className={`p-2 mb-2 rounded cursor-pointer hover:bg-gray-100 transition-colors ${
-                            currentRoomId === room.room_id ? 'bg-blue-50 border-l-4 border-blue-500' : ''
+                            currentRoomId === room.room_id ? 'bg-gray-50 border-l-4 text-purple-500' : ''
                         }`}
                     >
                         <div className="font-medium">{room.room_name}</div>
@@ -66,7 +66,7 @@ const RoomSideBar = ({ connected, currentRoomId }) => {
             <ToolTipComponent displayText={username}>
             <Button
                 variant="ghost"
-                className="h-auto p-2 rounded-full hover:bg-gray-100 self-start border-2 m-2"
+                className="h-auto p-2 rounded-full hover:bg-purple-400 self-start border-0 m-2"
                 onClick={toggleProfile}
             >
                 <AvatarWithInitials username={username} />
@@ -79,10 +79,10 @@ const RoomSideBar = ({ connected, currentRoomId }) => {
             </div>
             <div className="w-1/2 bg-yellow-400">
             <Sheet  open={isProfileOpen} onOpenChange={setIsProfileOpen}>
-                <SheetContent className=" bg-white !important:w-[800px] sm:w-[800px] md:w-[50vw] max-w-none" side="right">
+                <SheetContent className=" bg-white !max-w-none !w-[30%] sm:w-[20%]" side="right">
                     <SheetHeader className="border-b">
                         <div className="flex justify-between items-center">
-                            <SheetTitle>User Profile</SheetTitle>
+                            <SheetTitle>Profile</SheetTitle>
                             <Button
                                 variant="ghost"
                                 size="sm"

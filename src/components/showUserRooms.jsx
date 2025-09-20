@@ -107,7 +107,7 @@ const ShowUserRooms = () => {
 
         fetchRooms();
 
-    }, [navigate,access_token]);
+    }, [access_token]);
 
     const handleCreateRoom = async () => {
         if (!newRoom.name.trim()) return;
@@ -200,7 +200,7 @@ const ShowUserRooms = () => {
                         Create Room
                     </Button>
                 </div>
-
+                No of rooms:- {rooms.length}
                 {rooms.length === 0 ? (
                     <div className="text-center py-12 bg-white rounded-lg shadow">
                         <Typography variant="h4" color="gray" className="mb-4">No rooms yet</Typography>
@@ -216,9 +216,7 @@ const ShowUserRooms = () => {
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {rooms.map((room) => (
-                            <GetRoom key={room.room_id} room={room} username={username} />
-                        ))}
+                            <GetRoom rooms={rooms} />
                     </div>
                 )}
                 <AdminInvites/>

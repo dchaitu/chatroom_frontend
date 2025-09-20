@@ -10,8 +10,25 @@ const GetReplyDrawer = () => {
     const [replyText, setReplyText] = useState("")
     const [replies, setReplies] = useState([]);
     const {currentMessage, clearReply } = useReply()
+    const [userMessages, setUserMessages] = useState([]);
     const access_token = localStorage.getItem("access_token")
     // console.log("GetReplyDrawer ", message)
+
+    const fetchMessageDetails = async () => {
+        // console.log(roomId,"message last seen pressed");
+        const response = await fetch(`${REST_API_PATH}/message-info?room_id=${currentMessage.room_id}`,{
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${access_token}`
+            }
+
+        });
+        const data = await response.json()
+        console.log("UserMessage last seen data from fetch",data);
+        setUserMessages(data);
+        return data
+    }
 
     const getMessageReplies = async () => {
         if (!currentMessage) {return}
@@ -34,7 +51,9 @@ const GetReplyDrawer = () => {
     }
     useEffect(() => {
         if(currentMessage) {
-            getMessageReplies()
+            getMessageReplies();
+            fetchMessageDetails()
+
         }
     },[currentMessage])
     if (!currentMessage) {
@@ -89,14 +108,14 @@ const GetReplyDrawer = () => {
 
             <div className="flex-1 overflow-y-auto p-4">
                 <div className="mb-4 p-3">
-                    <UserMessage message={currentMessage}  />
+                    <UserMessage message={currentMessage} userMessages={userMessages} />
                 </div>
 
                 <div className="space-y-4 border-t-2 py-2" id="thread-replies">
                     {replies.length>0?
                         replies.map((reply) => (
                             <div key={reply.reply_id} className="flex items-center justify-between">
-                                <UserMessage message={reply} notReply={false}/>
+                                <UserMessage key={reply.reply_id} message={reply} notReply={false} userMessages={userMessages} />
                             </div>
                         )) : (
                             <div></div>
