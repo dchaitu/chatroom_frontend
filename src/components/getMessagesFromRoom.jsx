@@ -6,7 +6,8 @@ import RoomHeader from "../constants/roomHeader";
 import RoomSideBar from "./roomSideBar";
 import {useReply} from "../context/ReplyContext";
 import GetReplyDrawer from "./getReplyDrawer";
-import SendMessageForm from "../constants/sendMessageForm";
+import SendMessageForm from "./sendMessageForm";
+import VerticalSideBar from "../constants/verticalSideBar";
 
 const GetMessagesFromRoom = (props) => {
     const [messages, setMessages] = useState([]);
@@ -177,6 +178,9 @@ const GetMessagesFromRoom = (props) => {
     return (
         <div className="flex flex-col h-screen">
         <div className="flex flex-1 overflow-hidden bg-gray-100 font-sans">
+            {/* Vertical Sidebar */}
+            <VerticalSideBar
+            />
             {/* Sidebar */}
             <RoomSideBar
                 connected={isConnected}

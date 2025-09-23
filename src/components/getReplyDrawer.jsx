@@ -2,7 +2,7 @@ import React, {useContext, useEffect, useState} from 'react';
 
 import {useReply} from "../context/ReplyContext";
 import {REST_API_PATH} from "../constants/constants";
-import SendMessageForm from "../constants/sendMessageForm";
+import SendMessageForm from "./sendMessageForm";
 import UserMessage from "../constants/UserMessage";
 import {MdClose} from "react-icons/md";
 

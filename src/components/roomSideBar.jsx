@@ -47,7 +47,7 @@ const RoomSideBar = ({ connected, currentRoomId }) => {
 
 
     return (
-        <div className="w-1/4 bg-purple-700 border-r border-gray-200 p-2 flex flex-col h-screen shadow-purple-100 shadow-2xl">
+        <div className="w-1/4 bg-[rgba(131,56,138,1)] border-r border-gray-200 p-2 flex flex-col h-screen shadow-2xl">
             <h2 className="text-lg text-white font-semibold mb-4">{username}'s Rooms</h2>
             <div className="flex-1 overflow-y-auto">
                 {rooms.map((room) => (
