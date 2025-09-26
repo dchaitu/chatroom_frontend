@@ -57,7 +57,7 @@ const RoomHeader = ({ room, leaveRoom}) => {
     const fetchAvailableUsers = async () => {
         setLoadingUsers(true);
         try {
-            const response = await fetch(`${REST_API_PATH}/all-users/`, {
+            const response = await fetch(`${REST_API_PATH}/user-details/`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",

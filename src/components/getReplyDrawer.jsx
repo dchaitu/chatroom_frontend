@@ -16,7 +16,7 @@ const GetReplyDrawer = () => {
 
     const fetchMessageDetails = async () => {
         // console.log(roomId,"message last seen pressed");
-        const response = await fetch(`${REST_API_PATH}/message-info?room_id=${currentMessage.room_id}`,{
+        const response = await fetch(`${REST_API_PATH}/messages/info?room_id=${currentMessage.room_id}`,{
             method: "GET",
             headers: {
                 "Content-Type": "application/json",

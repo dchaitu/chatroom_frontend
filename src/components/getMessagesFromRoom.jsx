@@ -37,7 +37,7 @@ const GetMessagesFromRoom = (props) => {
 
     const fetchRoomDetails = useCallback(async () => {
         try {
-            const response = await fetch(`${REST_API_PATH}/room/room_details/${roomId}`, {
+            const response = await fetch(`${REST_API_PATH}/room/${roomId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -130,7 +130,7 @@ const GetMessagesFromRoom = (props) => {
         }
 
         try {
-            const response = await fetch(`${REST_API_PATH}/send_message/`, {
+            const response = await fetch(`${REST_API_PATH}/messages/send/`, {
                 method: "POST",
                 headers: {
                     Authorization: `Bearer ${access_token}`,
@@ -190,6 +190,7 @@ const GetMessagesFromRoom = (props) => {
             {/* Chat Area */}
             <div className={`flex-1 flex flex-col overflow-hidden ${showReply ? 'w-2/3' : 'w-full'}`}>
                 <div className="bg-white border-b p-4">
+                    {/*Room Header */}
                     <RoomHeader room={room} leaveRoom={handleLeaveRoom} />
 
                 </div>

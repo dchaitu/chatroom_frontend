@@ -44,7 +44,7 @@ const GetOldMessages = ({ roomId }) => {
 
     const fetchMessageDetails = async (roomId) => {
         console.log(roomId,"message last seen pressed");
-        const response = await fetch(`${REST_API_PATH}/message-info?room_id=${roomId}`,{
+        const response = await fetch(`${REST_API_PATH}/messages/info?room_id=${roomId}`,{
             method: "GET",
             headers: {
                 "Content-Type": "application/json",

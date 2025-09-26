@@ -15,6 +15,8 @@ const Register = () => {
     const [error, setError] = useState('');
     const [fullName, setFullName] = useState('');
     const [recaptchaValue, setRecaptchaValue] = useState(null);
+    const [picUrl, setPicUrl] = useState('');
+    const [avatar, setAvatar] = useState('');
     const navigate = useNavigate();
 
 
@@ -31,6 +33,8 @@ const Register = () => {
                 email: email,
                 password: password,
                 fullname: fullName,
+                pic_url: picUrl,
+                avatar: avatar,
                 recaptcha_token: recaptchaValue
             }),
         });
@@ -119,7 +123,29 @@ const Register = () => {
                                     required
                                 />
                             </div>
+                            <div className="mt-4">
+                                <Input
+                                    type="url"
+                                    label="Profile Picture URL"
+                                    size="lg"
+                                    icon={<UserCircleIcon className="h-4 w-4" />}
+                                    value={picUrl}
+                                    onChange={(e) => setPicUrl(e.target.value)}
+                                    placeholder="https://example.com/your-image.jpg"
+                                />
+                            </div>
 
+                            <div className="mt-4">
+                                <Input
+                                    type="text"
+                                    label="Avatar"
+                                    size="lg"
+                                    icon={<UserCircleIcon className="h-4 w-4" />}
+                                    value={avatar}
+                                    onChange={(e) => setAvatar(e.target.value)}
+                                    placeholder="avatar filename or URL"
+                                />
+                            </div>
 
                             <div className="mt-6">
                                 <ReCAPTCHA

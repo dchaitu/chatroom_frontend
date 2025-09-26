@@ -11,7 +11,7 @@ export const UserProvider = ({ children }) => {
         if (users[username]) return users[username];
 
         try {
-            const response = await fetch(`${REST_API_PATH}/user-details/${username}`, {
+            const response = await fetch(`${REST_API_PATH}/user/`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",

@@ -1,12 +1,6 @@
 import React, {useEffect, useState} from "react";
 import { useNavigate } from "react-router-dom";
 import {REST_API_PATH} from "../constants/constants";
-import AvatarWithInitials from "../constants/AvatarWithInitials";
-import ToolTipComponent from "../constants/toolTipComponent";
-import UserProfile from "./userProfile";
-import {Button} from "./ui/button";
-import { SheetContent, SheetHeader, SheetTitle} from "./ui/sheet";
-import {Sheet} from "./ui/sheet";
 
 const RoomSideBar = ({ connected, currentRoomId }) => {
     const [rooms, setRooms] = useState([]);
@@ -63,40 +57,10 @@ const RoomSideBar = ({ connected, currentRoomId }) => {
                     </div>
                 ))}
             </div>
-            <ToolTipComponent displayText={username}>
-            <Button
-                variant="ghost"
-                className="h-auto p-2 rounded-full hover:bg-purple-400 self-start border-0 m-2"
-                onClick={toggleProfile}
-            >
-                <AvatarWithInitials username={username} />
-            </Button>
-            </ToolTipComponent>
             <div className="mt-auto pt-4 border-t">
                 <p className={`text-sm ${connected ? "text-green-500" : "text-red-500"}`}>
                     Status: {connected ? "Connected" : "Disconnected"}
                 </p>
-            </div>
-            <div className="w-1/2 bg-yellow-400">
-            <Sheet  open={isProfileOpen} onOpenChange={setIsProfileOpen}>
-                <SheetContent className=" bg-white !max-w-none !w-[30%] sm:w-[20%]" side="right">
-                    <SheetHeader className="border-b">
-                        <div className="flex justify-between items-center">
-                            <SheetTitle>Profile</SheetTitle>
-                            <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={toggleProfile}
-                                className="h-8 w-8 p-0"
-                            >
-                            </Button>
-                        </div>
-                    </SheetHeader>
-                    <div className="p-4 overflow-y-auto">
-                        <UserProfile />
-                    </div>
-                </SheetContent>
-            </Sheet>
             </div>
         </div>
     );
