@@ -8,6 +8,7 @@ import {Button} from "../components/ui/button";
 import AvatarWithInitials from "./AvatarWithInitials";
 import {Sheet, SheetContent, SheetHeader, SheetTitle} from "../components/ui/sheet";
 import UserProfile from "../components/userProfile";
+import {Input} from "@material-tailwind/react";
 
 
 const VerticalSideBar = () => {
@@ -22,9 +23,18 @@ const VerticalSideBar = () => {
 
 
     return(
+        // TODO:
+        <div>
+
         <div id="v-side-bar" className="bg-[rgba(97,31,105,1)] w-20">
+
         <div className="flex flex-col h-screen text-gray-300 text-xs font-semibold text-center">
+            <div className="flex ">
+                <input placeholder="Search room"/>
+            </div>
             <div className="flex-1 flex-col">
+
+
                 <div className="justify-items-center p-2">
                     <RiHome7Fill size={25} />
                     Home
@@ -85,7 +95,7 @@ const VerticalSideBar = () => {
         </div>
 
 
-
+        </div>
         </div>
     )
 }

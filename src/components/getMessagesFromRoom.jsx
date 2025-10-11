@@ -20,6 +20,7 @@ const GetMessagesFromRoom = (props) => {
         users: [],
         admins: []
     });
+    const [roomAdmins, setRoomAdmins] = useState([]);
     const [file, setFile] = useState(null);
     const {showReply} = useReply();
     const messagesEndRef = useRef(null);
@@ -27,13 +28,32 @@ const GetMessagesFromRoom = (props) => {
     const { room_id } = useParams();
     const roomId = room_id;
     const access_token = localStorage.getItem("access_token");
-    const username = localStorage.getItem("username");
+
 
 
 
     const scrollToBottom = useCallback(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, []);
+
+    const fetchRoomAdmins = useCallback(async () => {
+        try {
+            const response = await fetch(`${REST_API_PATH}/room/${roomId}/admins`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${access_token}`
+                }
+            });
+            const data = await response.json();
+            if (response.ok) {
+                console.log("Room admins response", data);
+                setRoomAdmins(data);
+            }
+        } catch (error) {
+            console.error("Error fetching room admins:", error);
+        }
+    }, [roomId, access_token]);
 
     const fetchRoomDetails = useCallback(async () => {
         try {
@@ -71,6 +91,7 @@ const GetMessagesFromRoom = (props) => {
     useEffect(() => {
         if (roomId) {
             fetchRoomDetails();
+            fetchRoomAdmins();
         }
     }, [roomId, fetchRoomDetails]);
 
@@ -191,7 +212,7 @@ const GetMessagesFromRoom = (props) => {
             <div className={`flex-1 flex flex-col overflow-hidden ${showReply ? 'w-2/3' : 'w-full'}`}>
                 <div className="bg-white border-b p-4">
                     {/*Room Header */}
-                    <RoomHeader room={room} leaveRoom={handleLeaveRoom} />
+                    <RoomHeader room={room} leaveRoom={handleLeaveRoom} roomAdmins={roomAdmins}/>
 
                 </div>
                 {/* Messages */}
@@ -203,10 +224,13 @@ const GetMessagesFromRoom = (props) => {
                     </div>
 
                 </div>
+                <div className="flex-1 overflow-y-auto content-end">
                 <SendMessageForm handleSendMessage={handleSendMessage}
                                  initialMessage={newMessage}
                                  onMessageChange={setNewMessage}
                 />
+
+                </div>
 
             </div>
 

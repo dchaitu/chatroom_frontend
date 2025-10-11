@@ -22,7 +22,7 @@ import {
     Typography
 } from "@material-tailwind/react";
 
-const RoomHeader = ({ room, leaveRoom}) => {
+const RoomHeader = ({ room, leaveRoom,roomAdmins}) => {
     const {
         room_id = "",
         room_name = "",
@@ -44,7 +44,7 @@ const RoomHeader = ({ room, leaveRoom}) => {
 
     useEffect(() => {
         console.log(`${admins} admins`);
-        if(admins.includes(username)) {
+        if(roomAdmins.includes(username)) {
             setIsUserAdmin(true);
             console.log(`${username} is admin`);
         }
@@ -117,7 +117,7 @@ const RoomHeader = ({ room, leaveRoom}) => {
     };
 
     const checkAdmin = (username) => {
-        if(admins.includes(username)) {
+        if(roomAdmins.includes(username)) {
             return (
                 <span className="ml-2 border bg-green-500 text-light-green-100 text-xs px-2 py-0.5 rounded">
                 Group Admin

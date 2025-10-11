@@ -1,0 +1,43 @@
+.message-group {
+    display: flex;
+    margin-bottom: 1rem;
+}
+
+.avatar-container {
+    margin-right: 1rem;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.message-content-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.message-sender {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.25rem;
+}
+
+.message-sender strong {
+    margin-right: 0.5rem;
+}
+
+.message-timestamp {
+    color: #888;
+    font-size: 0.8rem;
+}
+
+.messages-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.message {
+    margin-bottom: 0.25rem;
+}
