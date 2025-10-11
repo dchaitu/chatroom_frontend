@@ -53,6 +53,9 @@ const GetRoom = ({ rooms }) => {
                     {room.room_name}
                 </h3>
                 <p>{unreadCount[room.room_id]} unread messages</p>
+                <p className="text-sm text-gray-600">
+                    Admins: {room.admins && room.admins.map(admin => (typeof admin === 'string' ? admin : admin.username)).join(', ')}
+                </p>
 
             </CardBody>
             <CardFooter className="pt-0">

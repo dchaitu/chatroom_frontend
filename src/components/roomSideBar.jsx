@@ -42,10 +42,10 @@ const RoomSideBar = ({ connected, currentRoomId }) => {
     };
 
     return (
-        <div className="w-64 bg-[rgba(131,56,138,1)] text-white border-r border-gray-200 flex flex-col h-screen">
+        <div className="w-64 bg-gray-800 text-white border-r border-gray-700 flex flex-col h-screen">
             {/* Header */}
-            <div className="p-4 border-b border-gray-200">
-                <h1 className="text-xl font-bold text-white">{username}'s Rooms</h1>
+            <div className="p-4 border-b border-gray-700 bg-gray-900">
+                <h1 className="text-lg font-bold text-white">{username}'s Rooms</h1>
             </div>
 
 
@@ -53,11 +53,11 @@ const RoomSideBar = ({ connected, currentRoomId }) => {
             <div className="p-4 flex-1 overflow-y-auto">
                 <div className="flex items-center justify-between mb-2">
                     <Menu as="div" className="relative flex-1">
-                        <Menu.Button className="flex items-center justify-between w-full text-left text-white font-semibold">
+                        <Menu.Button className="flex items-center justify-between w-full text-left text-gray-300 hover:text-white font-semibold py-2 px-3 rounded-md hover:bg-gray-700 transition-colors">
                             <span>Rooms</span>
-                            <ChevronDownIcon className="w-4 h-4 text-white" />
+                            <ChevronDownIcon className="w-4 h-4" />
                         </Menu.Button>
-                        <Menu.Items className="mt-2 space-y-1">
+                        <Menu.Items className="mt-2 space-y-1 bg-gray-800 border border-gray-700 rounded-md p-2">
                             {rooms.map((room) => (
                                 <Menu.Item key={room.room_id}>
                                     {({ active }) => (

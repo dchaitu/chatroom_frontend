@@ -99,7 +99,24 @@ const ShowUserRooms = () => {
                 }
                 const data = await response.json();
                 console.log("Data is :-",data);
-                setRooms(data);
+                const roomsWithAdmins = await Promise.all(
+                    data.map(async (room) => {
+                        const adminResponse = await fetch(`${REST_API_PATH}/room/${room.room_id}/admins`, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${access_token}`
+                            }
+                        });
+
+                        if (adminResponse.ok) {
+                            const admins = await adminResponse.json();
+                            return { ...room, admins: admins }; // Combine room data with admins
+                        }
+                        return { ...room, admins: [] }; // Default to empty array on error
+                    })
+                );
+                setRooms(roomsWithAdmins);
             } catch (error) {
                 console.error("Error fetching rooms:", error);
             }
@@ -251,12 +268,13 @@ const ShowUserRooms = () => {
                                                     </Typography>
                                                 )}
                                                 <Typography variant="small" className="text-gray-500">
-                                                    Admin: {room.admins.map((member, idx) => (
-                                                    <span key={idx} className="text-gray-700 text-sm">
-                                                        {member}{idx < room.admins.length - 1 && ', '}
-                                                    </span>
-                                                ))}
-
+                                                    {room.admins && room.admins.length > 0 && <>
+                                                        Admin: {room.admins.map((member, idx) => (
+                                                        <span key={idx} className="text-gray-700 text-sm">
+                                                            {member}{idx < room.admins.length - 1 && ', '}
+                                                        </span>
+                                                    ))}
+                                                    </>}
                                                 </Typography>
                                             </div>
                                             <Button

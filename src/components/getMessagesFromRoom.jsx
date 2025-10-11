@@ -8,6 +8,7 @@ import {useReply} from "../context/ReplyContext";
 import GetReplyDrawer from "./getReplyDrawer";
 import SendMessageForm from "./sendMessageForm";
 import VerticalSideBar from "../constants/verticalSideBar";
+import RoomsSearchBar from "./roomsSearchBar";
 
 const GetMessagesFromRoom = (props) => {
     const [messages, setMessages] = useState([]);
@@ -197,9 +198,15 @@ const GetMessagesFromRoom = (props) => {
 
 
     return (
-        <div className="flex flex-col h-screen">
-        <div className="flex flex-1 overflow-hidden bg-gray-100 font-sans">
+        <div >
+            <RoomsSearchBar />
+
+        <div className="flex flex-col h-screen overflow-hidden">
+
+
+        <div className="flex flex-1 overflow-hidden bg-gray-100 font-sans min-w-0 w-full">
             {/* Vertical Sidebar */}
+
             <VerticalSideBar
             />
             {/* Sidebar */}
@@ -242,6 +249,7 @@ const GetMessagesFromRoom = (props) => {
                 }`}><GetReplyDrawer/>
                 </div>
             )}
+        </div>
         </div>
         </div>
     );
