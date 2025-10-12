@@ -52,7 +52,7 @@ const AddEmojiToMessage = ({messageId}) => {
             <Popover>
                 <PopoverTrigger asChild>
                     <button className="flex items-center gap-1 text-gray-700 hover:text-black" onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
-                        <LuSmilePlus /> <span>React</span>
+                        <LuSmilePlus />
                     </button>
                 </PopoverTrigger>
                 <PopoverContent className="p-0 border-0 w-auto">

@@ -198,7 +198,7 @@ const GetMessagesFromRoom = (props) => {
 
 
     return (
-        <div >
+        <div className="bg-indigo-800 ">
             <RoomsSearchBar />
 
         <div className="flex flex-col h-screen overflow-hidden">
@@ -216,22 +216,22 @@ const GetMessagesFromRoom = (props) => {
             />
 
             {/* Chat Area */}
-            <div className={`flex-1 flex flex-col overflow-hidden ${showReply ? 'w-2/3' : 'w-full'}`}>
-                <div className="bg-white border-b p-4">
+            <div className={`flex-1 flex flex-col ${showReply ? 'w-2/3' : 'w-full'}`}>
+                <div className="bg-white border-b p-4 flex-shrink-0">
                     {/*Room Header */}
                     <RoomHeader room={room} leaveRoom={handleLeaveRoom} roomAdmins={roomAdmins}/>
 
                 </div>
                 {/* Messages */}
 
-                <div className={`flex flex-row overflow-y-auto p-6  ${showReply ? 'w-2/3' : 'w-full'}`}>
+                <div className={`flex flex-row overflow-y-auto  ${showReply ? 'w-2/3' : 'w-full'}`}>
                     <div className="flex-1 " id="all-messages">
                         <GetOldMessages roomId={roomId}/>
                         <div ref={messagesEndRef}/>
                     </div>
 
                 </div>
-                <div className="flex-1 overflow-y-auto content-end">
+                <div className="flex-1 content-end flex-shrink-0">
                 <SendMessageForm handleSendMessage={handleSendMessage}
                                  initialMessage={newMessage}
                                  onMessageChange={setNewMessage}

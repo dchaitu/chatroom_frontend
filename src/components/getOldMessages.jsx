@@ -66,30 +66,62 @@ const GetOldMessages = ({ roomId }) => {
     },[roomId])
 
     const groupedMessages = useMemo(() => {
-        const grouped = [];
-        let currentDate = null;
+    if (!messages.length) return [];
+    
+    const grouped = [];
+    let currentDate = null;
+    let lastUser = null;
+    let lastTime = null;
+    let messageGroup = [];
 
-        messages.forEach((message) => {
-            const messageDate = formatMessageDate(message.timestamp);
-            
-            if (messageDate !== currentDate) {
-                grouped.push({
-                    type: 'date',
-                    date: messageDate,
-                    id: `date-${messageDate}`
-                });
-                currentDate = messageDate;
-            }
-            
+    const processGroup = () => {
+        if (messageGroup.length > 0) {
             grouped.push({
-                ...message,
-                type: 'message',
-                id: message.message_id
+                type: 'messageGroup',
+                messages: [...messageGroup],
+                user: messageGroup[0].username,
+                id: `group-${messageGroup[0].message_id}`
             });
-        });
+            messageGroup = [];
+        }
+    };
+
+    messages.forEach((message) => {
+        const messageDate = formatMessageDate(message.timestamp);
+        const messageTime = new Date(message.timestamp).getTime();
         
-        return grouped;
-    }, [messages]);
+        // Check if we need a new date header
+        if (messageDate !== currentDate) {
+            processGroup(); // Process any pending message group
+            grouped.push({
+                type: 'date',
+                date: messageDate,
+                id: `date-${messageDate}`
+            });
+            currentDate = messageDate;
+            lastUser = null;
+            lastTime = null;
+        }
+
+        // Check if we should start a new message group
+        const isSameUser = message.username === lastUser;
+        const isWithinOneMinute = lastTime && (messageTime - lastTime) <= 60000; // 60,000 ms = 1 minute
+
+        if (!isSameUser || !isWithinOneMinute) {
+            processGroup(); // Process any pending message group
+        }
+
+        // Add message to current group
+        messageGroup.push(message);
+        lastUser = message.username;
+        lastTime = messageTime;
+    });
+
+    // Process any remaining messages in the last group
+    processGroup();
+    
+    return grouped;
+}, [messages]);
 
     // Scroll to bottom
     // useEffect(() => {
@@ -141,33 +173,35 @@ const GetOldMessages = ({ roomId }) => {
     }
 
     return (
-        <div>
-        <div className="space-y-1 p-4">
-            {groupedMessages.length === 0 ? (
-                <div className="text-gray-500 text-center">No messages in this room yet.</div>
-            ) : (
-                groupedMessages.map((item) => (
-                    <div key={item.id}>
-                        {/*date related separator*/}
-                        {item.type === 'date' ? (
-                            <DateSeparationLine item={item} />
-                        ) : (
-                            <UserMessage key={item.id}
-                                         message={item}
-                                         replyCount={replyCounts[item.message_id] || 0}
-                                         userMessages={userMessages}
-                            />
-                        )}
+    <div className="space-y-4">
+        {groupedMessages.map((item) => {
+            if (item.type === 'date') {
+                return <DateSeparationLine key={item.id} date={item.date} />;
+            }
+            
+            if (item.type === 'messageGroup') {
+                return (
+                    <div key={item.id} className="message-group">
+                        {item.messages.map((message, index) => (
+                            <div 
+                                key={message.message_id} 
+                            >
+                                <UserMessage 
+                                    message={message} 
+                                    replyCount={replyCounts[message.message_id] || 0}
+                                    showHeader={index === 0} // Only show header for first message in group
+                                    userMessages={userMessages}
+                                />
+                            </div>
+                        ))}
                     </div>
-                ))
-            )}
-            <div ref={scrollToBottomRef}></div>
-        </div>
-
-
-
-        </div>
-    );
+                );
+            }
+            return null;
+        })}
+        <div ref={scrollToBottomRef} />
+    </div>
+);
 };
 
 export default GetOldMessages;

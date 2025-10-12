@@ -10,6 +10,7 @@ import {Sheet, SheetContent, SheetHeader, SheetTitle} from "../components/ui/she
 import UserProfile from "../components/userProfile";
 import {Input} from "@material-tailwind/react";
 import {useNavigate} from "react-router-dom";
+import "./verticalSideBar.css";
 
 
 const VerticalSideBar = () => {
@@ -31,34 +32,35 @@ const VerticalSideBar = () => {
         // TODO:
         <div>
 
-        <div id="v-side-bar" className="bg-gray-800 w-20">
+        <div id="v-side-bar" className="bg-indigo-800 w-20 ">
 
         <div className="flex flex-col h-screen text-gray-300 text-xs font-semibold text-center">
 
-            <div className="flex-1 flex-col">
+            <div className="flex-1 flex-col text-[11px] pt-[8px]">
 
 
-                <div className="justify-items-center p-2 cursor-pointer hover:bg-gray-700" onClick={goHome}>
+                <div className="justify-items-center p-2 cursor-pointer hover:rounded-lg hover:bg-gray-700 hover:m-3" onClick={goHome}>
                     <RiHome7Fill size={25} />
                     Home
                 </div>
-                <div className="justify-items-center p-2 cursor-pointer hover:bg-gray-700">
+                <div className="justify-items-center p-2 cursor-pointer hover:rounded-lg hover:bg-gray-700 hover:m-3">
                     <TbMessages size={25} />
                     DMs
                 </div>
-                <div className="justify-items-center p-2 cursor-pointer hover:bg-gray-700">
+                <div className="justify-items-center p-2 cursor-pointer hover:rounded-lg hover:bg-[var(--dt_color-plt-indigo-700)] hover:m-3 ">
                     <BsBell size={25}/>
                     Activity
                 </div>
-                <div className="justify-items-center p-2 cursor-pointer hover:bg-gray-700">
+                <div className="justify-items-center p-2 cursor-pointer hover:rounded-lg hover:bg-gray-700 hover:m-3">
+                    <MdOutlineStickyNote2 size={25} />
+                    Files
+                </div>
+                <div className="justify-items-center p-2 cursor-pointer hover:rounded-lg hover:bg-gray-700 hover:m-3">
                     <MdBookmarkBorder size={25}/>
                     Later
                 </div>
-                <div className="justify-items-center p-2 cursor-pointer hover:bg-gray-700">
-                    <MdOutlineStickyNote2 size={25} />
-                    Canvases
-                </div>
-                <div className="justify-items-center p-2 cursor-pointer hover:bg-gray-700">
+
+                <div className="justify-items-center p-2 cursor-pointer hover:rounded-lg hover:bg-gray-700 hover:m-3">
                     <TbDots size={25} />
                     More
                 </div>

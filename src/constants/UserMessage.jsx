@@ -15,7 +15,7 @@ import AddEmojiToMessage from "./addEmojiToMessage";
 import ShowReactionsToMessage from "./showReactionsToMessage";
 
 const UserMessage = (props) => {
-    const {message, replyCount,userMessages,notReply=true} = props;
+    const {message, replyCount,userMessages,showHeader = true,notReply=true} = props;
     const [showMessageOptions, setShowMessageOptions] = useState(false);
     const [showButton, setShowButton] = useState(false);
     // const [replyCount, setReplyCount] = useState(null);
@@ -64,6 +64,7 @@ const UserMessage = (props) => {
         h1: (props) => <h1 className="text-3xl font-bold my-3" {...props} />,
         h2: (props) => <h2 className="text-2xl font-semibold my-2" {...props} />,
         h3: (props) => <h3 className="text-xl font-semibold my-1.5" {...props} />,
+        p: (props) => <p className="text-[15px]" {...props} />,
         code({ inline, className, children, ...props }) {
             const match = /language-(\w+)/.exec(className || "");
             return !inline && match ? (
@@ -88,10 +89,16 @@ const UserMessage = (props) => {
     };
 
     return (
-        <div key={message.id} className="flex items-center justify-start bg-gray-100">
-        <div className="flex self-start m-2">
-            <AvatarWithInitials username={message.username}/>
-        </div>
+        <div key={message.id} className="flex items-start justify-start bg-purple-400 px-5 py-2"
+             onMouseEnter={() => setShowMessageOptions(true)}
+             onMouseLeave={() => setShowMessageOptions(false)}>
+        {showHeader ? (
+                <div className="flex-shrink-0 ">
+                    <AvatarWithInitials username={message.username} />
+                </div>
+            ) : (
+                <div className="w-5"></div> // Empty space to align with messages that have avatars
+            )}
         <div className="flex-1 flex-col">
         <div
             key={`${message.room_id}-${message.timestamp}`} id="message-info"
@@ -100,17 +107,17 @@ const UserMessage = (props) => {
 
             <Popover open={showMessageOptions} onOpenChange={setShowMessageOptions}>
                 <div
-                    className="relative h-full max-w-xs lg:max-w-md xl:max-w-lg 2xl:max-w-xl p-3 m-2 shadow bg-gray-100 text-gray-800 rounded-md"
-                    onMouseEnter={showButtonFunc}
-                    // onMouseLeave={() => setShowMessageOptions(false)}
+                    className="relative h-full max-w-xs lg:max-w-md xl:max-w-lg 2xl:max-w-xl p-0.5 bg-gray-100 text-gray-800 rounded-md"
+
                 >
                     {/* Username + Timestamp */}
-                    <div className="flex justify-start items-baseline mb-1">
-                        <span className="font-semibold text-gray-700">{message.username}</span>
+                    { showHeader &&
+                    <div className="flex justify-between items-baseline ">
+                        <span className="font-semibold text-sm hover:underline hover:cursor-pointer">{message.username}</span>
                         <span className="text-xs text-gray-500 px-2" >{message.timestamp ? getTimeStamp(message.timestamp) : ""}</span>
-                    </div>
+                    </div>}
                     {message.file_url && (
-                        <div className="my-2 border border-gray-200 rounded-md bg-white">
+                        <div className="my-1 border border-gray-200 rounded-md bg-white">
                             {getFileType(message.file_url) === 'image' ? (
                                 <a
                                     href={message.file_url}
@@ -171,7 +178,6 @@ const UserMessage = (props) => {
                     side="top"
                 >
                     <div className="flex items-center gap-4">
-                        {/* ✅ Single source of truth */}
                         <AddEmojiToMessage
                             messageId={message.message_id}
                         />
@@ -180,7 +186,7 @@ const UserMessage = (props) => {
                             onClick={() => handleReplyClick(message)}
                             className="flex items-center gap-1 text-gray-700 hover:text-black"
                         >
-                            <BiMessageRoundedDetail /> <span>Reply</span>
+                            <BiMessageRoundedDetail />
                         </button>
 
                         <Popover>

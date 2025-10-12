@@ -36,7 +36,7 @@ const SendMessageForm = (props) => {
     return (
         <div className="p-4 bg-white border-t">
             <form onSubmit={onFileAndMessageSubmit} className="flex flex-col gap-2">
-                <div className="flex items-stretch gap-2">
+                <div className="flex items-stretch gap-2 relative">
                     <Textarea
                         type="text"
                         value={newMessage}
@@ -58,9 +58,12 @@ const SendMessageForm = (props) => {
 
                     <Button
                         type="submit"
-                        size="md"
-                        className="rounded-lg flex items-center justify-center"
                         disabled={!newMessage.trim() && !file}
+                        className={`absolute right-3 top-1/4 -translate-y-1/2 p-2 rounded ${
+                            !newMessage.trim() && !file
+                                ? 'bg-gray-300 text-gray-500'
+                                : 'bg-green-500 text-white'
+                        }`}
                     >
                         <PaperAirplaneIcon className="h-5 w-5"/>
                     </Button>

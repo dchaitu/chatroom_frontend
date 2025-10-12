@@ -1,7 +1,7 @@
 import React from "react";
 
 const DateSeparationLine = (props) => {
-    const {item} = props
+    const {item, date} = props
 
     return (
         <div className="flex items-center my-4">
@@ -10,7 +10,7 @@ const DateSeparationLine = (props) => {
 
             {/* line for datewise separation */}
             <span className="mx-2 text-xs text-muted-foreground whitespace-nowrap">
-        {item.date}
+        {date}
         </span>
 
             {/* Right line */}

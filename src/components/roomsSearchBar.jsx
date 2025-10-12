@@ -3,7 +3,7 @@ import {HelpCircle, SearchIcon} from "lucide-react";
 
 const RoomsSearchBar = () => {
     return (
-        <div className="flex items-center justify-between p-2 w-full bg-gray-800">
+        <div className="sticky top-0 z-10 flex items-center justify-between p-2 w-full bg-indigo-800">
             <div className="flex-1 max-w-2xl mx-auto">
                 <div className="relative">
                     <input
