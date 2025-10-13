@@ -171,7 +171,7 @@ const RoomHeader = ({ room, leaveRoom,roomAdmins}) => {
             <div className="flex items-center gap-2 text-lg">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild disabled={!isUserAdmin}>
-                        <button className="flex items-center gap-1 text-blue-600 hover:text-blue-800 focus:outline-none">
+                        <button className="flex items-center gap-1 text-black font-semibold focus:outline-none text-[15px]">
                             {room_name}
                             <ChevronDownIcon className="h-5 w-5 text-gray-500" />
                         </button>

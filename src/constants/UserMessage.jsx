@@ -89,11 +89,11 @@ const UserMessage = (props) => {
     };
 
     return (
-        <div key={message.id} className="flex items-start justify-start bg-purple-400 px-5 py-2"
+        <div key={message.id} className={`bg-purple-400 flex items-start justify-start px-5 `}
              onMouseEnter={() => setShowMessageOptions(true)}
              onMouseLeave={() => setShowMessageOptions(false)}>
         {showHeader ? (
-                <div className="flex-shrink-0 ">
+                <div className="mr-1">
                     <AvatarWithInitials username={message.username} />
                 </div>
             ) : (
@@ -102,17 +102,17 @@ const UserMessage = (props) => {
         <div className="flex-1 flex-col">
         <div
             key={`${message.room_id}-${message.timestamp}`} id="message-info"
-            className="flex "
+            className="flex"
         >
 
             <Popover open={showMessageOptions} onOpenChange={setShowMessageOptions}>
                 <div
-                    className="relative h-full max-w-xs lg:max-w-md xl:max-w-lg 2xl:max-w-xl p-0.5 bg-gray-100 text-gray-800 rounded-md"
+                    className="relative h-full w-full p-0.5 bg-gray-100 text-gray-800"
 
                 >
                     {/* Username + Timestamp */}
                     { showHeader &&
-                    <div className="flex justify-between items-baseline ">
+                    <div className="flex justify-start items-baseline ">
                         <span className="font-semibold text-sm hover:underline hover:cursor-pointer">{message.username}</span>
                         <span className="text-xs text-gray-500 px-2" >{message.timestamp ? getTimeStamp(message.timestamp) : ""}</span>
                     </div>}
@@ -166,7 +166,7 @@ const UserMessage = (props) => {
                     {/* Menu Trigger (top-right overlay) */}
                     <PopoverTrigger asChild>
                         <button className="absolute top-2 right-2 text-gray-500 hover:text-gray-800">
-                            <ChevronDownIcon className="h-5 w-5" />
+                            {/*<ChevronDownIcon className="h-5 w-5" />*/}
                         </button>
                     </PopoverTrigger>
                 </div>

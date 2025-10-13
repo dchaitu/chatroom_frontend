@@ -198,13 +198,11 @@ const GetMessagesFromRoom = (props) => {
 
 
     return (
-        <div className="bg-indigo-800 ">
+        <div className="bg-indigo-800  flex flex-col">
             <RoomsSearchBar />
 
-        <div className="flex flex-col h-screen overflow-hidden">
-
-
-        <div className="flex flex-1 overflow-hidden bg-gray-100 font-sans min-w-0 w-full">
+        <div className="flex  overflow-hidden ">
+        <div className="flex  overflow-hidden bg-gray-100 font-sans min-w-0 w-full mb-1 mr-0.5">
             {/* Vertical Sidebar */}
 
             <VerticalSideBar

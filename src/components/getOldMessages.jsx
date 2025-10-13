@@ -3,6 +3,7 @@ import {REST_API_PATH, formatMessageDate, POLLING_INTERVAL} from "../constants/c
 import UserMessage from "../constants/UserMessage";
 import {useReply} from "../context/ReplyContext";
 import DateSeparationLine from "../constants/dateSeparationLine";
+import MessageItem from "./MessageItem";
 
 const GetOldMessages = ({ roomId }) => {
     console.log("GetOldMessages", roomId);
@@ -123,6 +124,32 @@ const GetOldMessages = ({ roomId }) => {
     return grouped;
 }, [messages]);
 
+    const allItems = useMemo(() => {
+        if (!groupedMessages.length) return [];
+        const items = [];
+        groupedMessages.forEach(item => {
+            if (item.type === 'date') {
+                items.push({
+                    type: 'date',
+                    id: item.id,
+                    date: item.date
+                });
+            } else if (item.type === 'messageGroup') {
+                item.messages.forEach((message, index) => {
+                    items.push({
+                        type: 'message',
+                        id: message.message_id,
+                        message: message,
+                        isFirstInGroup: index === 0,
+                        replyCount: replyCounts[message.message_id] || 0,
+                        userMessages: userMessages
+                    });
+                });
+            }
+        });
+        return items;
+    }, [groupedMessages, replyCounts, userMessages]);
+
     // Scroll to bottom
     // useEffect(() => {
     //     scrollToBottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -173,35 +200,17 @@ const GetOldMessages = ({ roomId }) => {
     }
 
     return (
-    <div className="space-y-4">
-        {groupedMessages.map((item) => {
-            if (item.type === 'date') {
-                return <DateSeparationLine key={item.id} date={item.date} />;
-            }
-            
-            if (item.type === 'messageGroup') {
-                return (
-                    <div key={item.id} className="message-group">
-                        {item.messages.map((message, index) => (
-                            <div 
-                                key={message.message_id} 
-                            >
-                                <UserMessage 
-                                    message={message} 
-                                    replyCount={replyCounts[message.message_id] || 0}
-                                    showHeader={index === 0} // Only show header for first message in group
-                                    userMessages={userMessages}
-                                />
-                            </div>
-                        ))}
-                    </div>
-                );
-            }
-            return null;
-        })}
-        <div ref={scrollToBottomRef} />
-    </div>
-);
+        <div id="all-messages">
+            <ul className="space-y-4">
+                {allItems.map((item) => (
+                    <li key={item.id}>
+                        <MessageItem item={item} />
+                    </li>
+                ))}
+            </ul>
+            <div ref={scrollToBottomRef} />
+        </div>
+    );
 };
 
 export default GetOldMessages;

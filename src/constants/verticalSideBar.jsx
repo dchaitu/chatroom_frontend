@@ -11,6 +11,7 @@ import UserProfile from "../components/userProfile";
 import {Input} from "@material-tailwind/react";
 import {useNavigate} from "react-router-dom";
 import "./verticalSideBar.css";
+import VerticalSideBarTab from "./verticalSideBarTab";
 
 
 const VerticalSideBar = () => {
@@ -30,77 +31,49 @@ const VerticalSideBar = () => {
 
     return(
         // TODO:
-        <div>
+        <div id="v-side-bar" className="bg-indigo-800 w-[70px] ">
 
-        <div id="v-side-bar" className="bg-indigo-800 w-20 ">
+        <div className="flex flex-col text-gray-300 text-xs font-semibold text-center h-full">
 
-        <div className="flex flex-col h-screen text-gray-300 text-xs font-semibold text-center">
+            <div className="flex flex-1 flex-col text-[11px] pt-[8px]">
 
-            <div className="flex-1 flex-col text-[11px] pt-[8px]">
-
-
-                <div className="justify-items-center p-2 cursor-pointer hover:rounded-lg hover:bg-gray-700 hover:m-3" onClick={goHome}>
-                    <RiHome7Fill size={25} />
-                    Home
-                </div>
-                <div className="justify-items-center p-2 cursor-pointer hover:rounded-lg hover:bg-gray-700 hover:m-3">
-                    <TbMessages size={25} />
-                    DMs
-                </div>
-                <div className="justify-items-center p-2 cursor-pointer hover:rounded-lg hover:bg-[var(--dt_color-plt-indigo-700)] hover:m-3 ">
-                    <BsBell size={25}/>
-                    Activity
-                </div>
-                <div className="justify-items-center p-2 cursor-pointer hover:rounded-lg hover:bg-gray-700 hover:m-3">
-                    <MdOutlineStickyNote2 size={25} />
-                    Files
-                </div>
-                <div className="justify-items-center p-2 cursor-pointer hover:rounded-lg hover:bg-gray-700 hover:m-3">
-                    <MdBookmarkBorder size={25}/>
-                    Later
-                </div>
-
-                <div className="justify-items-center p-2 cursor-pointer hover:rounded-lg hover:bg-gray-700 hover:m-3">
-                    <TbDots size={25} />
-                    More
-                </div>
+                <VerticalSideBarTab icon={<RiHome7Fill size={25} />} text="Home" func={goHome}/>
+                <VerticalSideBarTab icon={<TbMessages size={25} />} text="DMs" func={goHome}/>
+                <VerticalSideBarTab icon={<BsBell size={25} />} text="Activity" func={goHome}/>
+                <VerticalSideBarTab icon={<MdOutlineStickyNote2 size={25} />} text="Files" func={goHome}/>
+                <VerticalSideBarTab icon={<MdBookmarkBorder size={25} />} text="Later" func={goHome}/>
+                <VerticalSideBarTab icon={<TbDots size={25} />} text="More" func={goHome}/>
             </div>
-
-            <div className="mt-auto p-2 flex justify-center">
-                <ToolTipComponent displayText={username}>
-                    <Button
-                        variant="ghost"
-                        className="h-auto p-2 rounded-full hover:bg-gray-700 self-start border-0 m-2"
-                        onClick={toggleProfile}
-                    >
-                        <AvatarWithInitials username={username} className="w-8 h-8" />
-                    </Button>
-                </ToolTipComponent>
-                <Sheet  open={isProfileOpen} onOpenChange={setIsProfileOpen}>
-                    <SheetContent className=" bg-white !max-w-none !w-[30%] sm:w-[20%]" side="right">
-                        <SheetHeader className="border-b">
-                            <div className="flex justify-between items-center">
-                                <SheetTitle>Profile</SheetTitle>
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={toggleProfile}
-                                    className="h-8 w-8 p-0"
-                                >
-                                </Button>
-                            </div>
-                        </SheetHeader>
-                        <div className="p-4 overflow-y-auto">
-                            <UserProfile />
+                <div className="p-2">
+                    <ToolTipComponent displayText={username}>
+                        <div onClick={toggleProfile}>
+                        <AvatarWithInitials imgClass="w-12 h-12" username={username} />
                         </div>
-                    </SheetContent>
-                </Sheet>
-            </div>
+                    </ToolTipComponent>
+                    <Sheet  open={isProfileOpen} onOpenChange={setIsProfileOpen}>
+                        <SheetContent className=" bg-white !max-w-none !w-[30%] sm:w-[20%]" side="right">
+                            <SheetHeader className="border-b">
+                                <div className="flex justify-between items-center">
+                                    <SheetTitle>Profile</SheetTitle>
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={toggleProfile}
+                                        className="h-8 w-8 p-0"
+                                    >
+                                    </Button>
+                                </div>
+                            </SheetHeader>
+                            <div className="p-4 overflow-y-auto">
+                                <UserProfile />
+                            </div>
+                        </SheetContent>
+                    </Sheet>
+                </div>
 
         </div>
 
 
-        </div>
         </div>
     )
 }
