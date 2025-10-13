@@ -7,6 +7,7 @@ const AvatarWithInitials = (props) => {
     const [avatar, setAvatar] = useState("");
     const [userPicUrl, setUserPicUrl] = useState("")
     const fallbackText = username ? username[0].toUpperCase() : "?";
+    // console.log("user AvatarInitials", username);
 
     useEffect(() => {
         const loadUser = async () => {
@@ -16,7 +17,8 @@ const AvatarWithInitials = (props) => {
                 setUserPicUrl(users[username].pic_url);
                 console.log("user pic_url", userPicUrl);
 
-            } else {
+            }
+            else {
                 const userData = await fetchUser(username);
                 if (userData) {
                     setAvatar(userData.avatar);

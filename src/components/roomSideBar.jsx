@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { REST_API_PATH } from "../constants/constants";
 import { Menu } from "@headlessui/react";
 import {IoCaretDownSharp} from "react-icons/io5";
+import {PlusIcon} from "@heroicons/react/24/solid";
+import {FaPlusSquare} from "react-icons/fa";
+import {AiFillPlusSquare} from "react-icons/ai";
 
 const RoomSideBar = ({ connected, currentRoomId }) => {
     const [rooms, setRooms] = useState([]);
@@ -43,16 +46,16 @@ const RoomSideBar = ({ connected, currentRoomId }) => {
     };
 
     return (
-        <div className="w-64 text-white  rounded-lg border  border-gray-700 flex flex-col h-screen">
+        <div className="w-[275px] h-full rounded-bl-lg  rounded-tl-lg  bg-gray-300 flex flex-col">
             {/* Header */}
-            <div className="p-4 border-b border-gray-700 rounded-lg">
-                <h1 className="text-lg font-bold text-indigo-800">{username}'s Rooms</h1>
+            <div className="p-4">
+                <h1 className="text-lg font-bold">{username}</h1>
             </div>
 
 
             {/* Channels Section */}
-            <div className="p-4 flex-1 overflow-y-auto">
-                <div className="flex items-center justify-between mb-2">
+            <div className="p-4 flex-1 rounded-bl-2xl">
+                <div className="flex items-center justify-between mb-2 ">
                     <Menu as="div" className="relative flex-1">
                         <Menu.Button onClick={toggleRooms} className="flex items-center justify-start w-full text-left text-[#091861CC] hover:text-white font-semibold py-0.5 px-3 rounded-md hover:bg-indigo-100 transition-colors">
 
@@ -84,8 +87,9 @@ const RoomSideBar = ({ connected, currentRoomId }) => {
                                 )}
                                 <Menu.Item className="mt-2 space-y-1">
                                     {/*TODO : Move create room to the bar*/}
-                                    <div>
-                                    <span className="text-sm text-[#091861CC]">Add Rooms</span>
+                                    <div className="flex items-center">
+                                        <AiFillPlusSquare className="w-4 h-4 mr-2 mt-1 text-white"/>
+                                        <span className="text-sm text-[#091861CC]">Add Rooms</span>
                                     </div>
                                 </Menu.Item>
                             </Menu.Items>

@@ -4,7 +4,6 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/cjs/styles/prism';
-import {ChevronDownIcon} from "@heroicons/react/24/outline";
 import React, {memo, useEffect, useState} from "react";
 
 import {Popover, PopoverContent, PopoverTrigger} from "@radix-ui/react-popover";
@@ -89,15 +88,15 @@ const UserMessage = (props) => {
     };
 
     return (
-        <div key={message.id} className={`bg-purple-400 flex items-start justify-start px-5 `}
+        <div key={message.id} className={` flex items-start justify-start px-5 `}
              onMouseEnter={() => setShowMessageOptions(true)}
              onMouseLeave={() => setShowMessageOptions(false)}>
         {showHeader ? (
-                <div className="mr-1">
+                <div className="mr-1 flex-shrink-0">
                     <AvatarWithInitials username={message.username} />
                 </div>
             ) : (
-                <div className="w-5"></div> // Empty space to align with messages that have avatars
+                <div className="w-8 mr-1 flex-shrink-0"></div> // Empty space to align with messages that have avatars
             )}
         <div className="flex-1 flex-col">
         <div
@@ -107,7 +106,7 @@ const UserMessage = (props) => {
 
             <Popover open={showMessageOptions} onOpenChange={setShowMessageOptions}>
                 <div
-                    className="relative h-full w-full p-0.5 bg-gray-100 text-gray-800"
+                    className="relative h-full w-full p-0.5 text-gray-800"
 
                 >
                     {/* Username + Timestamp */}
@@ -229,7 +228,7 @@ const UserMessage = (props) => {
             </Popover>
 
         </div>
-            <div className="mt-1">
+            <div>
                 <ShowReactionsToMessage roomId={message.room_id} messageId={message.message_id} />
                 {/*{replyCount}*/}
             </div>

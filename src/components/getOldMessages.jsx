@@ -45,7 +45,7 @@ const GetOldMessages = ({ roomId }) => {
 
     const fetchMessageDetails = async (roomId) => {
         console.log(roomId,"message last seen pressed");
-        const response = await fetch(`${REST_API_PATH}/messages/info?room_id=${roomId}`,{
+        const response = await fetch(`${REST_API_PATH}/messages/info/${roomId}`,{
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -201,9 +201,9 @@ const GetOldMessages = ({ roomId }) => {
 
     return (
         <div id="all-messages">
-            <ul className="space-y-4">
+            <ul className="flex flex-col">
                 {allItems.map((item) => (
-                    <li key={item.id}>
+                    <li key={item.id} className="m-0">
                         <MessageItem item={item} />
                     </li>
                 ))}

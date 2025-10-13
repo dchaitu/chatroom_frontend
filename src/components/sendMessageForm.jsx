@@ -34,7 +34,7 @@ const SendMessageForm = (props) => {
     };
 
     return (
-        <div className="p-4 bg-white border-t">
+        <div className="p-4 bg-white">
             <form onSubmit={onFileAndMessageSubmit} className="flex flex-col gap-2">
                 <div className="flex items-stretch gap-2 relative">
                     <Textarea
@@ -50,39 +50,41 @@ const SendMessageForm = (props) => {
                         placeholder="Type your message..."
                         className="!border !border-gray-300 bg-white text-gray-900 shadow-lg shadow-gray-900/5 ring-4
                          ring-transparent placeholder:text-gray-500 focus:!border-gray-900 focus:!border-t-gray-900
-                         focus:ring-gray-900/10"
+                         focus:ring-gray-900/10 pr-40"
                         labelProps={{
                             className: "hidden",
                         }}
                         containerProps={{className: "min-w-0 flex-1"}}/>
 
-                    <Button
-                        type="submit"
-                        disabled={!newMessage.trim() && !file}
-                        className={`absolute right-3 top-1/4 -translate-y-1/2 p-2 rounded ${
-                            !newMessage.trim() && !file
-                                ? 'bg-gray-300 text-gray-500'
-                                : 'bg-green-500 text-white'
-                        }`}
-                    >
-                        <PaperAirplaneIcon className="h-5 w-5"/>
-                    </Button>
-                </div>
-                <div className="flex justify-start m-2">
-                    <label htmlFor="file-upload" className="cursor-pointer text-gray-600 hover:text-black">
-                        <FiPlusCircle className="h-6 w-6" />
-                    </label>
-                    <input type="file"
-                           id="file-upload"
-                           onChange={(e) => setFile(e.target.files[0])}
-                           className="text-sm hidden" />
-                    <button
-                        type="button"
-                        onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                        className="text-gray-600 hover:text-black"
-                    >
-                        <LuSmilePlus className="h-6 w-6 mx-2"/>
-                    </button>
+                    <div className="absolute left-3 bottom-3 flex items-center gap-3">
+                        <label htmlFor="file-upload" className="cursor-pointer text-gray-600 hover:text-black">
+                            <FiPlusCircle className="h-6 w-6" />
+                        </label>
+                        <input type="file"
+                               id="file-upload"
+                               onChange={(e) => setFile(e.target.files[0])}
+                               className="text-sm hidden" />
+                        <button
+                            type="button"
+                            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                            className="text-gray-600 hover:text-black"
+                        >
+                            <LuSmilePlus className="h-6 w-6"/>
+                        </button>
+                    </div>
+                    <div className="absolute right-3 bottom-3 flex items-center gap-3">
+                        <Button
+                            type="submit"
+                            disabled={!newMessage.trim() && !file}
+                            className={`p-2 rounded ${
+                                !newMessage.trim() && !file
+                                    ? 'bg-gray-300 text-gray-500'
+                                    : 'bg-green-500 text-white'
+                            }`}
+                        >
+                            <PaperAirplaneIcon className="h-5 w-5"/>
+                        </Button>
+                    </div>
                 </div>
 
                 {/* Emoji Picker Dropdown */}

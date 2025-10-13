@@ -33,9 +33,9 @@ const GetMessagesFromRoom = (props) => {
 
 
 
-    const scrollToBottom = useCallback(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, []);
+    // const scrollToBottom = useCallback(() => {
+    //     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    // }, []);
 
     const fetchRoomAdmins = useCallback(async () => {
         try {
@@ -97,9 +97,9 @@ const GetMessagesFromRoom = (props) => {
     }, [roomId, fetchRoomDetails]);
 
     // Auto-scroll to bottom when messages change
-    useEffect(() => {
-        scrollToBottom();
-    }, [messages]);
+    // useEffect(() => {
+    //     scrollToBottom();
+    // }, [messages]);
 
     // Polling effect
     useEffect(() => {
@@ -198,11 +198,11 @@ const GetMessagesFromRoom = (props) => {
 
 
     return (
-        <div className="bg-indigo-800  flex flex-col">
+        <div className="bg-indigo-800  flex flex-col h-screen">
+        {/*<div className="mr-2">*/}
             <RoomsSearchBar />
 
-        <div className="flex  overflow-hidden ">
-        <div className="flex  overflow-hidden bg-gray-100 font-sans min-w-0 w-full mb-1 mr-0.5">
+        <div className="flex flex-1 overflow-hidden font-sans min-w-0 w-full mb-2 ">
             {/* Vertical Sidebar */}
 
             <VerticalSideBar
@@ -214,22 +214,22 @@ const GetMessagesFromRoom = (props) => {
             />
 
             {/* Chat Area */}
-            <div className={`flex-1 flex flex-col ${showReply ? 'w-2/3' : 'w-full'}`}>
-                <div className="bg-white border-b p-4 flex-shrink-0">
+            <div className={`bg-white flex-1 flex flex-col rounded-tr-lg rounded-br-lg mr-2 shadow-xl ${showReply ? 'w-2/3' : 'w-full'}`}>
+                <div className=" border-b p-4 flex-shrink-0 rounded-tr-lg ">
                     {/*Room Header */}
                     <RoomHeader room={room} leaveRoom={handleLeaveRoom} roomAdmins={roomAdmins}/>
 
                 </div>
                 {/* Messages */}
 
-                <div className={`flex flex-row overflow-y-auto  ${showReply ? 'w-2/3' : 'w-full'}`}>
+                <div className={`flex-1 flex flex-row overflow-y-auto  ${showReply ? 'w-2/3' : 'w-full'}`}>
                     <div className="flex-1 " id="all-messages">
                         <GetOldMessages roomId={roomId}/>
                         <div ref={messagesEndRef}/>
                     </div>
 
                 </div>
-                <div className="flex-1 content-end flex-shrink-0">
+                <div className="content-end flex-shrink-0 mb-3 rounded-br-lg ">
                 <SendMessageForm handleSendMessage={handleSendMessage}
                                  initialMessage={newMessage}
                                  onMessageChange={setNewMessage}
@@ -249,7 +249,7 @@ const GetMessagesFromRoom = (props) => {
             )}
         </div>
         </div>
-        </div>
+        // </div>
     );
 };
 

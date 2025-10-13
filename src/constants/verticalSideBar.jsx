@@ -37,7 +37,7 @@ const VerticalSideBar = () => {
 
             <div className="flex flex-1 flex-col text-[11px] pt-[8px]">
 
-                <VerticalSideBarTab icon={<RiHome7Fill size={25} />} text="Home" func={goHome}/>
+                <VerticalSideBarTab  icon={<RiHome7Fill size={25} />} text="Home" func={goHome}/>
                 <VerticalSideBarTab icon={<TbMessages size={25} />} text="DMs" func={goHome}/>
                 <VerticalSideBarTab icon={<BsBell size={25} />} text="Activity" func={goHome}/>
                 <VerticalSideBarTab icon={<MdOutlineStickyNote2 size={25} />} text="Files" func={goHome}/>

@@ -73,11 +73,11 @@ const ShowReactionsToMessage = ({roomId, messageId}) => {
     }, {});
 
 
-    return (<div className="flex-1 flex-row gap-2 mt-1">
+    return (<div className="flex-1 flex-row gap-2">
         {Object.entries(groupedReactions).map((emoji,count) => {
           return(
               <span key={`${emoji}-${messageId}`}
-                         className="px-2 py-1 bg-gray-200 rounded-full text-sm">
+                         className="px-2 py-1 bg-gray-100 rounded-full text-sm">
               <button onClick={()=>handleEmojiClick(emoji)}>
                   <span>{emoji}</span>
               </button>

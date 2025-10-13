@@ -8,6 +8,7 @@ const MessageItem = ({ item }) => {
     }
 
     if (item.type === 'message') {
+        console.log("message item", item);
         return (
             <UserMessage
                 message={item.message}
