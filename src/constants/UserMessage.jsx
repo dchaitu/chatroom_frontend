@@ -12,14 +12,15 @@ import {PiDotsThreeOutlineVerticalFill} from "react-icons/pi";
 import {BiMessageRoundedDetail} from "react-icons/bi";
 import AddEmojiToMessage from "./addEmojiToMessage";
 import ShowReactionsToMessage from "./showReactionsToMessage";
+import {useUsers} from "../context/allUserContext";
+import {hover} from "@testing-library/user-event/dist/hover";
 
 const UserMessage = (props) => {
     const {message, replyCount,userMessages,showHeader = true,notReply=true} = props;
     const [showMessageOptions, setShowMessageOptions] = useState(false);
     const [showButton, setShowButton] = useState(false);
-    // const [replyCount, setReplyCount] = useState(null);
     const {toggleReply} = useReply();
-    const access_token = localStorage.getItem("access_token");
+    const userMap = useUsers();
     console.log("userMessages data ",userMessages)
     console.log("messages data ",message)
 
@@ -27,12 +28,6 @@ const UserMessage = (props) => {
         toggleReply(message);
     };
 
-
-
-    const showButtonFunc = ()=> {
-        console.log("show button");
-        setShowButton(!showButton);
-    }
 
     const getFileType = (filename) => {
         if (!filename) return 'file';
@@ -43,6 +38,21 @@ const UserMessage = (props) => {
         if (imageTypes.includes(ext)) return 'image';
         if (docTypes.includes(ext)) return 'document';
         return 'file';
+    };
+
+    const getUserProfilePic = (username) => {
+        console.log("userMap ",userMap)
+        if (userMap && userMap[username] && userMap[username].pic_url) {
+            const profilePic = userMap[username].pic_url;
+            return (
+                <img
+                    src={profilePic}
+                    alt="profile"
+                    className="rounded object-cover w-8 h-8"
+                />
+            );
+        }
+        return <AvatarWithInitials username={username} />;
     };
 
 
@@ -88,16 +98,22 @@ const UserMessage = (props) => {
     };
 
     return (
-        <div key={message.id} className={` flex items-start justify-start px-5 `}
+        <div key={message.id} className={` flex items-start justify-start px-5 hover:bg-gray-100`}
              onMouseEnter={() => setShowMessageOptions(true)}
              onMouseLeave={() => setShowMessageOptions(false)}>
         {showHeader ? (
                 <div className="mr-1 flex-shrink-0">
-                    <AvatarWithInitials username={message.username} />
+                    {getUserProfilePic(message.username)}
                 </div>
             ) : (
-                <div className="w-8 mr-1 flex-shrink-0"></div> // Empty space to align with messages that have avatars
-            )}
+                <div className="flex items-center group hover:cursor-pointer">
+                    <div className="w-8 mr-1 flex-shrink-0 relative">
+                        <span className="left-0 text-xs text-gray-500 ">
+                          {getTimeStamp(message.timestamp)}
+                        </span>
+                    </div>
+                </div>
+                    )}
         <div className="flex-1 flex-col">
         <div
             key={`${message.room_id}-${message.timestamp}`} id="message-info"

@@ -15,6 +15,7 @@ import {ReplyProvider} from "./context/ReplyContext";
 import {UserProvider} from "./context/userContext";
 import AddEmojiToMessage from "./constants/addEmojiToMessage";
 import {TooltipProvider} from "./components/ui/tooltip";
+import {AllUserProvider} from "./context/allUserContext";
 
 function App() {
 
@@ -23,6 +24,7 @@ function App() {
         <ReplyProvider>
           <UserProvider>
               <TooltipProvider>
+              <AllUserProvider>
               <Router>
         <div>
           <Routes>
@@ -42,6 +44,7 @@ function App() {
           </Routes>
         </div>
       </Router>
+                  </AllUserProvider>
               </TooltipProvider>
           </UserProvider>
         </ReplyProvider>

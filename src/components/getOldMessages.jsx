@@ -106,9 +106,9 @@ const GetOldMessages = ({ roomId }) => {
 
         // Check if we should start a new message group
         const isSameUser = message.username === lastUser;
-        const isWithinOneMinute = lastTime && (messageTime - lastTime) <= 60000; // 60,000 ms = 1 minute
+        // const isWithinOneMinute = lastTime && (messageTime - lastTime) <= 60000; // 60,000 ms = 1 minute
 
-        if (!isSameUser || !isWithinOneMinute) {
+        if (!isSameUser) {
             processGroup(); // Process any pending message group
         }
 
