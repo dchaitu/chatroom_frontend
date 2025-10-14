@@ -1,4 +1,5 @@
 const withMT = require("@material-tailwind/react/utils/withMT");
+const { themeColors } = require("./src/styles/theme");
 
 module.exports = withMT({
   content: [
@@ -9,7 +10,12 @@ module.exports = withMT({
   theme: {
     extend: {
       colors: {
-        // Add any custom colors here
+        background: themeColors.background,
+        content: themeColors.content,
+        border: themeColors.border,
+        'text-on-background': themeColors['text-on-background'],
+        'text-on-content': themeColors['text-on-content'],
+        'hover-on-background': themeColors['hover-on-background'],
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],

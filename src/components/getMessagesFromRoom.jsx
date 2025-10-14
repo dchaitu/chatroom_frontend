@@ -198,7 +198,7 @@ const GetMessagesFromRoom = (props) => {
 
 
     return (
-        <div className="bg-indigo-800  flex flex-col h-screen">
+        <div className="bg-background text-text-on-background  flex flex-col h-screen">
         {/*<div className="mr-2">*/}
             <RoomsSearchBar />
 
@@ -214,8 +214,8 @@ const GetMessagesFromRoom = (props) => {
             />
 
             {/* Chat Area */}
-            <div className={`bg-white flex-1 flex flex-col rounded-tr-lg rounded-br-lg mr-2 shadow-xl ${showReply ? 'w-2/3' : 'w-full'}`}>
-                <div className=" border-b p-4 flex-shrink-0 rounded-tr-lg ">
+            <div className={`bg-content text-text-on-content flex-1 flex flex-col rounded-tr-lg rounded-br-lg mr-2 shadow-xl ${showReply ? 'w-2/3' : 'w-full'}`}>
+                <div className=" border-b border-border p-4 flex-shrink-0 rounded-tr-lg ">
                     {/*Room Header */}
                     <RoomHeader room={room} leaveRoom={handleLeaveRoom} roomAdmins={roomAdmins}/>
 
@@ -242,7 +242,7 @@ const GetMessagesFromRoom = (props) => {
 
             {/*<div ref={scrollToBottom}></div>*/}
             { showReply && (
-                <div className={`fixed inset-y-0 right-0 w-1/3 bg-white border-l border-gray-200 transform transition-transform duration-300 ease-in-out ${
+                <div className={`fixed inset-y-0 right-0 w-1/3 bg-content border-l border-border transform transition-transform duration-300 ease-in-out ${
                     showReply ? 'translate-x-0' : 'translate-x-full'
                 }`}><GetReplyDrawer/>
                 </div>

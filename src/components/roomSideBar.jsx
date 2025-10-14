@@ -49,7 +49,7 @@ const RoomSideBar = ({ connected, currentRoomId }) => {
         <div className="w-[275px] h-full rounded-bl-lg  rounded-tl-lg  bg-gray-300 flex flex-col">
             {/* Header */}
             <div className="p-4">
-                <h1 className="text-lg font-bold">{username}</h1>
+                <h1 className="text-lg font-bold text-text-on-content">{username}</h1>
             </div>
 
 
@@ -57,13 +57,13 @@ const RoomSideBar = ({ connected, currentRoomId }) => {
             <div className="p-4 flex-1 rounded-bl-2xl">
                 <div className="flex items-center justify-between mb-2 ">
                     <Menu as="div" className="relative flex-1">
-                        <Menu.Button onClick={toggleRooms} className="flex items-center justify-start w-full text-left text-[#091861CC] hover:text-white font-semibold py-0.5 px-3 rounded-md hover:bg-indigo-100 transition-colors">
+                        <Menu.Button onClick={toggleRooms} className="flex items-center justify-start w-full text-left text-[#091861CC] hover:text-white font-semibold py-0.5 rounded-md hover:bg-indigo-100 transition-colors">
 
                             <IoCaretDownSharp className="w-4 h-4 mr-2" />
                             <span className="text-[15px]">Rooms</span>
                         </Menu.Button>
                         {isRoomsOpen && (
-                            <Menu.Items static className="mt-2 space-y-1 p-2">
+                            <Menu.Items static className="mt-2 space-y-1 py-2">
                                 {rooms.map((room) => (
                                     <Menu.Item key={room.room_id}>
                                         {({ focus }) => (

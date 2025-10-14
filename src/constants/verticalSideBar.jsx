@@ -25,13 +25,13 @@ const VerticalSideBar = () => {
     };
 
     const goHome = () => {
-        navigate('/');
+        navigate('/room/user/');
     }
 
 
     return(
         // TODO:
-        <div id="v-side-bar" className="bg-indigo-800 w-[70px] ">
+        <div id="v-side-bar" className="bg-background w-[70px] ">
 
         <div className="flex flex-col text-gray-300 text-xs font-semibold text-center h-full">
 
