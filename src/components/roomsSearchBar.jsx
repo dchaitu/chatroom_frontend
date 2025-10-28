@@ -5,7 +5,7 @@ import VerticalSideBarTab from "../constants/verticalSideBarTab";
 
 const RoomsSearchBar = () => {
     return (
-        <div className="top-0 z-10 flex items-center justify-between h-[50px] bg-indigo-800">
+        <div className="top-0 z-10 flex items-center justify-between h-[50px] bg-background">
             <div className="flex-1 max-w-2xl mx-auto px-5 my-1">
                 <div className="relative my-1">
                     <input

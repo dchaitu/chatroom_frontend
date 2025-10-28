@@ -10,12 +10,15 @@ module.exports = withMT({
   theme: {
     extend: {
       colors: {
-        background: themeColors.background,
-        content: themeColors.content,
-        border: themeColors.border,
-        'text-on-background': themeColors['text-on-background'],
-        'text-on-content': themeColors['text-on-content'],
-        'hover-on-background': themeColors['hover-on-background'],
+        background: 'var(--color-background)',
+        content: 'var(--color-content)',
+        border: 'var(--color-border)',
+        'text-on-background': 'var(--color-text-on-background)',
+        'text-on-content': 'var(--color-text-on-content)',
+        'hover-on-background': 'var(--color-hover-on-background)',
+        'text-on-bg-options': 'var(--color-text-on-bg-options)',
+        'text-on-options': 'var(--color-text-on-options)',
+
       },
       fontFamily: {
         sans: ['Inter', 'sans-serif'],

@@ -6,6 +6,7 @@ import {IoCaretDownSharp} from "react-icons/io5";
 import {PlusIcon} from "@heroicons/react/24/solid";
 import {FaPlusSquare} from "react-icons/fa";
 import {AiFillPlusSquare} from "react-icons/ai";
+import { useTheme } from "../context/ThemeContext";
 
 const RoomSideBar = ({ connected, currentRoomId }) => {
     const [rooms, setRooms] = useState([]);
@@ -13,6 +14,7 @@ const RoomSideBar = ({ connected, currentRoomId }) => {
     const [isRoomsOpen, setIsRoomsOpen] = useState(true);
     const access_token = localStorage.getItem("access_token");
     const username = localStorage.getItem("username");
+    const { setTheme } = useTheme();
 
     const navigate = useNavigate();
 
@@ -49,7 +51,7 @@ const RoomSideBar = ({ connected, currentRoomId }) => {
         <div className="w-[275px] h-full rounded-bl-lg  rounded-tl-lg  bg-gray-300 flex flex-col">
             {/* Header */}
             <div className="p-4">
-                <h1 className="text-lg font-bold text-text-on-content">{username}</h1>
+                <h1 className="text-lg font-bold text-text-on-options">{username}</h1>
             </div>
 
 
@@ -57,7 +59,7 @@ const RoomSideBar = ({ connected, currentRoomId }) => {
             <div className="p-4 flex-1 rounded-bl-2xl">
                 <div className="flex items-center justify-between mb-2 ">
                     <Menu as="div" className="relative flex-1">
-                        <Menu.Button onClick={toggleRooms} className="flex items-center justify-start w-full text-left text-[#091861CC] hover:text-white font-semibold py-0.5 rounded-md hover:bg-indigo-100 transition-colors">
+                        <Menu.Button onClick={toggleRooms} className="flex items-center justify-start w-full text-left text-text-on-bg-options hover:text-white font-semibold py-0.5 rounded-md hover:bg-text-on-bg-options transition-colors">
 
                             <IoCaretDownSharp className="w-4 h-4 mr-2" />
                             <span className="text-[15px]">Rooms</span>
@@ -69,9 +71,9 @@ const RoomSideBar = ({ connected, currentRoomId }) => {
                                         {({ focus }) => (
                                             <div
                                                 onClick={() => handleRoomClick(room.room_id)}
-                                                className={`flex items-center justify-between px-2 py-1.5 rounded-md cursor-pointer text-[#091861CC] ${
+                                                className={`flex items-center justify-between px-2 py-1.5 rounded-md cursor-pointer text-text-on-options ${
                                                     currentRoomId === room.room_id
-                                                        ? 'bg-[#1E328F] text-[#F1F3FC]'
+                                                        ? 'bg-text-on-bg-options text-[#F1F3FC]'
                                                         : focus
                                                             ? 'bg-gray-100'
                                                             : ''
@@ -89,7 +91,7 @@ const RoomSideBar = ({ connected, currentRoomId }) => {
                                     {/*TODO : Move create room to the bar*/}
                                     <div className="flex items-center">
                                         <AiFillPlusSquare className="w-4 h-4 mr-2 mt-1 text-white"/>
-                                        <span className="text-sm text-[#091861CC]">Add Rooms</span>
+                                        <span className="text-sm text-text-on-options">Add Rooms</span>
                                     </div>
                                 </Menu.Item>
                             </Menu.Items>
@@ -99,6 +101,43 @@ const RoomSideBar = ({ connected, currentRoomId }) => {
 
                     </button>
                 </div>
+            </div>
+            <div className="p-4 mt-auto border-t border-border">
+                <Menu as="div" className="relative">
+                    <Menu.Button className="flex items-center justify-between w-full text-left text-text-on-content hover:text-white font-semibold py-2 px-4 rounded-md hover:bg-hover-on-background transition-colors">
+                        <span>Change Theme</span>
+                        <IoCaretDownSharp className="w-4 h-4" />
+                    </Menu.Button>
+                    <Menu.Items className="absolute bottom-full mb-2 w-full bg-content rounded-md shadow-lg">
+                        <Menu.Item>
+                            {({ active }) => (
+                                <button
+                                    onClick={() => setTheme('blue')}
+                                    className={`${ active ? 'bg-hover-on-background text-text-on-background' : 'text-text-on-content' } group flex rounded-md items-center w-full px-2 py-2 text-sm`}>
+                                    Blue
+                                </button>
+                            )}
+                        </Menu.Item>
+                        <Menu.Item>
+                            {({ active }) => (
+                                <button
+                                    onClick={() => setTheme('red')}
+                                    className={`${ active ? 'bg-hover-on-background text-text-on-background' : 'text-text-on-content' } group flex rounded-md items-center w-full px-2 py-2 text-sm`}>
+                                    Red
+                                </button>
+                            )}
+                        </Menu.Item>
+                        <Menu.Item>
+                            {({ active }) => (
+                                <button
+                                    onClick={() => setTheme('green')}
+                                    className={`${ active ? 'bg-hover-on-background text-text-on-background' : 'text-text-on-content' } group flex rounded-md items-center w-full px-2 py-2 text-sm`}>
+                                    Green
+                                </button>
+                            )}
+                        </Menu.Item>
+                    </Menu.Items>
+                </Menu>
             </div>
         </div>
     );

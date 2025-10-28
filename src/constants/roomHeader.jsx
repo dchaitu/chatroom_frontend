@@ -251,8 +251,8 @@ const RoomHeader = ({ room, leaveRoom,roomAdmins}) => {
                         <div key={room_id}>
                             <Typography variant="h2">{room_name}</Typography>
                             <Typography variant="h5">{description}</Typography>
-                            <Typography variant="h6" className="mt-2">Users: {users.map((user)=> <span>{user} </span>)}</Typography>
-                            <Typography variant="h6" className="mt-2">Admin: {admins.map((user)=> <span>{user} </span>)}</Typography>
+                            <Typography variant="h6" className="mt-2">Users: {users.map((user)=> <span key={user}>{user} </span>)}</Typography>
+                            <Typography variant="h6" className="mt-2">Admin: {admins.map((user)=> <span key={user}>{user} </span>)}</Typography>
                         </div>
 
                 </DialogBody>
