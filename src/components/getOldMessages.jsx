@@ -187,8 +187,8 @@ const GetOldMessages = ({ roomId }) => {
         console.log("GetOldMessagesFromRoom", roomId);
 
         fetchMessages();
-        // intervalId = setInterval(fetchMessages, POLLING_INTERVAL)
-        // return () => clearInterval(intervalId);
+        intervalId = setInterval(fetchMessages, POLLING_INTERVAL)
+        return () => clearInterval(intervalId);
     }, [roomId,access_token]);
 
     if (loading) {
