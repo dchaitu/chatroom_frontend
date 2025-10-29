@@ -1,8 +1,6 @@
 import React, {useState, useEffect, useMemo, useRef} from "react";
 import {REST_API_PATH, formatMessageDate, POLLING_INTERVAL} from "../constants/constants";
-import UserMessage from "../constants/UserMessage";
 import {useReply} from "../context/ReplyContext";
-import DateSeparationLine from "../constants/dateSeparationLine";
 import MessageItem from "./MessageItem";
 
 const GetOldMessages = ({ roomId }) => {

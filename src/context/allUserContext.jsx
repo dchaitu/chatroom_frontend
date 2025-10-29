@@ -7,7 +7,7 @@ export function useUsers() {
 }
 
 export const AllUserProvider = ({children}) => {
-    const [usersMap, setUsersMap] = useState([]);
+    const [usersMap, setUsersMap] = useState({});
     const access_token = localStorage.getItem("access_token");
 
     const fetchAllUsers = async () => {
@@ -34,7 +34,7 @@ export const AllUserProvider = ({children}) => {
 
     useEffect(() => {
         fetchAllUsers();
-    }, []);
+    }, [access_token]);
 
 
     return (
