@@ -3,8 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { REST_API_PATH } from "../constants/constants";
 import { Menu } from "@headlessui/react";
 import {IoCaretDownSharp} from "react-icons/io5";
-import {PlusIcon} from "@heroicons/react/24/solid";
-import {FaPlusSquare} from "react-icons/fa";
 import {AiFillPlusSquare} from "react-icons/ai";
 import { useTheme } from "../context/ThemeContext";
 

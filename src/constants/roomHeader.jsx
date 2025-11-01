@@ -51,7 +51,7 @@ const RoomHeader = ({ room, leaveRoom,roomAdmins}) => {
         else {
             console.log(`${username} is not admin`);
         }
-    },[admins, username]);
+    },[admins, username, roomAdmins]);
 
 
     const fetchAvailableUsers = async () => {

@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
-import {avatar, Button, Typography} from "@material-tailwind/react";
+import {Button, Typography} from "@material-tailwind/react";
 import {useNavigate} from "react-router-dom";
-import {LOCAL_API_PATH, REST_API_PATH} from "../constants/constants";
+import {LOCAL_API_PATH} from "../constants/constants";
 import {Separator} from "./ui/separator";
 import {Avatar, AvatarFallback, AvatarImage} from "./ui/avatar";
 import {IoMailOutline} from "react-icons/io5";

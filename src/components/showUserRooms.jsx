@@ -131,7 +131,7 @@ const ShowUserRooms = () => {
         
         setLoading(true);
         try {
-            const response = await fetch(`${LOCAL_API_PATH}/create_room/`, {
+            const response = await fetch(`${LOCAL_API_PATH}/room/create/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

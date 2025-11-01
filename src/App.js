@@ -14,42 +14,37 @@ import {AuthProvider} from "./context/context";
 import {ReplyProvider} from "./context/ReplyContext";
 import {UserProvider} from "./context/userContext";
 import AddEmojiToMessage from "./constants/addEmojiToMessage";
-import {TooltipProvider} from "./components/ui/tooltip";
 import {AllUserProvider} from "./context/allUserContext";
+import {TooltipProvider} from "./components/ui/tooltip";
 
 function App() {
-
   return (
-      <AuthProvider>
-        <ReplyProvider>
-          <UserProvider>
+    <AuthProvider>
+      <ReplyProvider>
+        <UserProvider>
+          <AllUserProvider>
               <TooltipProvider>
-              <AllUserProvider>
-              <Router>
-        <div>
-          <Routes>
-            <Route exact path="/login" element={<Login />} />
-            <Route exact path="/register" element={<Register />} />
-            <Route exact path="/" element={<Home />} />
-            <Route path="/" element={<ProtectedRoute />} >
-              <Route path="/room/user" element={<ShowUserRooms/>} />
-              <Route exact path="/rooms/:room_id/messages/" element={<GetMessagesFromRoom/>}/>
-              <Route exact path="/user/" element={<UserProfile/>}/>
-              <Route path="/messages/:roomId" element={<GetOldMessages/>}/>
-              <Route path="/invalid" element={<InvalidRoute />} />
-            </Route>
-              <Route path="/emoji" element={<AddEmojiToMessage/>}/>
-            <Route path="*" element={<Navigate to="/invalid" />} />
-
-          </Routes>
-        </div>
-      </Router>
-                  </AllUserProvider>
+                <Router>
+                  <Routes>
+                    <Route exact path="/login" element={<Login />} />
+                    <Route exact path="/register" element={<Register />} />
+                    <Route exact path="/" element={<Home />} />
+                    <Route path="/" element={<ProtectedRoute />}>
+                      <Route path="/room/user" element={<ShowUserRooms/>} />
+                      <Route exact path="/rooms/:room_id/messages/" element={<GetMessagesFromRoom/>}/>
+                      <Route exact path="/user/" element={<UserProfile/>}/>
+                      <Route path="/messages/:roomId" element={<GetOldMessages/>}/>
+                      <Route path="/invalid" element={<InvalidRoute />} />
+                    </Route>
+                    <Route path="/emoji" element={<AddEmojiToMessage/>}/>
+                    <Route path="*" element={<Navigate to="/invalid" />} />
+                  </Routes>
+                </Router>
               </TooltipProvider>
-          </UserProvider>
-        </ReplyProvider>
-      </AuthProvider>
-
+          </AllUserProvider>
+        </UserProvider>
+      </ReplyProvider>
+    </AuthProvider>
   );
 }
 

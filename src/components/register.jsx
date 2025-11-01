@@ -20,10 +20,10 @@ const Register = () => {
     const navigate = useNavigate();
 
 
-
+    console.log("Register Component");
     const handleSubmit = async e => {
         e.preventDefault();
-        const response = await fetch(`${REST_API_PATH}/register/`, {
+        const response = await fetch(`${REST_API_PATH}/register`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

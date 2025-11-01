@@ -2,7 +2,6 @@ import {useState} from "react";
 import EmojiPicker from "emoji-picker-react";
 import {REST_API_PATH} from "./constants";
 import {LuSmilePlus} from "react-icons/lu";
-import {Dialog, DialogBody} from "@material-tailwind/react";
 import {Popover, PopoverContent, PopoverTrigger} from "../components/ui/popover";
 
 const AddEmojiToMessage = ({messageId}) => {
