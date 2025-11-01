@@ -6,12 +6,17 @@ phases:
       nodejs: 18
     commands:
       - echo "Installing dependencies..."
-      - npm ci
+      - npm install
 
   build:
     commands:
       - echo "Building the React app..."
       - npm run build
+
+  artifacts:
+    files:
+      - '**/*'
+      - '!node_modules/**'
 
   post_build:
     commands:
