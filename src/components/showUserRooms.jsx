@@ -65,7 +65,7 @@ const ShowUserRooms = () => {
     useEffect(()=> {
         const getUserName = async () => {
             if (access_token) {
-                const response = await fetch(`${REST_API_PATH}/user`,{
+                const response = await fetch(`${REST_API_PATH}/user/`,{
                     method: 'GET',
                     headers: {
                         "Content-Type": "application/json",
@@ -220,8 +220,8 @@ const ShowUserRooms = () => {
                 No of rooms:- {rooms.length}
                 {rooms.length === 0 ? (
                     <div className="text-center py-12 bg-white rounded-lg shadow">
-                        <Typography variant="h4" color="gray" className="mb-4">No rooms yet</Typography>
-                        <Typography color="gray" className="mb-6">Create your first room to start chatting!</Typography>
+                        <h2 className="mb-4 text-gray-500">No rooms yet</h2>
+                        <p className="mb-4 text-gray-500">Create your first room to start chatting!</p>
                         <Button 
                             onClick={handleOpen}
                             color="indigo" 
@@ -239,7 +239,7 @@ const ShowUserRooms = () => {
                 <AdminInvites/>
 
                 <div className="mt-12 bg-white p-6 rounded-lg shadow">
-                    <Typography>Not present above?</Typography>
+                    <Typography  variant="paragraph" className="mb-2">Not present above?</Typography>
                     <Typography variant="h4" className="mb-4">Join a Room</Typography>
 
                     <Dialog open={joinDialogOpen} handler={() => setJoinDialogOpen(!joinDialogOpen)}>

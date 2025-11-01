@@ -9,7 +9,7 @@ const InvalidRoute = () => {
     const goToHome = () => {
         const access_token = localStorage.getItem("access_token");
         if (access_token) {
-            navigate('/room/user');
+            navigate('/room/user/');
         } else {
             navigate('/');
         }
