@@ -5,25 +5,22 @@ phases:
     runtime-versions:
       nodejs: 18
     commands:
-      - echo "Installing dependencies..."
-      - npm install
+      - echo "Installing compatible npm..."
+        - npm install -g npm@9
+        - echo "Installing project dependencies..."
+        - rm -rf node_modules package-lock.json
+        - npm install
 
   build:
     commands:
       - echo "Building the React app..."
       - npm run build
 
-  artifacts:
-    files:
-      - '**/*'
-      - '!node_modules/**'
-
   post_build:
     commands:
       - echo "Build completed successfully."
-      # Sync build output to S3
+      - echo "Syncing build output to S3..."
       - aws s3 sync build/ s3://chatroom-frontend-s3/ --delete
-      # Optional: Invalidate CloudFront cache
 
 artifacts:
   files:

@@ -1,5 +1,4 @@
 import {Link} from "react-router-dom";
-import {Home} from "lucide-react";
 
 const Hero = ()=> {
     return <div className="bg-white">

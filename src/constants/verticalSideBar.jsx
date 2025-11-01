@@ -8,7 +8,6 @@ import {Button} from "../components/ui/button";
 import AvatarWithInitials from "./AvatarWithInitials";
 import {Sheet, SheetContent, SheetHeader, SheetTitle} from "../components/ui/sheet";
 import UserProfile from "../components/userProfile";
-import {Input} from "@material-tailwind/react";
 import {useNavigate} from "react-router-dom";
 import "./verticalSideBar.css";
 import VerticalSideBarTab from "./verticalSideBarTab";

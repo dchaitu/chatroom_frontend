@@ -34,7 +34,7 @@ export const AllUserProvider = ({children}) => {
 
     useEffect(() => {
         fetchAllUsers();
-    }, [access_token]);
+    }, [access_token, fetchAllUsers]);
 
 
     return (
