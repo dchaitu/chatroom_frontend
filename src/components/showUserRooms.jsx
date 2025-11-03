@@ -86,7 +86,7 @@ const ShowUserRooms = () => {
     useEffect(() => {
         const fetchRooms = async () => {
             try {
-                const response = await fetch(`${LOCAL_API_PATH}/room/user/`, {
+                const response = await fetch(`${REST_API_PATH}/room/user/`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
@@ -131,7 +131,7 @@ const ShowUserRooms = () => {
         
         setLoading(true);
         try {
-            const response = await fetch(`${LOCAL_API_PATH}/room/create/`, {
+            const response = await fetch(`${REST_API_PATH}/room/create/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

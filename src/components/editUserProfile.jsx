@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-import {LOCAL_API_PATH} from "../constants/constants";
+import {LOCAL_API_PATH, REST_API_PATH} from "../constants/constants";
 import {DialogTitle, Dialog, DialogHeader, DialogContent, DialogFooter} from "./ui/dialog";
 import {Button} from "./ui/button";
 import {Input} from "@material-tailwind/react";
@@ -32,7 +32,7 @@ const EditUserProfile = ({ user, onClose, onUserUpdated }) => {
         setLoading(true);
         setError('');
         try {
-            const response = await fetch(`${LOCAL_API_PATH}/user/`, {
+            const response = await fetch(`${REST_API_PATH}/user/`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

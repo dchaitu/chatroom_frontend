@@ -1,7 +1,7 @@
 export const siteKey = '6Lcp4Y0rAAAAAD_kq7y5aB5QlfGM5QLlbxywSlBu'
 // export const secretKey = '6Lcp4Y0rAAAAAMx574CaTgPELQT7aT24Aprreo84'
 export const REST_API_PATH = process.env.REACT_APP_API_URL
-export const LOCAL_API_PATH = process.env.REACT_APP_API_URL
+export const LOCAL_API_PATH = process.env.REACT_APP_LOCAL_API_URL
 export const JOIN_REQUEST = `${REST_API_PATH}/admin/pending-requests/?request_type=join_request`
 export const PENDING_INVITES = `${REST_API_PATH}/admin/pending-requests/?request_type=invite`
 export const RESPOND_REQUEST = (roomId) => `${REST_API_PATH}/admin/request/${roomId}/respond/`

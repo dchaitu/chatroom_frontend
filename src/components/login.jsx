@@ -5,7 +5,7 @@ import {LOCAL_API_PATH, REST_API_PATH, siteKey} from "../constants/constants";
 import { Card, Input, Button } from "@material-tailwind/react";
 import {CardBody, CardFooter } from "@material-tailwind/react";
 import { LockClosedIcon, UserCircleIcon } from '@heroicons/react/24/outline';
-import {AuthContext} from "../context/context";
+// import {useAuth} from "../context/context";
 
 const Login = () => {
     const [inputUsername, setInputUsername] = useState('');
@@ -13,7 +13,7 @@ const Login = () => {
     const [error, setError] = useState('');
     const navigate = useNavigate();
     const [recaptchaValue, setRecaptchaValue] = useState(null);
-    const {setUsername} = useContext(AuthContext);
+    // const {setUsername} = useAuth();
 
 
 
@@ -24,7 +24,7 @@ const Login = () => {
             return;
         }
         try {
-            const response = await fetch(`${LOCAL_API_PATH}/login/`, {
+            const response = await fetch(`${REST_API_PATH}/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -50,7 +50,7 @@ const Login = () => {
                 console.log(`Access Token is ${data.access_token}`);
                 console.log("Login successful, navigating to rooms");
                 localStorage.setItem('access_token', data.access_token)
-                setUsername(inputUsername)
+                // setUsername(inputUsername)
                 localStorage.setItem('username', inputUsername)
                 navigate(`/room/user/`);
             } else if (data.status_code === 401)
@@ -62,7 +62,7 @@ const Login = () => {
                 else if(data.status_code===404)
                 {
                     setError('User Not Found');
-                    navigate(`/register/`);
+                    navigate(`/register`);
                 }
                 else {
                     setError(data.detail || 'Login failed. Please try again.');

@@ -78,7 +78,7 @@ const GetMessagesFromRoom = (props) => {
 
     useEffect(() => {
         if (roomId) {
-            fetch(`${REST_API_PATH}/room/${roomId}/mark-read/`, {
+            fetch(`${REST_API_PATH}/room/${roomId}/mark-read`, {
                 method: "POST",
                 headers: {
                     "Authorization": `Bearer ${access_token}`,
@@ -86,7 +86,7 @@ const GetMessagesFromRoom = (props) => {
                 }
             });
         }
-    }, [roomId]);
+    }, [roomId, access_token]);
 
     // Fetch room details when component mounts or roomId changes
     useEffect(() => {

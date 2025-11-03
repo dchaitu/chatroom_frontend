@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {Button, Typography} from "@material-tailwind/react";
 import {useNavigate} from "react-router-dom";
-import {LOCAL_API_PATH} from "../constants/constants";
+import {LOCAL_API_PATH, REST_API_PATH} from "../constants/constants";
 import {Separator} from "./ui/separator";
 import {Avatar, AvatarFallback, AvatarImage} from "./ui/avatar";
 import {IoMailOutline} from "react-icons/io5";
@@ -53,7 +53,7 @@ const UserProfile = () => {
     // }
     const fetchUserProfile = async () => {
         try {
-            const response = await fetch(`${LOCAL_API_PATH}/user/`, {
+            const response = await fetch(`${REST_API_PATH}/user/`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
