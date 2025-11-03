@@ -51,32 +51,32 @@ const UserProfile = () => {
     //         console.log("Error not updated properly",err);
     //     }
     // }
-    const fetchUserProfile = async () => {
-        try {
-            const response = await fetch(`${REST_API_PATH}/user/`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${accessToken}`,
-
-                }
-            });
-            if (!response.ok) {
-                throw new Error("Failed to fetch user profile");
-            }
-            const data = await response.json();
-            console.log("user profile", data);
-            setUser(data);
-        }
-        catch (error) {
-            console.error("Error fetching user profile:", error);
-            setError("Failed to load user profile. Please try again later.");
-        } finally {
-            setLoading(false);
-        }
-    };
 
     useEffect(() => {
+        const fetchUserProfile = async () => {
+            try {
+                const response = await fetch(`${REST_API_PATH}/user/`, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${accessToken}`,
+
+                    }
+                });
+                if (!response.ok) {
+                    throw new Error("Failed to fetch user profile");
+                }
+                const data = await response.json();
+                console.log("user profile", data);
+                setUser(data);
+            }
+            catch (error) {
+                console.error("Error fetching user profile:", error);
+                setError("Failed to load user profile. Please try again later.");
+            } finally {
+                setLoading(false);
+            }
+        };
 
         fetchUserProfile();
     },[navigate]);

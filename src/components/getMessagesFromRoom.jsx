@@ -132,10 +132,10 @@ const GetMessagesFromRoom = (props) => {
 
         if (roomId) {
             fetchMessages(); // initial fetch
-            // intervalId = setInterval(fetchMessages, POLLING_INTERVAL);
+            intervalId = setInterval(fetchMessages, POLLING_INTERVAL);
         }
 
-        // return () => clearInterval(intervalId);
+        return () => clearInterval(intervalId);
     }, [roomId, access_token]);
 
 
