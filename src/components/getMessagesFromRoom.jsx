@@ -22,13 +22,14 @@ const GetMessagesFromRoom = (props) => {
         admins: []
     });
     const [roomAdmins, setRoomAdmins] = useState([]);
-    const [file, setFile] = useState(null);
     const {showReply} = useReply();
     const messagesEndRef = useRef(null);
     const navigate = useNavigate();
     const { room_id } = useParams();
     const roomId = room_id;
     const access_token = localStorage.getItem("access_token");
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
 
 
@@ -94,7 +95,7 @@ const GetMessagesFromRoom = (props) => {
             fetchRoomDetails();
             fetchRoomAdmins();
         }
-    }, [roomId, fetchRoomDetails]);
+    }, [roomId, fetchRoomDetails, fetchRoomAdmins]);
 
     // Auto-scroll to bottom when messages change
     // useEffect(() => {
@@ -121,12 +122,17 @@ const GetMessagesFromRoom = (props) => {
                     const data = await response.json();
                     setMessages(data);
                     setIsConnected(true);
+                    setError(null);
                 } else {
                     setIsConnected(false);
+                    setError("Failed to fetch messages");
                 }
             } catch (error) {
                 console.error("Polling error:", error);
                 setIsConnected(false);
+                setError("Failed to fetch messages");
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -141,6 +147,10 @@ const GetMessagesFromRoom = (props) => {
 
     const handleSendMessage = async (e, messageContent, file) => {
         e.preventDefault();
+        if (!messageContent?.trim() && !file) {
+            console.error("Cannot send empty message and no file");
+            return;
+        }
 
         const formData = new FormData();
         formData.append("room_id", roomId);
@@ -149,29 +159,43 @@ const GetMessagesFromRoom = (props) => {
         }
         if(file){
             formData.append("file", file);
+            console.log('File details:', {
+                name: file.name,
+                type: file.type,
+                size: file.size
+            });
         }
 
         try {
+            console.log('Sending request to:', `${REST_API_PATH}/messages/send/`);
+            console.log('Request payload:', {
+                room_id: roomId,
+                hasContent: !!messageContent?.trim(),
+                hasFile: !!file
+            });
+
             const response = await fetch(`${REST_API_PATH}/messages/send/`, {
                 method: "POST",
                 headers: {
-                    Authorization: `Bearer ${access_token}`,
+                    'Authorization': `Bearer ${access_token}`
                 },
                 body: formData
             });
+
             const data = await response.json();
-            // console.log("Data is ...",data);
+            console.log("Data is ...",data);
             if (response.ok) {
                 setMessages(prevMessages => [...prevMessages, data]);
                 console.log("File Data is ", data)
                 setNewMessage("");
-                setFile(null);
-                // reset input
-                // Optional: immediately append pending message
-                // Will be refreshed by polling automatically
             }
         } catch (err) {
-            console.error("Send message error:", err);
+            console.error("Send message error:", {
+                message: err.message,
+                name: err.name,
+                stack: err.stack
+            });
+            alert(`Failed to send message: ${err.message}`);
         }
     };
 
@@ -224,7 +248,7 @@ const GetMessagesFromRoom = (props) => {
 
                 <div className={`flex-1 flex flex-row overflow-y-auto  ${showReply ? 'w-2/3' : 'w-full'}`}>
                     <div className="flex-1 " id="all-messages">
-                        <GetOldMessages roomId={roomId}/>
+                        <GetOldMessages roomId={roomId} messages={messages} loading={loading} error={error} />
                         <div ref={messagesEndRef}/>
                     </div>
 
@@ -242,7 +266,7 @@ const GetMessagesFromRoom = (props) => {
 
             {/*<div ref={scrollToBottom}></div>*/}
             { showReply && (
-                <div className={`fixed inset-y-0 right-0 w-1/3 bg-content border-l border-border transform transition-transform duration-300 ease-in-out ${
+                <div className={`fixed inset-y-0 right-0 w-1/3 bg-content border-l border-border transform transition-transform duration-300 ease-in-out ${ 
                     showReply ? 'translate-x-0' : 'translate-x-full'
                 }`}><GetReplyDrawer/>
                 </div>

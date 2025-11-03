@@ -1,6 +1,6 @@
 import {Button, Textarea} from "@material-tailwind/react";
 import {PaperAirplaneIcon} from "@heroicons/react/24/solid";
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {FiPlusCircle} from "react-icons/fi";
 import {LuSmilePlus} from "react-icons/lu";
 import EmojiPicker from "emoji-picker-react";
@@ -11,6 +11,7 @@ const SendMessageForm = (props) => {
     const [newMessage, setNewMessage] = useState(initialMessage);
     const [file, setFile] = useState(null);
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    const fileInputRef = useRef(null);
 
     useEffect(() => {
         setNewMessage(initialMessage);
@@ -26,6 +27,10 @@ const SendMessageForm = (props) => {
         e.preventDefault();
         handleSendMessage(e,newMessage,file);
         setFile(null);
+        setNewMessage('');
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
     }
     const handleEmojiSelect = (emojiData) => {
         const emoji = emojiData.emoji;
@@ -62,6 +67,7 @@ const SendMessageForm = (props) => {
                         </label>
                         <input type="file"
                                id="file-upload"
+                               ref={fileInputRef}
                                onChange={(e) => setFile(e.target.files[0])}
                                className="text-sm hidden" />
                         <button

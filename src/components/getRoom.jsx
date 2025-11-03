@@ -1,4 +1,4 @@
-import React, {useContext, useState, useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 
 import {
     Card,
@@ -39,11 +39,11 @@ const GetRoom = ({ rooms }) => {
 
     useEffect(() => {
         fetchUnreadCount(roomIds)
-    }, []);
+    }, [roomIds, fetchUnreadCount]);
 
 
     const showRoomDetails = (room) => (
-        <Card className="mt-6 w-96">
+        <Card className="mt-6 w-96" key={room.room_id}>
             <CardBody>
 
                 <h4  color="blue-gray" className="mb-2">

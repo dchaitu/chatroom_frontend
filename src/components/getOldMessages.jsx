@@ -1,13 +1,10 @@
 import React, {useState, useEffect, useMemo, useRef} from "react";
-import {REST_API_PATH, formatMessageDate, POLLING_INTERVAL} from "../constants/constants";
+import {REST_API_PATH, formatMessageDate} from "../constants/constants";
 import {useReply} from "../context/ReplyContext";
 import MessageItem from "./MessageItem";
 
-const GetOldMessages = ({ roomId }) => {
+const GetOldMessages = ({ roomId, messages, loading, error }) => {
     console.log("GetOldMessages", roomId);
-    const [messages, setMessages] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
     const [replyCounts, setReplyCounts] = useState({});
     const access_token = localStorage.getItem("access_token");
     const scrollToBottomRef = useRef(null);
@@ -154,40 +151,6 @@ const GetOldMessages = ({ roomId }) => {
     // }, [messages.length]);
 
     console.log("GetOldMessages from console", roomId);
-    useEffect(() => {
-        if(!roomId) return;
-        let intervalId;
-
-        const fetchMessages = async () => {
-            try {
-                setLoading(true);
-                console.log("GetOldMessages from console requesting...", roomId);
-                const response = await fetch(`${REST_API_PATH}/messages/${roomId}`,{
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${access_token}`
-                    }
-                });
-                const data = await response.json();
-                console.log("Get old messages ",data);
-
-                setMessages(data);
-                console.log(response);
-                setError(null);
-            } catch (err) {
-                console.error("Error fetching messages:", err);
-                setError("Failed to load messages. Please try again later.");
-            } finally {
-                setLoading(false);
-            }
-        };
-        console.log("GetOldMessagesFromRoom", roomId);
-
-        fetchMessages();
-        intervalId = setInterval(fetchMessages, POLLING_INTERVAL)
-        return () => clearInterval(intervalId);
-    }, [roomId,access_token]);
 
     if (loading) {
         return <div>Loading messages...</div>;
