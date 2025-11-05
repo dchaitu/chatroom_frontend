@@ -1,5 +1,13 @@
 version: 0.2
 
+env:
+  variables:
+    NODE_OPTIONS: "--max-old-space-size=4096"
+    S3_BUCKET: "chatroom-frontend-s3"
+    CLOUDFRONT_DISTRIBUTION_ID: "E1M2B4FRDPCQ0P"
+  cache:
+    paths:
+      - 'node_modules/**/*'
 phases:
   install:
     runtime-versions:
