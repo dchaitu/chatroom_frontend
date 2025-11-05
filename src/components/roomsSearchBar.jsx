@@ -1,7 +1,5 @@
 import React from "react";
 import {HelpCircle, SearchIcon} from "lucide-react";
-import VerticalSideBar from "../constants/verticalSideBar";
-import VerticalSideBarTab from "../constants/verticalSideBarTab";
 
 const RoomsSearchBar = () => {
     return (

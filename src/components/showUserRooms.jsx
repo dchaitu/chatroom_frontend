@@ -4,7 +4,7 @@ import {Input, Typography, Button, Dialog, DialogHeader, DialogBody, DialogFoote
 import {useNavigate} from "react-router-dom";
 import NavbarDefault from "./navBarDefault";
 import { PlusIcon, ArrowRightIcon } from '@heroicons/react/24/solid';
-import {JOIN_REQUEST, LOCAL_API_PATH, REST_API_PATH} from "../constants/constants";
+import {JOIN_REQUEST, REST_API_PATH} from "../constants/constants";
 import AdminInvites from "./adminInvites";
 
 // Get messages in the current room

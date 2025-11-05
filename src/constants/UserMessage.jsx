@@ -1,10 +1,10 @@
 import AvatarWithInitials from "./AvatarWithInitials";
-import {formatMessageDate, getTimeStamp, REST_API_PATH} from "./constants";
+import {formatMessageDate, getTimeStamp} from "./constants";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/cjs/styles/prism';
-import React, {memo, useEffect, useState} from "react";
+import React, {memo, useState} from "react";
 
 import {Popover, PopoverContent, PopoverTrigger} from "@radix-ui/react-popover";
 import {useReply} from "../context/ReplyContext";
@@ -148,7 +148,7 @@ const UserMessage = (props) => {
                             ) : (
                                 <a
                                     target="_blank"
-                                    href={`${REST_API_PATH}${message.file_url}`}
+                                    href={`${message.file_url}`}
                                     download
                                     className="flex items-center gap-2 p-2 hover:bg-gray-50 rounded-md transition-colors"
                                 >

@@ -2,7 +2,7 @@
 import { createContext, useContext, useState } from 'react';
 import {REST_API_PATH} from "../constants/constants";
 
-const UserContext = createContext();
+const UserContext = createContext({});
 
 export const UserProvider = ({ children }) => {
     const [users, setUsers] = useState({});

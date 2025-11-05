@@ -8,7 +8,6 @@ import { useTheme } from "../context/ThemeContext";
 
 const RoomSideBar = ({ connected, currentRoomId }) => {
     const [rooms, setRooms] = useState([]);
-    const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [isRoomsOpen, setIsRoomsOpen] = useState(true);
     const access_token = localStorage.getItem("access_token");
     const username = localStorage.getItem("username");

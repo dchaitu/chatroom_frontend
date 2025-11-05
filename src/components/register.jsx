@@ -4,7 +4,7 @@ import ReCAPTCHA from 'react-google-recaptcha';
 import {REST_API_PATH, siteKey} from "../constants/constants";
 import { Card, Input, Button } from "@material-tailwind/react";
 import { CardBody, CardFooter } from "@material-tailwind/react";
-import { UserCircleIcon, LockClosedIcon, IdentificationIcon, UserGroupIcon } from '@heroicons/react/24/outline';
+import { UserCircleIcon, LockClosedIcon, IdentificationIcon } from '@heroicons/react/24/outline';
 import {MailIcon} from "lucide-react";
 
 const Register = () => {

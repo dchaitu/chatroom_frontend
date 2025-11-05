@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback, memo} from 'react';
 
 import {
     Card,
@@ -8,7 +8,6 @@ import {useNavigate} from "react-router-dom";
 import {REST_API_PATH} from "../constants/constants";
 
 const GetRoom = ({ rooms }) => {
-    // const { room_id, room_name } = room;
     const roomIds = rooms.map((room) => room.room_id);
     console.log("roomIds ", roomIds);
     const [unreadCount, setUnreadCount] = useState({});
@@ -18,7 +17,7 @@ const GetRoom = ({ rooms }) => {
      navigate(`/rooms/${room_id}/messages`);
     }
 
-    const fetchUnreadCount = async (roomIds) => {
+    const fetchUnreadCount = useCallback(async (roomIds) => {
         const response = await fetch(`${REST_API_PATH}/room/unread-count`, {
             method: 'POST',
             headers: {
@@ -34,12 +33,13 @@ const GetRoom = ({ rooms }) => {
             return acc;
         }, {});
         setUnreadCount(countsMap);
-        console.log("unreadCount for roomIds ", unreadCount);
-    };
+    },[access_token]);
 
     useEffect(() => {
-        fetchUnreadCount(roomIds)
-    }, [roomIds, fetchUnreadCount]);
+        if(roomIds.length>0) {
+            fetchUnreadCount(roomIds)
+        }
+    }, [JSON.stringify(roomIds), fetchUnreadCount]);
 
 
     const showRoomDetails = (room) => (
@@ -89,4 +89,4 @@ const GetRoom = ({ rooms }) => {
 }
 
 
-export default GetRoom;
+export default memo(GetRoom);
