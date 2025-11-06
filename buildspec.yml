@@ -5,31 +5,47 @@ env:
     NODE_OPTIONS: "--max-old-space-size=4096"
     S3_BUCKET: "chatroom-frontend-s3"
     CLOUDFRONT_DISTRIBUTION_ID: "E1M2B4FRDPCQ0P"
-  cache:
-    paths:
-      - 'node_modules/**/*'
+
+cache:
+  paths:
+    - 'node_modules/**/*'
+
 phases:
   install:
     runtime-versions:
       nodejs: 18
     commands:
+      - echo "Node version:"
+      - node --version
+      - echo "NPM version:"
+      - npm --version
       - echo "Installing compatible npm..."
-        - npm install -g npm@9
-        - echo "Installing project dependencies..."
-        - rm -rf node_modules package-lock.json
-        - npm install
+      - npm install -g npm@9
+
+  pre_build:
+    commands:
+      - echo "Installing project dependencies..."
+      - rm -rf node_modules package-lock.json
+      - npm install --legacy-peer-deps
+      - echo "Verifying TypeScript installation..."
+      - npm list typescript || npm install typescript@4.9.5 --save-dev --legacy-peer-deps
+      - echo "Verifying react-scripts installation..."
+      - npm list react-scripts || npm install react-scripts@5.0.1 --save-dev --legacy-peer-deps
 
   build:
     commands:
       - echo "Building the React app..."
-      - export NODE_OPTIONS="--max_old_space_size=4096"
       - npm run build
 
   post_build:
     commands:
       - echo "Build completed successfully."
+      - echo "Checking build output..."
+      - ls -la build/
       - echo "Syncing build output to S3..."
-      - aws s3 sync build/ s3://chatroom-frontend-s3/ --delete
+      - aws s3 sync build/ s3://$S3_BUCKET/ --delete
+      - echo "Invalidating CloudFront cache..."
+      - aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DISTRIBUTION_ID --paths "/*"
 
 artifacts:
   files:
