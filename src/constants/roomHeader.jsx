@@ -22,7 +22,7 @@ import {
     Typography
 } from "@material-tailwind/react";
 
-const RoomHeader = ({ room, leaveRoom,roomAdmins}) => {
+const RoomHeader = ({ room={}, leaveRoom,roomAdmins}) => {
     const {
         room_id = "",
         room_name = "",
@@ -43,7 +43,7 @@ const RoomHeader = ({ room, leaveRoom,roomAdmins}) => {
     const username = localStorage.getItem("username");
 
     useEffect(() => {
-        console.log(`${admins} admins`);
+        console.log(`${roomAdmins} roomAdmins`);
         if(roomAdmins.includes(username)) {
             setIsUserAdmin(true);
             console.log(`${username} is admin`);
@@ -51,7 +51,7 @@ const RoomHeader = ({ room, leaveRoom,roomAdmins}) => {
         else {
             console.log(`${username} is not admin`);
         }
-    },[admins, username, roomAdmins]);
+    },[username, roomAdmins]);
 
 
     const fetchAvailableUsers = async () => {
@@ -117,6 +117,7 @@ const RoomHeader = ({ room, leaveRoom,roomAdmins}) => {
     };
 
     const checkAdmin = (username) => {
+        console.log("roomAdmins", roomAdmins);
         if(roomAdmins.includes(username)) {
             return (
                 <span className="ml-2 border bg-green-500 text-light-green-100 text-xs px-2 py-0.5 rounded">
@@ -158,6 +159,7 @@ const RoomHeader = ({ room, leaveRoom,roomAdmins}) => {
                 },
                 body: updatedBody
             })
+            console.log("Room response", response);
         } catch (e) {
             console.error("Error updating room:", e)
         }
@@ -252,7 +254,7 @@ const RoomHeader = ({ room, leaveRoom,roomAdmins}) => {
                             <Typography variant="h2">{room_name}</Typography>
                             <Typography variant="h5">{description}</Typography>
                             <Typography variant="h6" className="mt-2">Users: {users.map((user)=> <span key={user}>{user} </span>)}</Typography>
-                            <Typography variant="h6" className="mt-2">Admin: {admins.map((user)=> <span key={user}>{user} </span>)}</Typography>
+                            {/*<Typography variant="h6" className="mt-2">Admin: {admins.map((user)=> <span key={user}>{user} </span>)}</Typography>*/}
                         </div>
 
                 </DialogBody>

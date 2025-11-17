@@ -1,17 +1,24 @@
-import React, {useState, useEffect, useRef, useCallback} from 'react';
-import {useNavigate, useParams} from 'react-router-dom';
-import {POLLING_INTERVAL, REST_API_PATH} from "../constants/constants";
-import GetOldMessages from "./getOldMessages";
-import RoomHeader from "../constants/roomHeader";
-import RoomSideBar from "./roomSideBar";
-import {useReply} from "../context/ReplyContext";
-import GetReplyDrawer from "./getReplyDrawer";
-import SendMessageForm from "./sendMessageForm";
-import VerticalSideBar from "../constants/verticalSideBar";
+import React, { useEffect, useRef, useState, useCallback, useMemo } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+
+
+import { useReply } from "../context/ReplyContext";
+import {useRoomMetadata} from "./useRoomMetadata";
+import {REST_API_PATH, formatMessageDate} from "../constants/constants";
 import RoomsSearchBar from "./roomsSearchBar";
+import VerticalSideBar from "../constants/verticalSideBar";
+import RoomSideBar from "./roomSideBar";
+import RoomHeader from "../constants/roomHeader";
+import SendMessageForm from "./sendMessageForm";
+import GetReplyDrawer from "./getReplyDrawer";
+import {useMessages} from "./useMessages";
+import MessageItem from "./MessageItem";
+import GetOldMessages from "./getOldMessages";
+import {useWebSocketConnection} from "./useWebSocketConnection";
+import MessagesList from "./messagesList";
 
 const GetMessagesFromRoom = (props) => {
-    const [messages, setMessages] = useState([]);
+    // const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const [isConnected, setIsConnected] = useState(false);
     const [room, setRoom] = useState({
@@ -22,21 +29,59 @@ const GetMessagesFromRoom = (props) => {
         admins: []
     });
     const [roomAdmins, setRoomAdmins] = useState([]);
-    const {showReply} = useReply();
+    // const {showReply} = useReply();
     const messagesEndRef = useRef(null);
     const navigate = useNavigate();
     const { room_id } = useParams();
     const roomId = room_id;
     const access_token = localStorage.getItem("access_token");
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    // const [loading, setLoading] = useState(true);
+    // const [error, setError] = useState(null);
+    const { showReply } = useReply();
+
+    const ws = useRef(null);
+    const { messages, loading, error, fetchMessages, setMessages } = useMessages(roomId, access_token, ws);
+    useEffect(() => {
+        if (!access_token) return;
+        const socket = new WebSocket(
+            `wss://3raigmqws9.execute-api.us-east-1.amazonaws.com/production/`,
+            access_token
+        );
+
+        socket.onopen = () => console.log("WS connected");
+        socket.onclose = (event) => {
+            console.log("WS disconnected", {
+                code: event.code,
+                reason: event.reason,
+                wasClean: event.wasClean
+            });
+        };
+
+        socket.onerror = (err) => {
+            console.error("WS error", err);
+            console.log("Socket state:", socket.readyState);
+        };
+
+        socket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            console.log("WS message:", data);
+
+            if (data.event === "new_message" && data.room_id === roomId) {
+                fetchMessages();
+            }
+        };
+
+        ws.current = socket;
+
+        return () => socket.close();
+    }, [roomId, access_token, fetchMessages]);
 
 
 
 
-    // const scrollToBottom = useCallback(() => {
-    //     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    // }, []);
+    const scrollToBottom = useCallback(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, []);
 
     const fetchRoomAdmins = useCallback(async () => {
         try {
@@ -76,110 +121,45 @@ const GetMessagesFromRoom = (props) => {
         }
     }, [roomId, access_token]);
 
-
-    useEffect(() => {
-        if (roomId) {
-            fetch(`${REST_API_PATH}/room/${roomId}/mark-read`, {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${access_token}`,
-                    "Content-Type": "application/json"
-                }
-            });
-        }
-    }, [roomId, access_token]);
-
-    // Fetch room details when component mounts or roomId changes
     useEffect(() => {
         if (roomId) {
             fetchRoomDetails();
             fetchRoomAdmins();
         }
-    }, [roomId, fetchRoomDetails, fetchRoomAdmins]);
+        }, [roomId, fetchRoomDetails, fetchRoomAdmins]);
 
-    // Auto-scroll to bottom when messages change
+
     // useEffect(() => {
-    //     scrollToBottom();
-    // }, [messages]);
-
-    // Polling effect
-    useEffect(() => {
-        let intervalId;
-
-        const fetchMessages = async () => {
-            try {
-                const response = await fetch(
-                    `${REST_API_PATH}/messages/${roomId}`,
-                    {
-                        method: "GET",
-                        headers: {
-                            "Content-Type": "application/json",
-                            'Authorization': `Bearer ${access_token}`
-                        }
-                    }
-                );
-                if (response.ok) {
-                    const data = await response.json();
-                    setMessages(data);
-                    setIsConnected(true);
-                    setError(null);
-                } else {
-                    setIsConnected(false);
-                    setError("Failed to fetch messages");
-                }
-            } catch (error) {
-                console.error("Polling error:", error);
-                setIsConnected(false);
-                setError("Failed to fetch messages");
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        if (roomId) {
-            fetchMessages(); // initial fetch
-            intervalId = setInterval(fetchMessages, POLLING_INTERVAL);
-        }
-
-        return () => clearInterval(intervalId);
-    }, [roomId, access_token]);
-
+    //     if (!access_token) return;
+    //
+    //     const socket = new WebSocket(
+    //         `wss://3raigmqws9.execute-api.us-east-1.amazonaws.com/production/`
+    //     );
+    //
+    //     socket.onopen = () => console.log("WS Connected");
+    //     socket.onclose = () => console.log("WS Disconnected");
+    //
+    //     ws.current = socket;
+    //
+    //     return () => socket.close();
+    // }, [access_token]);
 
     const handleSendMessage = async (e, messageContent, file) => {
         e.preventDefault();
-        if (!messageContent?.trim() && !file) {
-            console.error("Cannot send empty message and no file");
-            return;
-        }
+        if (!messageContent?.trim() && !file) return;
 
         const formData = new FormData();
         formData.append("room_id", roomId);
-        if(messageContent) {
-            formData.append("content", messageContent);
-        }
-        if(file){
-            formData.append("file", file);
-            console.log('File details:', {
-                name: file.name,
-                type: file.type,
-                size: file.size
-            });
-        }
+        if (messageContent) formData.append("content", messageContent);
+        if (file) formData.append("file", file);
 
         try {
-            console.log('Sending request to:', `${REST_API_PATH}/messages/send/`);
-            console.log('Request payload:', {
-                room_id: roomId,
-                hasContent: !!messageContent?.trim(),
-                hasFile: !!file
-            });
-
             const response = await fetch(`${REST_API_PATH}/messages/send/`, {
                 method: "POST",
                 headers: {
-                    'Authorization': `Bearer ${access_token}`
+                    Authorization: `Bearer ${access_token}`,
                 },
-                body: formData
+                body: formData,
             });
 
             const data = await response.json();
@@ -190,30 +170,24 @@ const GetMessagesFromRoom = (props) => {
                 setNewMessage("");
             }
         } catch (err) {
-            console.error("Send message error:", {
-                message: err.message,
-                name: err.name,
-                stack: err.stack
-            });
-            alert(`Failed to send message: ${err.message}`);
+            console.error("Send message error:", err);
         }
     };
 
     // Handle leaving the room
     const handleLeaveRoom = async () => {
         try {
-            const response = await fetch(`${REST_API_PATH}/leave_room/?room_id=${roomId}`, {
+            const res = await fetch(`${REST_API_PATH}/leave_room/?room_id=${roomId}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${access_token}`,
                 },
             });
-            const data = await response.json();
-            console.log("Leave room ", data);
+            await res.json();
             navigate(`/room/user/`);
-        } catch (error) {
-            console.error("Error leaving room:", error);
+        } catch (err) {
+            console.error("Error leaving room:", err);
         }
     };
 
@@ -248,7 +222,13 @@ const GetMessagesFromRoom = (props) => {
 
                 <div className={`flex-1 flex flex-row overflow-y-auto  ${showReply ? 'w-2/3' : 'w-full'}`}>
                     <div className="flex-1 " id="all-messages">
-                        <GetOldMessages roomId={roomId} messages={messages} loading={loading} error={error} />
+                        {/*<GetOldMessages roomId={roomId} messages={messages} loading={loading} error={error} />*/}
+                        <MessagesList
+                            messages={messages}
+                            roomId={roomId}
+                            loading={loading}
+                            error={error}
+                        />
                         <div ref={messagesEndRef}/>
                     </div>
 
@@ -273,8 +253,7 @@ const GetMessagesFromRoom = (props) => {
             )}
         </div>
         </div>
-        // </div>
     );
 };
 
-export default GetMessagesFromRoom;
+export default GetMessagesFromRoom
