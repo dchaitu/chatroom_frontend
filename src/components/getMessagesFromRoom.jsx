@@ -44,11 +44,20 @@ const GetMessagesFromRoom = (props) => {
     useEffect(() => {
         if (!access_token) return;
         const socket = new WebSocket(
-            `wss://3raigmqws9.execute-api.us-east-1.amazonaws.com/production/`,
-            access_token
+            `wss://3raigmqws9.execute-api.us-east-1.amazonaws.com/production`
         );
 
-        socket.onopen = () => console.log("WS connected");
+        socket.onopen = () => {
+            console.log("WS connected");
+
+            // Send initial message to register/join room
+            // This should match whatever route your backend expects
+            socket.send(JSON.stringify({
+                action: "sendMessage", // or create a new "joinRoom" action
+                room_id: roomId,
+                message: "joined" // or any initial message
+            }));
+        };
         socket.onclose = (event) => {
             console.log("WS disconnected", {
                 code: event.code,
@@ -56,11 +65,7 @@ const GetMessagesFromRoom = (props) => {
                 wasClean: event.wasClean
             });
         };
-
-        socket.onerror = (err) => {
-            console.error("WS error", err);
-            console.log("Socket state:", socket.readyState);
-        };
+        socket.onerror = (err) => console.error("WS error", err);
 
         socket.onmessage = (event) => {
             const data = JSON.parse(event.data);
@@ -73,7 +78,11 @@ const GetMessagesFromRoom = (props) => {
 
         ws.current = socket;
 
-        return () => socket.close();
+        return () => {
+            if (socket.readyState === WebSocket.OPEN) {
+                socket.close();
+            }
+        };
     }, [roomId, access_token, fetchMessages]);
 
 
@@ -129,20 +138,9 @@ const GetMessagesFromRoom = (props) => {
         }, [roomId, fetchRoomDetails, fetchRoomAdmins]);
 
 
-    // useEffect(() => {
-    //     if (!access_token) return;
-    //
-    //     const socket = new WebSocket(
-    //         `wss://3raigmqws9.execute-api.us-east-1.amazonaws.com/production/`
-    //     );
-    //
-    //     socket.onopen = () => console.log("WS Connected");
-    //     socket.onclose = () => console.log("WS Disconnected");
-    //
-    //     ws.current = socket;
-    //
-    //     return () => socket.close();
-    // }, [access_token]);
+    useEffect(() => {
+        scrollToBottom();
+    }, []);
 
     const handleSendMessage = async (e, messageContent, file) => {
         e.preventDefault();
@@ -222,13 +220,13 @@ const GetMessagesFromRoom = (props) => {
 
                 <div className={`flex-1 flex flex-row overflow-y-auto  ${showReply ? 'w-2/3' : 'w-full'}`}>
                     <div className="flex-1 " id="all-messages">
-                        {/*<GetOldMessages roomId={roomId} messages={messages} loading={loading} error={error} />*/}
-                        <MessagesList
-                            messages={messages}
-                            roomId={roomId}
-                            loading={loading}
-                            error={error}
-                        />
+                        <GetOldMessages roomId={roomId} messages={messages} loading={loading} error={error} />
+                        {/*<MessagesList*/}
+                        {/*    messages={messages}*/}
+                        {/*    roomId={roomId}*/}
+                        {/*    loading={loading}*/}
+                        {/*    error={error}*/}
+                        {/*/>*/}
                         <div ref={messagesEndRef}/>
                     </div>
 

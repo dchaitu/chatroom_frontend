@@ -76,8 +76,8 @@ const RoomSideBar = ({ connected, currentRoomId }) => {
                                                             : ''
                                                 }`}
                                             >
-                                                <span className="text-sm"># {room.room_name}</span>
-                                                <span className="text-xs text-gray-500">{room.users?.length || 0}</span>
+                                                <span className="text-sm text-white"># {room.room_name}</span>
+                                                <span className="text-xs text-white">{room.users?.length || 0}</span>
                                             </div>
                                         )}
                                     </Menu.Item>
