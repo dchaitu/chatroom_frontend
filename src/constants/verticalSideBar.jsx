@@ -11,6 +11,7 @@ import UserProfile from "../components/userProfile";
 import {useNavigate} from "react-router-dom";
 import "./verticalSideBar.css";
 import VerticalSideBarTab from "./verticalSideBarTab";
+import {useTheme} from "../context/ThemeContext";
 
 
 const VerticalSideBar = () => {
@@ -30,7 +31,7 @@ const VerticalSideBar = () => {
 
     return(
         // TODO:
-        <div id="v-side-bar" className="bg-background w-[70px] ">
+        <div id="v-side-bar" className={` w-[70px]`}>
 
         <div className="flex flex-col text-gray-300 text-xs font-semibold text-center h-full">
 

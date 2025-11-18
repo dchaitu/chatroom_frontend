@@ -11,6 +11,7 @@ module.exports = withMT({
     extend: {
       colors: {
         background: 'var(--color-background)',
+        'component-background': 'var(--color-component-background)',
         content: 'var(--color-content)',
         border: 'var(--color-border)',
         'text-on-background': 'var(--color-text-on-background)',

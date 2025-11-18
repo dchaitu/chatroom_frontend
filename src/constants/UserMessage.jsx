@@ -107,9 +107,9 @@ const UserMessage = (props) => {
             ) : (
                 <div className="flex items-center group hover:cursor-pointer">
                     <div className="w-8 mr-1 flex-shrink-0 relative">
-                        <span className="left-0 text-xs text-gray-500 ">
-                          {getTimeStamp(message.timestamp)}
-                        </span>
+                    <span className="left-0 text-xs text-gray-500 ">
+                      {showMessageOptions && getTimeStamp(message.timestamp)}
+                    </span>
                     </div>
                 </div>
                     )}
@@ -128,7 +128,7 @@ const UserMessage = (props) => {
                     { showHeader &&
                     <div className="flex justify-start items-baseline ">
                         <span className="font-semibold text-sm hover:underline hover:cursor-pointer">{message.username}</span>
-                        <span className="text-xs text-gray-500 px-2" >{message.timestamp ? getTimeStamp(message.timestamp) : ""}</span>
+                        <span className="text-xs text-gray-500 px-2" >{showMessageOptions && message.timestamp ? getTimeStamp(message.timestamp) : ""}</span>
                     </div>}
                     {message.file_url && (
                         <div className="my-1 border border-gray-200 rounded-md bg-white">

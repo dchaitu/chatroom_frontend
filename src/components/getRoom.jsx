@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback, memo} from 'react';
+import React, {useState, useEffect, useCallback, memo, useMemo} from 'react';
 
 import {
     Card,
@@ -6,9 +6,10 @@ import {
 } from "@material-tailwind/react";
 import {useNavigate} from "react-router-dom";
 import {REST_API_PATH} from "../constants/constants";
+import {FaArrowRightToBracket} from "react-icons/fa6";
 
 const GetRoom = ({ rooms }) => {
-    const roomIds = rooms.map((room) => room.room_id);
+    const roomIds = useMemo(() => rooms.map(r => r.room_id), [rooms]);
     console.log("roomIds ", roomIds);
     const [unreadCount, setUnreadCount] = useState({});
     const navigate = useNavigate();
@@ -17,7 +18,10 @@ const GetRoom = ({ rooms }) => {
      navigate(`/rooms/${room_id}/messages`);
     }
 
+
+
     const fetchUnreadCount = useCallback(async (roomIds) => {
+        if (!roomIds || roomIds.length === 0) return;
         const response = await fetch(`${REST_API_PATH}/room/unread-count`, {
             method: 'POST',
             headers: {
@@ -39,7 +43,7 @@ const GetRoom = ({ rooms }) => {
         if(roomIds.length>0) {
             fetchUnreadCount(roomIds)
         }
-    }, [JSON.stringify(roomIds), fetchUnreadCount]);
+    }, [roomIds.join(","), fetchUnreadCount]);
 
 
     const showRoomDetails = (room) => (
@@ -61,20 +65,7 @@ const GetRoom = ({ rooms }) => {
             <CardFooter className="pt-0">
                 <Button size="sm" onClick={()=>goToRoomMessages(room.room_id)} variant="text" className="flex items-center gap-2">
                     Go to Room
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth={2}
-                        stroke="currentColor"
-                        className="h-4 w-4"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3"
-                        />
-                    </svg>
+                    <FaArrowRightToBracket/>
                 </Button>
             </CardFooter>
         </Card>

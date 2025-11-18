@@ -12,8 +12,16 @@ export const CustomThemeProvider = ({ children }) => {
     const root = window.document.documentElement;
     const selectedTheme = themes[theme];
 
-    for (const [key, value] of Object.entries(selectedTheme)) {
-      root.style.setProperty(`--color-${key}`, value);
+    if(!selectedTheme.isGradient) {
+      for (const [key, value] of Object.entries(selectedTheme)) {
+        if (key !== 'isGradient') {
+          root.style.setProperty(`--color-${key}`, value);
+        }
+      }
+    }
+    else {
+      root.style.setProperty('--color-gradient-from', selectedTheme.gradientFrom);
+      root.style.setProperty('--color-gradient-to', selectedTheme.gradientTo);
     }
   }, [theme]);
 

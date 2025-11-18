@@ -13,7 +13,7 @@ const RoomsSearchBar = () => {
                     <SearchIcon className="absolute right-3 top-2.5 h-4 w-4 text-[#F0F3FC40]" />
                 </div>
             </div>
-            <div className="ml-4">
+            <div className="mr-2">
                 <HelpCircle className="h-5 w-5 text-gray-400 hover:text-white cursor-pointer" />
                 {/*<VerticalSideBarTab icon={<HelpCircle className="h-5 w-5 text-gray-400 hover:text-white hover:mx-0 cursor-pointer" />} />*/}
             </div>

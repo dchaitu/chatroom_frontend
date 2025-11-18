@@ -5,15 +5,18 @@ import { Menu } from "@headlessui/react";
 import {IoCaretDownSharp} from "react-icons/io5";
 import {AiFillPlusSquare} from "react-icons/ai";
 import { useTheme } from "../context/ThemeContext";
+import {FaPlus} from "react-icons/fa6";
 
 const RoomSideBar = ({ connected, currentRoomId }) => {
     const [rooms, setRooms] = useState([]);
     const [isRoomsOpen, setIsRoomsOpen] = useState(true);
     const access_token = localStorage.getItem("access_token");
     const username = localStorage.getItem("username");
-    const { setTheme } = useTheme();
+    const { theme, setTheme } = useTheme();
 
     const navigate = useNavigate();
+
+    const bgClass = theme ==="gradient"? "bg-gradient-to-r from-blue-200 to-red-200":"bg-background";
 
     useEffect(() => {
         const getUserRooms = async () => {
@@ -87,7 +90,7 @@ const RoomSideBar = ({ connected, currentRoomId }) => {
                                 <Menu.Item className="mt-2 space-y-1">
                                     {/*TODO : Move create room to the bar*/}
                                     <div className="flex items-center">
-                                        <AiFillPlusSquare className="w-4 h-4 mr-2 mt-1 text-white"/>
+                                        <FaPlus className="w-4 h-4 mr-2 mt-1 text-black"/>
                                         <span className="text-sm text-text-on-options">Add Rooms</span>
                                     </div>
                                 </Menu.Item>
@@ -130,6 +133,15 @@ const RoomSideBar = ({ connected, currentRoomId }) => {
                                     onClick={() => setTheme('green')}
                                     className={`${ active ? 'bg-hover-on-background text-text-on-background' : 'text-text-on-content' } group flex rounded-md items-center w-full px-2 py-2 text-sm`}>
                                     Green
+                                </button>
+                            )}
+                        </Menu.Item>
+                        <Menu.Item>
+                            {({ active }) => (
+                                <button
+                                    onClick={() => setTheme('gradient')}
+                                    className={`${ active ? `bg-hover-on-background ${bgClass} text-text-on-background` : 'text-text-on-content' } group flex rounded-md items-center w-full px-2 py-2 text-sm`}>
+                                    Gradient
                                 </button>
                             )}
                         </Menu.Item>
