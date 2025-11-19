@@ -20,8 +20,8 @@ const UserMessage = (props) => {
     const [showButton, setShowButton] = useState(false);
     const {toggleReply} = useReply();
     const userMap = useUsers();
-    console.log("userMessages data ",userMessages)
-    console.log("messages data ",message)
+    // console.log("userMessages data ",userMessages)
+    // console.log("messages data ",message)
 
     const handleReplyClick = (message) => {
         toggleReply(message);
@@ -40,7 +40,7 @@ const UserMessage = (props) => {
     };
 
     const getUserProfilePic = (username) => {
-        console.log("userMap ",userMap)
+        // console.log("userMap ",userMap)
         if (userMap && userMap[username] && userMap[username].pic_url) {
             const profilePic = userMap[username].pic_url;
             return (
@@ -102,7 +102,7 @@ const UserMessage = (props) => {
              onMouseLeave={() => setShowMessageOptions(false)}>
         {showHeader ? (
                 <div className="mr-1 flex-shrink-0">
-                    {getUserProfilePic(message.username)}
+                    {getUserProfilePic(message.username|| message.user)}
                 </div>
             ) : (
                 <div className="flex items-center group hover:cursor-pointer">

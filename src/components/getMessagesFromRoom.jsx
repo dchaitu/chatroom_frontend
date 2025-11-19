@@ -16,6 +16,7 @@ import MessageItem from "./MessageItem";
 import GetOldMessages from "./getOldMessages";
 import {useWebSocketConnection} from "./useWebSocketConnection";
 import MessagesList from "./messagesList";
+import {useTheme} from "../context/ThemeContext";
 
 const GetMessagesFromRoom = (props) => {
     // const [messages, setMessages] = useState([]);
@@ -41,6 +42,8 @@ const GetMessagesFromRoom = (props) => {
 
     const ws = useRef(null);
     const { messages, loading, error, fetchMessages, setMessages } = useMessages(roomId, access_token, ws);
+    const { theme } = useTheme();
+    const bgClass = theme === "gradient" ? "bg-gradient-to-r from-blue-200 to-red-300" : "bg-component-background";
     useEffect(() => {
         if (!access_token) return;
         const socket = new WebSocket(
@@ -53,7 +56,7 @@ const GetMessagesFromRoom = (props) => {
             // Send initial message to register/join room
             // This should match whatever route your backend expects
             socket.send(JSON.stringify({
-                action: "sendMessage", // or create a new "joinRoom" action
+                action: "broadcastMessage", // or create a new "joinRoom" action
                 room_id: roomId,
                 message: "joined" // or any initial message
             }));
@@ -85,6 +88,17 @@ const GetMessagesFromRoom = (props) => {
         };
     }, [roomId, access_token, fetchMessages]);
 
+    useEffect(() => {
+        if (!roomId) return;
+
+        fetch(`${REST_API_PATH}/room/${roomId}/mark-read`, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${access_token}`,
+                "Content-Type": "application/json",
+            },
+        });
+    }, [roomId]);
 
 
 
@@ -192,9 +206,8 @@ const GetMessagesFromRoom = (props) => {
 
 
 
-
     return (
-        <div className="bg-background text-text-on-background  flex flex-col h-screen">
+        <div className={`${bgClass} text-text-on-background  flex flex-col h-screen`}>
         {/*<div className="mr-2">*/}
             <RoomsSearchBar />
 

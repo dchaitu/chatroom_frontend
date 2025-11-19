@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { REST_API_PATH } from "../constants/constants";
 import { Menu } from "@headlessui/react";
 import {IoCaretDownSharp} from "react-icons/io5";
-import {AiFillPlusSquare} from "react-icons/ai";
 import { useTheme } from "../context/ThemeContext";
 import {FaPlus} from "react-icons/fa6";
 
@@ -48,7 +47,7 @@ const RoomSideBar = ({ connected, currentRoomId }) => {
     };
 
     return (
-        <div className="w-[275px] h-full rounded-bl-lg  rounded-tl-lg  bg-gray-300 flex flex-col">
+        <div className="w-[275px] h-full rounded-bl-lg  rounded-tl-lg  bg-white flex flex-col">
             {/* Header */}
             <div className="p-4">
                 <h1 className="text-lg font-bold text-text-on-options">{username}</h1>
@@ -65,22 +64,22 @@ const RoomSideBar = ({ connected, currentRoomId }) => {
                             <span className="text-[15px]">Rooms</span>
                         </Menu.Button>
                         {isRoomsOpen && (
-                            <Menu.Items static className="mt-2 space-y-1 py-2">
+                            <Menu.Items static className="mt-2 space-y-1 py-2 text-text-on-options">
                                 {rooms.map((room) => (
                                     <Menu.Item key={room.room_id}>
                                         {({ focus }) => (
                                             <div
                                                 onClick={() => handleRoomClick(room.room_id)}
-                                                className={`flex items-center justify-between px-2 py-1.5 rounded-md cursor-pointer text-text-on-options ${
+                                                className={`flex items-center justify-between px-2 py-1.5 rounded-md cursor-pointer ${
                                                     currentRoomId === room.room_id
                                                         ? 'bg-text-on-bg-options text-[#F1F3FC]'
                                                         : focus
-                                                            ? 'bg-gray-100'
+                                                            ? 'bg-gray-100 text-white'
                                                             : ''
                                                 }`}
                                             >
-                                                <span className="text-sm text-white"># {room.room_name}</span>
-                                                <span className="text-xs text-white">{room.users?.length || 0}</span>
+                                                <span className="text-sm"># {room.room_name}</span>
+                                                {/*<span className="text-xs text-white">{room.users?.length || 0}</span>*/}
                                             </div>
                                         )}
                                     </Menu.Item>
@@ -91,7 +90,7 @@ const RoomSideBar = ({ connected, currentRoomId }) => {
                                     {/*TODO : Move create room to the bar*/}
                                     <div className="flex items-center">
                                         <FaPlus className="w-4 h-4 mr-2 mt-1 text-black"/>
-                                        <span className="text-sm text-text-on-options">Add Rooms</span>
+                                        <span className="text-sm ">Add Rooms</span>
                                     </div>
                                 </Menu.Item>
                             </Menu.Items>

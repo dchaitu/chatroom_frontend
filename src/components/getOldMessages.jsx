@@ -75,7 +75,7 @@ const GetOldMessages = ({ roomId, messages, loading, error }) => {
             grouped.push({
                 type: 'messageGroup',
                 messages: [...messageGroup],
-                user: messageGroup[0].username,
+                username: messageGroup[0].username,
                 id: `group-${messageGroup[0].message_id}`
             });
             messageGroup = [];
