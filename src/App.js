@@ -31,7 +31,7 @@ function App() {
                     <Route exact path="/" element={<Home />} />
                     <Route path="/" element={<ProtectedRoute />}>
                       <Route path="/room/user" element={<ShowUserRooms/>} />
-                      <Route exact path="/rooms/:room_id/messages/" element={<GetMessagesFromRoom/>}/>
+                      <Route exact path="/rooms/:roomId/messages/" element={<GetMessagesFromRoom/>}/>
                       <Route exact path="/user/" element={<UserProfile/>}/>
                       <Route path="/messages/:roomId" element={<GetOldMessages/>}/>
                       <Route path="/invalid" element={<InvalidRoute />} />

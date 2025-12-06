@@ -1,7 +1,7 @@
-import {useCallback, useEffect, useState} from "react";
-import {REST_API_PATH} from "../constants/constants";
+import { useCallback, useEffect, useState } from "react";
+import { REST_API_PATH } from "../constants/constants";
 
-export function useMessages(roomId, token, wsRef) {
+export function useMessages(roomId, token, socket) {
     const [messages, setMessages] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -34,19 +34,38 @@ export function useMessages(roomId, token, wsRef) {
 
     // WS listener
     useEffect(() => {
-        if (!wsRef.current) return;
+        if (!socket) return;
 
-        wsRef.current.onmessage = (event) => {
+        socket.onmessage = (event) => {
+            console.log("WS message received:", event.data);
             let data = {};
             try {
                 data = JSON.parse(event.data);
-            } catch {}
+                console.log("Parsed WS data:", data);
+            } catch (e) {
+                console.error("Failed to parse WS message:", e);
+                return;
+            }
 
-            if (data.event === "new_message" && data.room_id === roomId) {
+            // Handle broadcast signal from lambda.py ({"event": "new_message", "room_id": ...})
+            // Use loose equality to handle potential string/number mismatches
+            if (data.event === "new_message" && data.room_id == roomId) {
+                console.log("Received new_message signal, fetching messages...");
                 fetchMessages();
+                return;
+            }
+
+            // Fallback for full message objects (if architecture changes back)
+            if (data.message_id && data.room_id === roomId) {
+                setMessages(prevMessages => {
+                    if (prevMessages.some(msg => msg.message_id === data.message_id)) {
+                        return prevMessages;
+                    }
+                    return [...prevMessages, data];
+                });
             }
         };
-    }, [roomId, fetchMessages, wsRef]);
+    }, [roomId, socket, fetchMessages]);
 
     return { messages, loading, error, fetchMessages, setMessages };
 }

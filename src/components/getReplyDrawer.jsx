@@ -33,7 +33,7 @@ const GetReplyDrawer = () => {
     const getMessageReplies = async () => {
         if (!currentMessage) {return}
         try {
-            const response = await fetch(`${REST_API_PATH}/reply/show-replies-for/${currentMessage.message_id}`, {
+            const response = await fetch(`${REST_API_PATH}/reply/show-replies-for/${currentMessage.message_id}/`, {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
@@ -41,8 +41,14 @@ const GetReplyDrawer = () => {
                 },
             });
             const data = await response.json();
-            console.log("Get replies ",data);
-            setReplies(data);
+            if (Array.isArray(data)) {
+                setReplies(data);
+            } else if (typeof data === 'object' && data !== null) {
+                const arrayProperty = Object.values(data).find(value => Array.isArray(value));
+                setReplies(arrayProperty || []);
+            } else {
+                setReplies([]);
+            }
 
         }
         catch (error) {

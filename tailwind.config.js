@@ -1,5 +1,5 @@
 const withMT = require("@material-tailwind/react/utils/withMT");
-const { themeColors } = require("./src/styles/theme");
+const { themeColors } = require("../insta_ai_creator_frontend/src/styles/theme");
 
 module.exports = withMT({
   content: [

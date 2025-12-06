@@ -3,14 +3,15 @@ import {REST_API_PATH, formatMessageDate} from "../constants/constants";
 import {useReply} from "../context/ReplyContext";
 import MessageItem from "./MessageItem";
 
-const GetOldMessages = ({ roomId, messages, loading, error }) => {
+const GetOldMessages = (props) => {
+    console.log("props are ",props)
+    const { roomId, messages, loading, error } = props;
     console.log("GetOldMessages", roomId);
     const [replyCounts, setReplyCounts] = useState({});
     const access_token = localStorage.getItem("access_token");
     const scrollToBottomRef = useRef(null);
     const [userMessages, setUserMessages] = useState([]);
 
-    const {showReply} = useReply();
 
     useEffect(() => {
         if (!messages.length) return;
@@ -55,10 +56,10 @@ const GetOldMessages = ({ roomId, messages, loading, error }) => {
     }
 
     useEffect(() => {
-
-        fetchMessageDetails(roomId)
+        if(roomId){
+             fetchMessageDetails(roomId)
         console.log("UserMessage last seen data",userMessages)
-
+        }
     },[roomId])
 
     const groupedMessages = useMemo(() => {

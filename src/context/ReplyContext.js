@@ -7,10 +7,16 @@ export const ReplyProvider = ({ children }) => {
     const [currentMessage, setCurrentMessage] = useState(null);
 
     const toggleReply = (message = null) => {
-        setShowReply(prev => !prev);
         if (message) {
-            setCurrentMessage(message);
-            console.log('Reply message', message);
+            if (showReply && currentMessage && currentMessage.message_id === message.message_id) {
+                setShowReply(false);
+                setCurrentMessage(null);
+            } else {
+                setShowReply(true);
+                setCurrentMessage(message);
+            }
+        } else {
+            setShowReply(prev => !prev);
         }
     };
     const clearReply = () => {

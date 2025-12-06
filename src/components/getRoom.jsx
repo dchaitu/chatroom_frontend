@@ -14,8 +14,9 @@ const GetRoom = ({ rooms }) => {
     const [unreadCount, setUnreadCount] = useState({});
     const navigate = useNavigate();
     const access_token = localStorage.getItem("access_token");
-    const goToRoomMessages = (room_id) => {
-     navigate(`/rooms/${room_id}/messages`);
+    const goToRoomMessages = (roomId) => {
+        console.log("Going to room ", roomId);
+     navigate(`/rooms/${roomId}/messages`);
     }
 
 

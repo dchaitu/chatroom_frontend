@@ -1,36 +1,12 @@
 import {REST_API_PATH} from "./constants";
-import {useEffect, useState} from "react";
+import {useReactions} from "../context/ReactionsContext";
 
-const ShowReactionsToMessage = ({roomId, messageId}) => {
-    const [reactions, setReactions] = useState([]);
+const ShowReactionsToMessage = ({messageId}) => {
+    const {reactions, addReaction, removeReaction, fetchReactions} = useReactions();
     const access_token = localStorage.getItem("access_token");
     const username = localStorage.getItem("username");
-    const fetchReactionsToMessages = async (roomId) => {
-        try{
-            const response = await fetch(`${REST_API_PATH}/reaction/${roomId}/`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${access_token}`
 
-                }
-            });
-            const data = await response.json()
-            setReactions(data);
-        }catch (error) {
-            console.log(error);
-        }
-    }
-
-    useEffect(() => {
-        fetchReactionsToMessages(roomId);
-    },[roomId])
-
-
-    const handleEmojiClick = async (emojiData) => {
-        console.log("emojiData ", emojiData);
-        const emoji = emojiData[0];
-        console.log("emoji", emoji);
+    const handleEmojiClick = async (emoji) => {
         try{
             const response = await fetch(`${REST_API_PATH}/reaction/create/`, {
                 method: "POST",
@@ -43,20 +19,10 @@ const ShowReactionsToMessage = ({roomId, messageId}) => {
                     reaction_type: emoji
                 })
             });
-            if(response.status === 200 || response.status === 201) {
-                const data = await response.json()
-                if(!data)
-                {
-                    setReactions((prevState) => (
-                        prevState.filter((r)=> !(r.username === username && r.reaction_type === emoji))
-                    ))
-                }
-                else {
-                    setReactions((prevState) => {
-                        const updatedReaction = prevState.filter((r)=> r.username !== username)
-                        return [...updatedReaction, data]
-                    })
-                }
+            if(response.ok) {
+                const result = await response.text();
+                const data = result ? JSON.parse(result) : null;
+                fetchReactions();
             }
         }catch (error) {
             console.log("Error toggling",error);
@@ -73,23 +39,20 @@ const ShowReactionsToMessage = ({roomId, messageId}) => {
     }, {});
 
 
-    return (<div className="flex-1 flex-row gap-2">
-        {Object.entries(groupedReactions).map((emoji,count) => {
-          return(
+    return (<div className="flex flex-row gap-2">
+        {Object.entries(groupedReactions).map(([emoji, count]) => (
               <span key={`${emoji}-${messageId}`}
-                         className="px-2 py-1 bg-gray-100 rounded-full text-sm">
+                         className="px-2 py-1 bg-gray-100 rounded-full text-sm cursor-pointer">
               <button onClick={()=>handleEmojiClick(emoji)}>
                   <span>{emoji}</span>
               </button>
 
-              {count>0 &&
-               <span key={`${emoji}-${messageId}-${count}`} className="text-sm ">
+              {count > 0 &&
+               <span key={`${emoji}-${messageId}-${count}`} className="text-sm ml-1">
                   {count}
               </span>}
             </span>
-                  )
-
-        })}
+        ))}
     </div>)
 }
 

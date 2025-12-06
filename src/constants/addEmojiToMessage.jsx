@@ -3,9 +3,11 @@ import EmojiPicker from "emoji-picker-react";
 import {REST_API_PATH} from "./constants";
 import {LuSmilePlus} from "react-icons/lu";
 import {Popover, PopoverContent, PopoverTrigger} from "../components/ui/popover";
+import {useReactions} from "../context/ReactionsContext";
 
 const AddEmojiToMessage = ({messageId}) => {
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    const {fetchReactions} = useReactions();
 
     const access_token = localStorage.getItem("access_token");
 
@@ -25,8 +27,9 @@ const AddEmojiToMessage = ({messageId}) => {
                     reaction_type: emoji,
                 }),
             });
-            const data = await response.json();
-            console.log("Reaction saved",data);
+            if (response.ok) {
+                await fetchReactions();
+            }
 
         }catch(err) {
             console.error("Error saving reaction",err);
@@ -35,19 +38,6 @@ const AddEmojiToMessage = ({messageId}) => {
 
     return (
         <>
-            {/*<button className="flex items-center gap-1 text-gray-700 hover:text-black" onClick={() => setShowEmojiPicker(!showEmojiPicker)}>*/}
-            {/*    <LuSmilePlus /> <span>React</span>*/}
-            {/*</button>*/}
-            {/*{*/}
-            {/*    showEmojiPicker && <EmojiPicker*/}
-            {/*        onEmojiClick={handleClick}/>*/}
-            {/*}*/}
-            {/*<Dialog open={showEmojiPicker} handler={setShowEmojiPicker}>*/}
-            {/*    <DialogBody>*/}
-            {/*        <EmojiPicker*/}
-            {/*            onEmojiClick={handleClick}/>*/}
-            {/*    </DialogBody>*/}
-            {/*</Dialog>*/}
             <Popover>
                 <PopoverTrigger asChild>
                     <button className="flex items-center gap-1 text-gray-700 hover:text-black" onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
