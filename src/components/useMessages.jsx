@@ -49,10 +49,20 @@ export function useMessages(roomId, token, socket) {
 
             // Handle broadcast signal from lambda.py ({"event": "new_message", "room_id": ...})
             // Use loose equality to handle potential string/number mismatches
-            if (data.event === "new_message" && data.room_id == roomId) {
+            if (data.event === "new_message" && data.room_id === roomId) {
                 console.log("Received new_message signal, fetching messages...");
                 fetchMessages();
                 return;
+            }
+            if(data.event==="reply"&& data.room_id === roomId)
+            {
+                console.log("Received reply");
+                fetchMessages()
+            }
+            if(data.event==="reaction"&& data.room_id === roomId)
+            {
+                console.log("Received reaction");
+                fetchMessages()
             }
 
             // Fallback for full message objects (if architecture changes back)

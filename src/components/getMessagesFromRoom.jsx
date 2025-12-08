@@ -102,7 +102,6 @@ const GetMessagesFromRoom = (props) => {
                     try {
                         const payload = {
                             action: "broadcastMessage",
-                            room_id: roomId
                         };
                         ws.send(JSON.stringify(payload));
                         console.log("Sent broadcastMessage signal to WS");
@@ -165,7 +164,7 @@ const GetMessagesFromRoom = (props) => {
 
                         <div className={`flex-1 flex flex-row overflow-y-auto  ${showReply ? 'w-2/3' : 'w-full'}`}>
                             <div className="flex-1 " id="all-messages">
-                                <GetOldMessages roomId={roomId} messages={messages} loading={loading} error={error} />
+                                <GetOldMessages roomId={roomId} messages={messages} loading={loading} error={error} socket={ws} />
                                 <div ref={messagesEndRef} />
                             </div>
 
@@ -184,7 +183,7 @@ const GetMessagesFromRoom = (props) => {
                     {/*<div ref={scrollToBottom}></div>*/}
                     {showReply && (
                         <div className={`fixed inset-y-0 right-0 w-1/3 bg-content border-l border-border transform transition-transform duration-300 ease-in-out ${showReply ? 'translate-x-0' : 'translate-x-full'
-                            }`}><GetReplyDrawer />
+                            }`}><GetReplyDrawer socket={ws} />
                         </div>
                     )}
                 </div>

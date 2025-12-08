@@ -1,22 +1,22 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
-import {useReply} from "../context/ReplyContext";
-import {REST_API_PATH} from "../constants/constants";
+import { useReply } from "../context/ReplyContext";
+import { REST_API_PATH } from "../constants/constants";
 import SendMessageForm from "./sendMessageForm";
 import UserMessage from "../constants/UserMessage";
-import {MdClose} from "react-icons/md";
+import { MdClose } from "react-icons/md";
 
-const GetReplyDrawer = () => {
+const GetReplyDrawer = ({ socket }) => {
     const [replyText, setReplyText] = useState("")
     const [replies, setReplies] = useState([]);
-    const {currentMessage, clearReply } = useReply()
+    const { currentMessage, clearReply } = useReply()
     const [userMessages, setUserMessages] = useState([]);
     const access_token = localStorage.getItem("access_token")
     // console.log("GetReplyDrawer ", message)
 
     const fetchMessageDetails = async () => {
         // console.log(roomId,"message last seen pressed");
-        const response = await fetch(`${REST_API_PATH}/messages/info?room_id=${currentMessage.room_id}`,{
+        const response = await fetch(`${REST_API_PATH}/messages/info?room_id=${currentMessage.room_id}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -25,13 +25,13 @@ const GetReplyDrawer = () => {
 
         });
         const data = await response.json()
-        console.log("UserMessage last seen data from fetch",data);
+        console.log("UserMessage last seen data from fetch", data);
         setUserMessages(data);
         return data
     }
 
     const getMessageReplies = async () => {
-        if (!currentMessage) {return}
+        if (!currentMessage) { return }
         try {
             const response = await fetch(`${REST_API_PATH}/reply/show-replies-for/${currentMessage.message_id}/`, {
                 method: "GET",
@@ -56,12 +56,12 @@ const GetReplyDrawer = () => {
         }
     }
     useEffect(() => {
-        if(currentMessage) {
+        if (currentMessage) {
             getMessageReplies();
             fetchMessageDetails()
 
         }
-    },[currentMessage])
+    }, [currentMessage])
     if (!currentMessage) {
         return null
     }
@@ -86,7 +86,19 @@ const GetReplyDrawer = () => {
 
             if (response.ok) {
                 setReplyText("")
-                getMessageReplies();
+                if (socket && socket.readyState === WebSocket.OPEN) {
+                    try {
+                        const payload = {
+                            action: "broadcastMessage",
+                            reply_to: currentMessage.message_id,
+                        };
+                        socket.send(JSON.stringify(payload));
+                        console.log("Sent reply broadcast to WS");
+                    } catch (wsErr) {
+                        console.error("WebSocket reply broadcast error:", wsErr);
+                    }
+                }
+                // getMessageReplies();
                 // You might want to refresh messages or update the UI here
             }
         } catch (error) {
@@ -103,7 +115,7 @@ const GetReplyDrawer = () => {
         <div className="top-0 right-0 h-full bg-white border-t border-l border-gray-200 rounded-tl-lg  flex flex-col">
             <div className="flex justify-between p-4 border-b border-gray-200">
                 <h1 className="text-xl font-semibold">Thread</h1>
-                <button 
+                <button
                     onClick={handleClose}
                     className="p-1 rounded-full hover:bg-gray-100"
                     aria-label="Close thread"
@@ -118,7 +130,7 @@ const GetReplyDrawer = () => {
                 </div>
 
                 <div className="space-y-4 border-t-2 py-2" id="thread-replies">
-                    {replies.length>0?
+                    {replies.length > 0 ?
                         replies.map((reply) => (
                             <div key={reply.reply_id} className="flex items-center justify-between">
                                 <UserMessage key={reply.reply_id} message={reply} notReply={false} userMessages={userMessages} />
@@ -130,8 +142,8 @@ const GetReplyDrawer = () => {
                     }
                 </div>
                 <SendMessageForm handleSendMessage={handleReplySubmit}
-                                 initialMessage={replyText}
-                                 onMessageChange={setReplyText}
+                    initialMessage={replyText}
+                    onMessageChange={setReplyText}
                 />
 
             </div>

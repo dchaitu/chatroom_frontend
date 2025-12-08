@@ -1,10 +1,10 @@
-import React, {useState, useEffect, useMemo, useRef} from "react";
-import {REST_API_PATH, formatMessageDate} from "../constants/constants";
-import {useReply} from "../context/ReplyContext";
+import React, { useState, useEffect, useMemo, useRef } from "react";
+import { REST_API_PATH, formatMessageDate } from "../constants/constants";
+import { useReply } from "../context/ReplyContext";
 import MessageItem from "./MessageItem";
 
 const GetOldMessages = (props) => {
-    console.log("props are ",props)
+    console.log("props are ", props)
     const { roomId, messages, loading, error } = props;
     console.log("GetOldMessages", roomId);
     const [replyCounts, setReplyCounts] = useState({});
@@ -40,8 +40,8 @@ const GetOldMessages = (props) => {
     }, [messages, access_token]);
 
     const fetchMessageDetails = async (roomId) => {
-        console.log(roomId,"message last seen pressed");
-        const response = await fetch(`${REST_API_PATH}/messages/info/${roomId}`,{
+        console.log(roomId, "message last seen pressed");
+        const response = await fetch(`${REST_API_PATH}/messages/info/${roomId}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -50,75 +50,75 @@ const GetOldMessages = (props) => {
 
         });
         const data = await response.json()
-        console.log("UserMessage last seen data from fetch",data);
+        console.log("UserMessage last seen data from fetch", data);
         setUserMessages(data);
         return data
     }
 
     useEffect(() => {
-        if(roomId){
-             fetchMessageDetails(roomId)
-        console.log("UserMessage last seen data",userMessages)
+        if (roomId) {
+            fetchMessageDetails(roomId)
+            console.log("UserMessage last seen data", userMessages)
         }
-    },[roomId])
+    }, [roomId])
 
     const groupedMessages = useMemo(() => {
-    if (!messages.length) return [];
-    
-    const grouped = [];
-    let currentDate = null;
-    let lastUser = null;
-    let lastTime = null;
-    let messageGroup = [];
+        if (!messages.length) return [];
 
-    const processGroup = () => {
-        if (messageGroup.length > 0) {
-            grouped.push({
-                type: 'messageGroup',
-                messages: [...messageGroup],
-                username: messageGroup[0].username,
-                id: `group-${messageGroup[0].message_id}`
-            });
-            messageGroup = [];
-        }
-    };
+        const grouped = [];
+        let currentDate = null;
+        let lastUser = null;
+        let lastTime = null;
+        let messageGroup = [];
 
-    messages.forEach((message) => {
-        const messageDate = formatMessageDate(message.timestamp);
-        const messageTime = new Date(message.timestamp).getTime();
-        
-        // Check if we need a new date header
-        if (messageDate !== currentDate) {
-            processGroup(); // Process any pending message group
-            grouped.push({
-                type: 'date',
-                date: messageDate,
-                id: `date-${messageDate}`
-            });
-            currentDate = messageDate;
-            lastUser = null;
-            lastTime = null;
-        }
+        const processGroup = () => {
+            if (messageGroup.length > 0) {
+                grouped.push({
+                    type: 'messageGroup',
+                    messages: [...messageGroup],
+                    username: messageGroup[0].username,
+                    id: `group-${messageGroup[0].message_id}`
+                });
+                messageGroup = [];
+            }
+        };
 
-        // Check if we should start a new message group
-        const isSameUser = message.username === lastUser;
-        // const isWithinOneMinute = lastTime && (messageTime - lastTime) <= 60000; // 60,000 ms = 1 minute
+        messages.forEach((message) => {
+            const messageDate = formatMessageDate(message.timestamp);
+            const messageTime = new Date(message.timestamp).getTime();
 
-        if (!isSameUser) {
-            processGroup(); // Process any pending message group
-        }
+            // Check if we need a new date header
+            if (messageDate !== currentDate) {
+                processGroup(); // Process any pending message group
+                grouped.push({
+                    type: 'date',
+                    date: messageDate,
+                    id: `date-${messageDate}`
+                });
+                currentDate = messageDate;
+                lastUser = null;
+                lastTime = null;
+            }
 
-        // Add message to current group
-        messageGroup.push(message);
-        lastUser = message.username;
-        lastTime = messageTime;
-    });
+            // Check if we should start a new message group
+            const isSameUser = message.username === lastUser;
+            // const isWithinOneMinute = lastTime && (messageTime - lastTime) <= 60000; // 60,000 ms = 1 minute
 
-    // Process any remaining messages in the last group
-    processGroup();
-    
-    return grouped;
-}, [messages]);
+            if (!isSameUser) {
+                processGroup(); // Process any pending message group
+            }
+
+            // Add message to current group
+            messageGroup.push(message);
+            lastUser = message.username;
+            lastTime = messageTime;
+        });
+
+        // Process any remaining messages in the last group
+        processGroup();
+
+        return grouped;
+    }, [messages]);
 
     const allItems = useMemo(() => {
         if (!groupedMessages.length) return [];
@@ -166,7 +166,7 @@ const GetOldMessages = (props) => {
             <ul className="flex flex-col">
                 {allItems.map((item) => (
                     <li key={item.id} className="m-0">
-                        <MessageItem item={item} />
+                        <MessageItem item={item} socket={props.socket} />
                     </li>
                 ))}
             </ul>

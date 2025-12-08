@@ -1,25 +1,29 @@
 import AvatarWithInitials from "./AvatarWithInitials";
-import {formatMessageDate, getTimeStamp} from "./constants";
+import { formatMessageDate, getTimeStamp } from "./constants";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/cjs/styles/prism';
-import React, {memo, useState} from "react";
+import React, { memo, useState } from "react";
 
-import {Popover, PopoverContent, PopoverTrigger} from "@radix-ui/react-popover";
-import {useReply} from "../context/ReplyContext";
-import {PiDotsThreeOutlineVerticalFill} from "react-icons/pi";
-import {BiMessageRoundedDetail} from "react-icons/bi";
+import { Popover, PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
+import { useReply } from "../context/ReplyContext";
+import { PiDotsThreeOutlineVerticalFill } from "react-icons/pi";
+import { BiMessageRoundedDetail } from "react-icons/bi";
 import AddEmojiToMessage from "./addEmojiToMessage";
 import ShowReactionsToMessage from "./showReactionsToMessage";
-import {useUsers} from "../context/allUserContext";
+import { useUsers } from "../context/allUserContext";
 
 const UserMessage = (props) => {
-    const {message, replyCount,userMessages,showHeader = true,notReply=true} = props;
+    const { message, replyCount, userMessages, showHeader = true, notReply = true, socket } = props;
     const [showMessageOptions, setShowMessageOptions] = useState(false);
     const [showButton, setShowButton] = useState(false);
-    const {toggleReply} = useReply();
+    const { toggleReply } = useReply();
     const userMap = useUsers();
+
+    // Use reply_id if available (for replies), otherwise message_id
+    const currentMessageId = message.reply_id || message.message_id;
+
     // console.log("userMessages data ",userMessages)
     // console.log("messages data ",message)
 
@@ -98,173 +102,175 @@ const UserMessage = (props) => {
 
     return (
         <div key={message.id} className={` flex items-start justify-start px-5 hover:bg-gray-100`}
-             onMouseEnter={() => setShowMessageOptions(true)}
-             onMouseLeave={() => setShowMessageOptions(false)}>
-        {showHeader ? (
+            onMouseEnter={() => setShowMessageOptions(true)}
+            onMouseLeave={() => setShowMessageOptions(false)}>
+            {showHeader ? (
                 <div className="mr-1 flex-shrink-0">
-                    {getUserProfilePic(message.username|| message.user)}
+                    {getUserProfilePic(message.username || message.user)}
                 </div>
             ) : (
                 <div className="flex items-center group hover:cursor-pointer">
                     <div className="w-8 mr-1 flex-shrink-0 relative">
-                    <span className="left-0 text-xs text-gray-500 ">
-                      {showMessageOptions && getTimeStamp(message.timestamp)}
-                    </span>
+                        <span className="left-0 text-xs text-gray-500 ">
+                            {showMessageOptions && getTimeStamp(message.timestamp)}
+                        </span>
                     </div>
                 </div>
-                    )}
-        <div className="flex-1 flex-col">
-        <div
-            key={`${message.room_id}-${message.timestamp}`} id="message-info"
-            className="flex"
-        >
-
-            <Popover open={showMessageOptions} onOpenChange={setShowMessageOptions}>
+            )}
+            <div className="flex-1 flex-col">
                 <div
-                    className="relative h-full w-full p-0.5 text-gray-800"
-
+                    key={`${message.room_id}-${message.timestamp}`} id="message-info"
+                    className="flex"
                 >
-                    {/* Username + Timestamp */}
-                    { showHeader &&
-                    <div className="flex justify-start items-baseline ">
-                        <span className="font-semibold text-sm hover:underline hover:cursor-pointer">{message.username}</span>
-                        <span className="text-xs text-gray-500 px-2" >{showMessageOptions && message.timestamp ? getTimeStamp(message.timestamp) : ""}</span>
-                    </div>}
-                    {message.file_url && (
-                        <div className="my-1 border border-gray-200 rounded-md bg-white">
-                            {getFileType(message.file_url) === 'image' ? (
-                                <a
-                                    href={message.file_url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="block"
-                                >
-                                    <img
-                                        src={message.file_url}
-                                        alt="Attachment"
-                                        className="max-w-xs max-h-48 rounded-md border cursor-pointer hover:opacity-90 transition-opacity"
-                                    />
-                                </a>
-                            ) : (
-                                <a
-                                    target="_blank"
-                                    href={`${message.file_url}`}
-                                    download
-                                    className="flex items-center gap-2 p-2 hover:bg-gray-50 rounded-md transition-colors"
-                                >
-                                    <span className="text-xl">📄</span>
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-sm font-medium text-gray-900 truncate">
-                                            {message.file_url.split('/').pop()}
-                                        </p>
-                                        <p className="text-xs text-gray-500">
-                                            {getFileType(message.file_url).toUpperCase()} File
-                                        </p>
-                                    </div>
-                                    <span className="text-blue-600 text-sm font-medium">Download</span>
-                                </a>
-                            )}
-                        </div>
-                    )}
 
+                    <Popover open={showMessageOptions} onOpenChange={setShowMessageOptions}>
+                        <div
+                            className="relative h-full w-full p-0.5 text-gray-800"
 
-                    {/* Markdown content */}
-                    <div className="prose max-w-none text-gray-800 break-words">
-                        <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
-                            {message.content}
-                        </ReactMarkdown>
-                        {/*{message_id_wise_count[message.message_id]} replies*/}
-
-                    </div>
-
-                    {/* Menu Trigger (top-right overlay) */}
-                    <PopoverTrigger asChild>
-                        <button className="absolute top-2 right-2 text-gray-500 hover:text-gray-800">
-                            {/*<ChevronDownIcon className="h-5 w-5" />*/}
-                        </button>
-                    </PopoverTrigger>
-                </div>
-
-                {/* Popover Content (menu) */}
-                <PopoverContent
-                    className="z-50 px-3 py-2 bg-white shadow-lg border rounded-full"
-                    align="end"
-                    side="top"
-                >
-                    <div className="flex items-center gap-4">
-                        <AddEmojiToMessage
-                            messageId={message.message_id}
-                        />
-
-                        <button
-                            onClick={() => handleReplyClick(message)}
-                            className="flex items-center gap-1 text-gray-700 hover:text-black"
                         >
-                            <BiMessageRoundedDetail />
-                        </button>
+                            {/* Username + Timestamp */}
+                            {showHeader &&
+                                <div className="flex justify-start items-baseline ">
+                                    <span className="font-semibold text-sm hover:underline hover:cursor-pointer">{message.username}</span>
+                                    <span className="text-xs text-gray-500 px-2" >{showMessageOptions && message.timestamp ? getTimeStamp(message.timestamp) : ""}</span>
+                                </div>}
+                            {message.file_url && (
+                                <div className="my-1 border border-gray-200 rounded-md bg-white">
+                                    {getFileType(message.file_url) === 'image' ? (
+                                        <a
+                                            href={message.file_url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="block"
+                                        >
+                                            <img
+                                                src={message.file_url}
+                                                alt="Attachment"
+                                                className="max-w-xs max-h-48 rounded-md border cursor-pointer hover:opacity-90 transition-opacity"
+                                            />
+                                        </a>
+                                    ) : (
+                                        <a
+                                            target="_blank"
+                                            href={`${message.file_url}`}
+                                            download
+                                            className="flex items-center gap-2 p-2 hover:bg-gray-50 rounded-md transition-colors"
+                                        >
+                                            <span className="text-xl">📄</span>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-medium text-gray-900 truncate">
+                                                    {message.file_url.split('/').pop()}
+                                                </p>
+                                                <p className="text-xs text-gray-500">
+                                                    {getFileType(message.file_url).toUpperCase()} File
+                                                </p>
+                                            </div>
+                                            <span className="text-blue-600 text-sm font-medium">Download</span>
+                                        </a>
+                                    )}
+                                </div>
+                            )}
 
-                        <Popover>
+
+                            {/* Markdown content */}
+                            <div className="prose max-w-none text-gray-800 break-words">
+                                <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
+                                    {message.content}
+                                </ReactMarkdown>
+                                {/*{message_id_wise_count[message.message_id]} replies*/}
+
+                            </div>
+
+                            {/* Menu Trigger (top-right overlay) */}
                             <PopoverTrigger asChild>
-                                <button className="flex items-center gap-1 text-gray-700 hover:text-black">
-                                    <PiDotsThreeOutlineVerticalFill />
+                                <button className="absolute top-2 right-2 text-gray-500 hover:text-gray-800">
+                                    {/*<ChevronDownIcon className="h-5 w-5" />*/}
                                 </button>
                             </PopoverTrigger>
+                        </div>
 
-                            <PopoverContent
-                                align="end"
-                                side="top"
-                                className="z-50 w-80 p-2 bg-gray-50 shadow-lg border rounded"
-                            >
-                                <p className="font-semibold mb-2">Last seen</p>
-                                <ul className="px-4 py-2 bg-white rounded-md">
-                                    {userMessages.filter((item) =>  item.message_id === message.message_id).map(
-                                        (item) =>(
-                                        <li
-                                            key={`${item.message_id}-${item.username}`}
-                                            className="mb-2 border-b border-gray-200 pb-1"
-                                        >
-                                            <div className="flex justify-between">
-                                                <span className="font-medium">{item.username}</span>
-                                                <span className="text-xs text-gray-500">
-                                                    {getTimeStamp(item.read_at)}
-                                                </span>
-                                            </div>
-                                            <span className="text-xs text-gray-400">
-                                            {formatMessageDate(item.read_at)}
-                                          </span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </PopoverContent>
-                        </Popover>
+                        {/* Popover Content (menu) */}
+                        <PopoverContent
+                            className="z-50 px-3 py-2 bg-white shadow-lg border rounded-full"
+                            align="end"
+                            side="top"
+                        >
+                            <div className="flex items-center gap-4">
+                                <AddEmojiToMessage
+                                    messageId={currentMessageId}
+                                    roomId={message.room_id}
+                                    socket={socket}
+                                />
 
-                    </div>
-                </PopoverContent>
-            </Popover>
+                                <button
+                                    onClick={() => handleReplyClick(message)}
+                                    className="flex items-center gap-1 text-gray-700 hover:text-black"
+                                >
+                                    <BiMessageRoundedDetail />
+                                </button>
 
-        </div>
-            <div>
-                <ShowReactionsToMessage roomId={message.room_id} messageId={message.message_id} />
-                {/*{replyCount}*/}
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <button className="flex items-center gap-1 text-gray-700 hover:text-black">
+                                            <PiDotsThreeOutlineVerticalFill />
+                                        </button>
+                                    </PopoverTrigger>
+
+                                    <PopoverContent
+                                        align="end"
+                                        side="top"
+                                        className="z-50 w-80 p-2 bg-gray-50 shadow-lg border rounded"
+                                    >
+                                        <p className="font-semibold mb-2">Last seen</p>
+                                        <ul className="px-4 py-2 bg-white rounded-md">
+                                            {userMessages.filter((item) => item.message_id === currentMessageId).map(
+                                                (item) => (
+                                                    <li
+                                                        key={`${item.message_id}-${item.username}`}
+                                                        className="mb-2 border-b border-gray-200 pb-1"
+                                                    >
+                                                        <div className="flex justify-between">
+                                                            <span className="font-medium">{item.username}</span>
+                                                            <span className="text-xs text-gray-500">
+                                                                {getTimeStamp(item.read_at)}
+                                                            </span>
+                                                        </div>
+                                                        <span className="text-xs text-gray-400">
+                                                            {formatMessageDate(item.read_at)}
+                                                        </span>
+                                                    </li>
+                                                ))}
+                                        </ul>
+                                    </PopoverContent>
+                                </Popover>
+
+                            </div>
+                        </PopoverContent>
+                    </Popover>
+
+                </div>
+                <div>
+                    <ShowReactionsToMessage roomId={message.room_id} messageId={currentMessageId} />
+                    {/*{replyCount}*/}
+                </div>
+
+                <div
+                    className="px-5 text-sm text-gray-500 hover:text-blue-500 cursor-pointer flex items-center gap-1"
+                    onMouseEnter={() => setShowButton(true)}
+                    onMouseLeave={() => setShowButton(false)}
+                    onClick={() => handleReplyClick(message)}
+                >
+                    {replyCount > 0 && notReply && (
+                        <span className="flex items-center gap-1">
+                            <BiMessageRoundedDetail className="h-4 w-4" />
+                            {replyCount} {replyCount === 1 ? 'reply' : 'replies'}
+                        </span>
+                    )}
+                    {showButton && replyCount > 0 && (
+                        <span className="ml-1 text-gray-500"> View Thread</span>
+                    )}
+                </div>
             </div>
-
-            <div
-                className="px-5 text-sm text-gray-500 hover:text-blue-500 cursor-pointer flex items-center gap-1"
-                onMouseEnter={() => setShowButton(true)}
-                onMouseLeave={() => setShowButton(false)}
-                onClick={() => handleReplyClick(message)}
-            >
-                {replyCount > 0 && notReply && (
-                    <span className="flex items-center gap-1">
-                    <BiMessageRoundedDetail className="h-4 w-4" />
-                        {replyCount} {replyCount === 1 ? 'reply' : 'replies'}
-                </span>
-                )}
-                {showButton && replyCount>0 &&  (
-                    <span className="ml-1 text-gray-500"> View Thread</span>
-                )}
-            </div>
-        </div>
         </div>
     )
 }

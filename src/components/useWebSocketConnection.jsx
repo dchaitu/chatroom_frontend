@@ -10,8 +10,8 @@ export const useWebSocketConnection = (token, roomId) => {
         }
 
         const wsUrl = roomId
-            ? `wss://3raigmqws9.execute-api.us-east-1.amazonaws.com/production/?token=${token}&room_id=${roomId}`
-            : `wss://3raigmqws9.execute-api.us-east-1.amazonaws.com/production/?token=${token}`;
+            ? `wss://3raigmqws9.execute-api.us-east-1.amazonaws.com/production/?token=${encodeURIComponent(token)}&room_id=${roomId}`
+            : `wss://3raigmqws9.execute-api.us-east-1.amazonaws.com/production/?token=${encodeURIComponent(token)}`;
 
         console.log("Attempting to connect to WebSocket:", wsUrl);
 
